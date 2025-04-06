@@ -1,0 +1,64 @@
+﻿@model CrudDF3.Models.ViewModels.RegistrarViewModel
+
+@{
+    ViewData["Title"] = "Registro de Cliente";
+}
+
+<h2 class="text-center mt-4">Registro de Cliente</h2>
+
+@if (ViewBag.ErrorMessage != null)
+{
+    <div class="alert alert-danger text-center">@ViewBag.ErrorMessage</div>
+}
+
+<div class="container mt-4">
+    <form asp-action="Registrar" asp-controller="Account" method="post" class="col-md-6 mx-auto needs-validation" novalidate>
+        <div class="mb-3">
+            <label class="form-label">Cédula</label>
+            <input asp-for="CedulaUsuario" class="form-control" required />
+            <span asp-validation-for="CedulaUsuario" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Nombre</label>
+            <input asp-for="NombreUsuario" class="form-control" required />
+            <span asp-validation-for="NombreUsuario" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Apellido</label>
+            <input asp-for="ApellidoUsuario" class="form-control" required />
+            <span asp-validation-for="ApellidoUsuario" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Correo Electrónico</label>
+            <input asp-for="CorreoUsuario" type="email" class="form-control" required />
+            <span asp-validation-for="CorreoUsuario" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Teléfono</label>
+            <input asp-for="Telefono" class="form-control" required />
+            <span asp-validation-for="Telefono" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Dirección</label>
+            <input asp-for="Direccion" class="form-control" required />
+            <span asp-validation-for="Direccion" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Contraseña</label>
+            <input asp-for="ContraseñaUsuario" type="password" class="form-control" required />
+            <span asp-validation-for="ContraseñaUsuario" class="text-danger"></span>
+        </div>
+
+        <button type="submit" class="btn btn-primary w-100">Registrarse</button>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

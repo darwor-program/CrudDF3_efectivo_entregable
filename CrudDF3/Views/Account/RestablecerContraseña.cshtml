@@ -1,0 +1,20 @@
+﻿@{
+    ViewData["Title"] = "Restablecer Contraseña";
+}
+
+<h2>Restablecer Contraseña</h2>
+
+@if (ViewBag.SuccessMessage != null)
+{
+    <div class="alert alert-success">@ViewBag.SuccessMessage</div>
+}
+
+<form method="post" asp-action="GuardarNuevaContraseña" asp-controller="Account">
+    <input type="hidden" name="usuario" value="@ViewBag.Usuario" />
+
+    <div class="mb-3">
+        <label for="nuevaContraseña" class="form-label">Nueva Contraseña</label>
+        <input type="password" name="nuevaContraseña" class="form-control" required placeholder="Ingresa tu nueva contraseña">
+    </div>
+    <button type="submit" class="btn btn-primary">Guardar Contraseña</button>
+</form>

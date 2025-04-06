@@ -1,0 +1,65 @@
+﻿@model IEnumerable<CrudDF3.Models.Huespede>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.CedulaHuesped)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.NombreHuesped)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ApellidoHuesped)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CorreoHuesped)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.FechaEntradaHuesped)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.FechaSalidaHuesped)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.CedulaHuesped)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.NombreHuesped)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ApellidoHuesped)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CorreoHuesped)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.FechaEntradaHuesped)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.FechaSalidaHuesped)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.IdHuesped">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.IdHuesped">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.IdHuesped">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

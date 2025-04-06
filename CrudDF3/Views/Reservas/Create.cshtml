@@ -1,0 +1,190 @@
+﻿@model CrudDF3.Models.CreateReservaViewModel
+
+@{
+    ViewData["Title"] = "Crear Reserva";
+    // Inicialización completa y segura
+    var paquetes = Model.PaquetesDisponibles as IList<PaqueteSelectionViewModel> ?? new List<PaqueteSelectionViewModel>();
+    var usuarios = Model.Usuarios ?? new SelectList(Enumerable.Empty<SelectListItem>());
+
+    // Asegurar que el modelo no sea nulo
+    if (Model == null)
+    {
+        <div class="alert alert-danger">
+            Error al cargar el formulario. Por favor, recargue la página.
+        </div>
+        return;
+    }
+}
+
+<h1>@ViewData["Title"]</h1>
+<hr />
+
+<div class="row">
+    <div class="col-md-12">
+        <form asp-action="Create" method="post" id="reservaForm">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <!-- Sección de Datos de Reserva -->
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label asp-for="IdUsuario" class="control-label">Usuario</label>
+                        <select asp-for="IdUsuario" asp-items="usuarios" class="form-control">
+                            <option value="">-- Seleccione un usuario --</option>
+                        </select>
+                        <span asp-validation-for="IdUsuario" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="FechaInicial" class="control-label">Fecha Inicial</label>
+                        <input asp-for="FechaInicial" class="form-control" type="date" />
+                        <span asp-validation-for="FechaInicial" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="FechaFinal" class="control-label">Fecha Final</label>
+                        <input asp-for="FechaFinal" class="form-control" type="date" />
+                        <span asp-validation-for="FechaFinal" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label asp-for="NumeroPersonas" class="control-label">Número de Personas</label>
+                        <input asp-for="NumeroPersonas" class="form-control" />
+                        <span asp-validation-for="NumeroPersonas" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="Valor" class="control-label">Valor Total</label>
+                        <input asp-for="Valor" class="form-control" readonly id="valorTotal" />
+                        <span asp-validation-for="Valor" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="Anticipo" class="control-label">Anticipo (30% del total)</label>
+                        <input asp-for="Anticipo" class="form-control" readonly id="anticipoInput" />
+                        <span asp-validation-for="Anticipo" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sección de Paquetes Turísticos -->
+            <div class="card mt-4">
+                <div class="card-header bg-primary text-white">
+                    <h5>Paquetes Turísticos Disponibles</h5>
+                </div>
+                <div class="card-body">
+                    @if (paquetes.Count > 0)
+                    {
+                        <div class="alert alert-info">
+                            Seleccione uno o más paquetes para esta reserva
+                        </div>
+
+                        <div class="row">
+                            @for (int i = 0; i < paquetes.Count; i++)
+                            {
+                                <div class="col-md-6 mb-3">
+                                    <div class="card h-100">
+                                        <div class="card-body">
+                                            <input type="hidden" asp-for="@Model.PaquetesDisponibles[i].IdPaquete" />
+                                            <input type="hidden" asp-for="@Model.PaquetesDisponibles[i].PrecioPaquete" class="paquete-precio" />
+
+                                            <div class="form-check">
+                                                <input class="form-check-input paquete-checkbox"
+                                                       type="checkbox"
+                                                       name="PaquetesSeleccionados"
+                                                       value="@paquetes[i].IdPaquete"
+                                                       data-precio="@paquetes[i].PrecioPaquete"
+                                                @(Model.PaquetesSeleccionados.Contains(paquetes[i].IdPaquete) ? "checked" : "") />
+                                                <label class="form-check-label">
+                                                    <strong>@paquetes[i].NombrePaquete</strong>
+                                                </label>
+                                            </div>
+
+                                            <p class="card-text small mt-2">@paquetes[i].DescripcionPaquete</p>
+
+                                            <div class="d-flex justify-content-between align-items-center mt-2">
+                                                <span class="badge bg-success">@paquetes[i].PrecioPaquete?.ToString("C")</span>
+                                                <small class="text-muted">@paquetes[i].DestinoPaquete</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="alert alert-warning">
+                            No hay paquetes turísticos disponibles
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <!-- Campos adicionales -->
+            <div class="row mt-3">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label asp-for="FechaReserva" class="control-label">Fecha de Reserva</label>
+                        <input asp-for="FechaReserva" class="form-control" type="date" />
+                        <span asp-validation-for="FechaReserva" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group form-check mt-4 pt-2">
+                        <label class="form-check-label">
+                            <input class="form-check-input" asp-for="EstadoReserva" /> @Html.DisplayNameFor(model => model.EstadoReserva)
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Botones de Acción -->
+            <div class="form-group mt-4">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save"></i> Crear Reserva
+                </button>
+                <a asp-action="Index" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Volver al Listado
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        $(document).ready(function() {
+            // Función para calcular el total
+        function calcularTotal() {
+            let total = 0;
+
+            $('.paquete-checkbox:checked').each(function() {
+                const precio = parseFloat($(this).data('precio')) || 0;
+                total += precio;
+            });
+
+            $('#valorTotal').val(total.toFixed(2));
+            $('#anticipoInput').val((total * 0.3).toFixed(2));
+        }
+
+            // Calcular al cargar la página (por si hay selecciones iniciales)
+            calcularTotal();
+
+            // Recalcular cuando cambia cualquier checkbox
+            $('.paquete-checkbox').change(function() {
+                calcularTotal();
+            });
+
+            // También recalcular cuando se hace clic en las etiquetas (por si acaso)
+            $('.form-check-label').click(function() {
+                setTimeout(calcularTotal, 50); // Pequeño retraso para permitir que el checkbox cambie
+            });
+        });
+    </script>
+}

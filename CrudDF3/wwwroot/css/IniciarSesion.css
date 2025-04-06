@@ -1,0 +1,120 @@
+﻿html {
+    font-size: 14px;
+    position: relative;
+    min-height: 100%;
+}
+
+@media (min-width: 768px) {
+    html {
+        font-size: 16px;
+    }
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background: white;
+    font-family: 'Arial', sans-serif;
+    display: grid;
+    flex-direction: column;
+    margin: 0;
+}
+
+.container {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.content-form {
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    padding: 40px;
+    width: 100%;
+    max-width: 400px;
+    min-height: 200px;
+    margin-top: 34px;
+}
+
+.logo mb-4 {
+    padding: 15px;
+    font-size: 25px;
+    text-align: center;
+}
+
+input {
+    width: 100%;
+    padding: 12px;
+    margin: 8px 0;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 16px;
+    outline: none;
+    transition: 0.3s;
+}
+
+    input:focus {
+        border-color: #5b9bd5;
+        box-shadow: 0 0 8px rgba(91, 155, 213, 0.4);
+    }
+
+button {
+    width: 100%;
+    padding: 14px;
+    background-color: #5b9bd5;
+    border: none;
+    color: white;
+    font-size: 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+    button:hover {
+        background-color: #4a8ec2;
+    }
+
+a {
+    text-decoration: none;
+    color: #5b9bd5;
+    font-size: 14px;
+}
+
+    a:hover {
+        text-decoration: underline;
+    }
+
+p {
+    text-align: center;
+    font-size: 14px;
+    margin-top: 10px;
+}
+
+    p.error {
+        color: #f44336;
+    }
+
+    p.success {
+        color: #4CAF50;
+    }
+
+.OlvidarContra, .RegistroCuenta {
+    text-align: center;
+    margin-top: 10px;
+}
+
+footer {
+    position: relative;
+    bottom: 0;
+    width: 100%;
+    background-color: #f8f9fa;
+    padding: 10px 0;
+    text-align: center;
+    border-top: 1px solid  #dee2e6;
+}

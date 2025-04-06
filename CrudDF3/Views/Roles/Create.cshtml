@@ -1,0 +1,69 @@
+﻿@model CrudDF3.Models.CreateRoleViewModel
+
+@{
+    ViewData["Title"] = "Create Role";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<h4>Create Role</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <!-- Campo NombreRol -->
+            <div class="form-group">
+                <label asp-for="NombreRol" class="control-label"></label>
+                <input asp-for="NombreRol" class="form-control" />
+                <span asp-validation-for="NombreRol" class="text-danger"></span>
+            </div>
+
+            <!-- Campo DescripcionRol -->
+            <div class="form-group">
+                <label asp-for="DescripcionRol" class="control-label"></label>
+                <input asp-for="DescripcionRol" class="form-control" />
+                <span asp-validation-for="DescripcionRol" class="text-danger"></span>
+            </div>
+
+            <!-- Campo EstadoRol -->
+            <div class="form-group form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="EstadoRol" /> @Html.DisplayNameFor(model => model.EstadoRol)
+                </label>
+            </div>
+
+            <!-- Selección de permisos con checkboxes -->
+            <div class="form-group">
+                <label>Assign Permissions</label>
+                <div>
+                    @foreach (var permission in Model.Permissions)
+                    {
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="SelectedPermissions" value="@permission.Value" />
+                            <label class="form-check-label">
+                                @permission.Text
+                            </label>
+                        </div>
+                    }
+                </div>
+                <span asp-validation-for="SelectedPermissions" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <input type="submit" value="Create Role" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

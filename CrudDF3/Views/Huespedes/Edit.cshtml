@@ -1,0 +1,59 @@
+﻿@model CrudDF3.Models.Huespede
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h1>Edit</h1>
+
+<h4>Huespede</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="IdHuesped" />
+            <div class="form-group">
+                <label asp-for="CedulaHuesped" class="control-label"></label>
+                <input asp-for="CedulaHuesped" class="form-control" />
+                <span asp-validation-for="CedulaHuesped" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="NombreHuesped" class="control-label"></label>
+                <input asp-for="NombreHuesped" class="form-control" />
+                <span asp-validation-for="NombreHuesped" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ApellidoHuesped" class="control-label"></label>
+                <input asp-for="ApellidoHuesped" class="form-control" />
+                <span asp-validation-for="ApellidoHuesped" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="CorreoHuesped" class="control-label"></label>
+                <input asp-for="CorreoHuesped" class="form-control" />
+                <span asp-validation-for="CorreoHuesped" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="FechaEntradaHuesped" class="control-label"></label>
+                <input asp-for="FechaEntradaHuesped" class="form-control" />
+                <span asp-validation-for="FechaEntradaHuesped" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="FechaSalidaHuesped" class="control-label"></label>
+                <input asp-for="FechaSalidaHuesped" class="form-control" />
+                <span asp-validation-for="FechaSalidaHuesped" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

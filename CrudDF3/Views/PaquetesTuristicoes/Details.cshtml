@@ -1,0 +1,136 @@
+﻿@model CrudDF3.Models.PaquetesTuristico
+
+@{
+    ViewData["Title"] = "Detalles del Paquete";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<div>
+    <hr />
+    <div class="row">
+        <div class="col-md-6">
+            <dl class="row">
+                <dt class="col-sm-4">Nombre:</dt>
+                <dd class="col-sm-8">@Html.DisplayFor(model => model.NombrePaquete)</dd>
+
+                <dt class="col-sm-4">Descripción:</dt>
+                <dd class="col-sm-8">@Html.DisplayFor(model => model.DescripcionPaquete)</dd>
+
+                <dt class="col-sm-4">Precio:</dt>
+                <dd class="col-sm-8">@Model.PrecioPaquete?.ToString("C")</dd>
+
+                <dt class="col-sm-4">Disponibilidad:</dt>
+                <dd class="col-sm-8">
+                    @if (Model.DisponibilidadPaquete)
+                    {
+                        <span class="badge bg-success">Disponible</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-danger">No Disponible</span>
+                    }
+                </dd>
+            </dl>
+        </div>
+        <div class="col-md-6">
+            <dl class="row">
+                <dt class="col-sm-4">Fecha:</dt>
+                <dd class="col-sm-8">@Model.FechaPaquete?.ToString("dd/MM/yyyy")</dd>
+
+                <dt class="col-sm-4">Destino:</dt>
+                <dd class="col-sm-8">@Html.DisplayFor(model => model.DestinoPaquete)</dd>
+
+                <dt class="col-sm-4">Tipo de Viaje:</dt>
+                <dd class="col-sm-8">@Html.DisplayFor(model => model.TipoViajePaquete)</dd>
+
+                <dt class="col-sm-4">Estado:</dt>
+                <dd class="col-sm-8">
+                    @if (Model.EstadoPaquete)
+                    {
+                        <span class="badge bg-success">Activo</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-danger">Inactivo</span>
+                    }
+                </dd>
+            </dl>
+        </div>
+    </div>
+
+    <!-- Servicios incluidos -->
+    <div class="card mt-4">
+        <div class="card-header bg-primary text-white">
+            <h5>Servicios Incluidos</h5>
+        </div>
+        <div class="card-body">
+            @if (Model.PaqueteServicios != null && Model.PaqueteServicios.Any())
+            {
+                <div class="row">
+                    @foreach (var servicio in Model.PaqueteServicios)
+                    {
+                        <div class="col-md-4 mb-3">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <h6 class="card-title">@servicio.IdServicioNavigation?.NombreServicio</h6>
+                                    <p class="card-text small">@servicio.IdServicioNavigation?.Descripcion</p>
+                                    <div class="d-flex justify-content-between">
+                                        <span class="badge bg-info">@servicio.IdServicioNavigation?.Categoria</span>
+                                        <span class="badge bg-success">@servicio.IdServicioNavigation?.Costo?.ToString("C")</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+            else
+            {
+                <p class="text-muted">No hay servicios asignados a este paquete.</p>
+            }
+        </div>
+    </div>
+
+    <!-- Habitaciones incluidas -->
+    <div class="card mt-4">
+        <div class="card-header bg-info text-white">
+            <h5>Habitaciones Incluidas</h5>
+        </div>
+        <div class="card-body">
+            @if (Model.PaqueteHabitaciones != null && Model.PaqueteHabitaciones.Any())
+            {
+                <div class="row">
+                    @foreach (var habitacion in Model.PaqueteHabitaciones)
+                    {
+                        <div class="col-md-4 mb-3">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <h6 class="card-title">@habitacion.IdHabitacionNavigation?.TipoHabitacion</h6>
+                                    <p class="card-text small">@habitacion.IdHabitacionNavigation?.DescripcionHabitacion</p>
+                                    <div class="d-flex justify-content-between">
+                                        <span class="badge bg-primary">Capacidad: @habitacion.IdHabitacionNavigation?.CapacidadHuespedes</span>
+                                        <span class="badge bg-success">@habitacion.IdHabitacionNavigation?.TarifaHabitacion?.ToString("C")</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+            else
+            {
+                <p class="text-muted">No hay habitaciones asignadas a este paquete.</p>
+            }
+        </div>
+    </div>
+</div>
+
+<div class="mt-4">
+    <a asp-action="Edit" asp-route-id="@Model.IdPaquete" class="btn btn-warning">
+        <i class="fas fa-edit"></i> Editar
+    </a>
+    <a asp-action="Index" class="btn btn-secondary">
+        <i class="fas fa-arrow-left"></i> Volver al listado
+    </a>
+</div>

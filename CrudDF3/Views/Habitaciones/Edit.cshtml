@@ -1,0 +1,59 @@
+﻿@model CrudDF3.Models.Habitacione
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h1>Edit</h1>
+
+<h4>Habitacione</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="IdHabitacion" />
+            <div class="form-group">
+                <label asp-for="TipoHabitacion" class="control-label"></label>
+                <input asp-for="TipoHabitacion" class="form-control" />
+                <span asp-validation-for="TipoHabitacion" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="CapacidadHuespedes" class="control-label"></label>
+                <input asp-for="CapacidadHuespedes" class="form-control" />
+                <span asp-validation-for="CapacidadHuespedes" class="text-danger"></span>
+            </div>
+            <div class="form-group form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="EstadoHabitacion" /> @Html.DisplayNameFor(model => model.EstadoHabitacion)
+                </label>
+            </div>
+            <div class="form-group">
+                <label asp-for="DescripcionHabitacion" class="control-label"></label>
+                <input asp-for="DescripcionHabitacion" class="form-control" />
+                <span asp-validation-for="DescripcionHabitacion" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="TarifaHabitacion" class="control-label"></label>
+                <input asp-for="TarifaHabitacion" class="form-control" />
+                <span asp-validation-for="TarifaHabitacion" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="CaracteristicasHabitacion" class="control-label"></label>
+                <input asp-for="CaracteristicasHabitacion" class="form-control" />
+                <span asp-validation-for="CaracteristicasHabitacion" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

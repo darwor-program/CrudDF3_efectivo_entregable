@@ -1,0 +1,148 @@
+﻿@model IEnumerable<CrudDF3.Models.PaquetesTuristico>
+
+@{
+    ViewData["Title"] = "Paquetes Turísticos";
+}
+
+<div class="text-center mb-5">
+    <h1 class="display-4">Bienvenido a CrudDF</h1>
+    <p class="lead">Descubre nuestros exclusivos paquetes turísticos</p>
+</div>
+
+<div class="container">
+    <div class="row row-cols-1 row-cols-md-3 g-4">
+        @foreach (var paquete in Model)
+        {
+            <div class="col">
+                <div class="card h-100 border-0 shadow-sm hover-effect">
+                    <div class="position-relative">
+                        <img src="~/Imagenes/por que quiero.jpg" class="card-img-top" alt="@paquete.NombrePaquete" style="height: 200px; object-fit: cover;">
+                        <div class="position-absolute top-0 end-0 bg-primary text-white px-2 py-1 rounded-bl">
+                            @paquete.PrecioPaquete?.ToString("C")
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title text-primary">@paquete.NombrePaquete</h5>
+                        <p class="card-text text-muted">@paquete.DescripcionPaquete</p>
+
+                        <!-- Acordeón para Servicios -->
+                        <div class="accordion mt-3" id="serviciosAccordion@(paquete.IdPaquete)">
+                            <div class="accordion-item">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseServicios@(paquete.IdPaquete)">
+                                        <i class="fas fa-concierge-bell me-2"></i> Servicios Incluidos (@paquete.PaqueteServicios.Count)
+                                    </button>
+                                </h2>
+                                <div id="collapseServicios@(paquete.IdPaquete)" class="accordion-collapse collapse" data-bs-parent="#serviciosAccordion@(paquete.IdPaquete)">
+                                    <div class="accordion-body p-0">
+                                        <ul class="list-group list-group-flush">
+                                            @foreach (var servicio in paquete.PaqueteServicios)
+                                            {
+                                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                    <div>
+                                                        <i class="fas fa-check-circle text-success me-2"></i>
+                                                        @servicio.IdServicioNavigation?.NombreServicio
+                                                    </div>
+                                                    <span class="badge bg-primary rounded-pill">@servicio.IdServicioNavigation?.Costo?.ToString("C")</span>
+                                                </li>
+                                            }
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Acordeón para Habitaciones -->
+                        <div class="accordion mt-3" id="habitacionesAccordion@(paquete.IdPaquete)">
+                            <div class="accordion-item">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseHabitaciones@(paquete.IdPaquete)">
+                                        <i class="fas fa-hotel me-2"></i> Habitaciones Disponibles (@paquete.PaqueteHabitaciones.Count)
+                                    </button>
+                                </h2>
+                                <div id="collapseHabitaciones@(paquete.IdPaquete)" class="accordion-collapse collapse" data-bs-parent="#habitacionesAccordion@(paquete.IdPaquete)">
+                                    <div class="accordion-body p-0">
+                                        <ul class="list-group list-group-flush">
+                                            @foreach (var habitacion in paquete.PaqueteHabitaciones)
+                                            {
+                                                <li class="list-group-item">
+                                                    <div class="d-flex justify-content-between align-items-start">
+                                                        <div>
+                                                            <i class="fas fa-bed text-info me-2"></i>
+                                                            <strong>@habitacion.IdHabitacionNavigation?.TipoHabitacion</strong>
+                                                            <div class="small text-muted mt-1">
+                                                                @habitacion.IdHabitacionNavigation?.DescripcionHabitacion
+                                                            </div>
+                                                        </div>
+                                                        <div class="text-end">
+                                                            <span class="badge bg-success">@habitacion.IdHabitacionNavigation?.TarifaHabitacion?.ToString("C")</span>
+                                                            <div class="small mt-1">
+                                                                <span class="badge bg-primary">Capacidad: @habitacion.IdHabitacionNavigation?.CapacidadHuespedes</span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </li>
+                                            }
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-center mt-3">
+                            <span class="badge bg-@(paquete.EstadoPaquete ? "success" : "secondary")">
+                                @(paquete.EstadoPaquete ? "Disponible" : "No Disponible")
+                            </span>
+                            <!-- Solo muestra el botón de reserva -->
+                            <a href="@Url.Action("Create", "Reservas", new { idPaquete = paquete.IdPaquete })"
+                               class="btn btn-primary btn-sm">
+                                <i class="fas fa-calendar-check me-1"></i> Reservar
+                            </a>
+                        </div>
+                    </div>
+                    <div class="card-footer bg-transparent">
+                        <small class="text-muted">
+                            <i class="fas fa-map-marker-alt me-1"></i> @paquete.DestinoPaquete
+                            <span class="mx-2">|</span>
+                            <i class="far fa-calendar-alt me-1"></i> @paquete.FechaPaquete?.ToString("d")
+                        </small>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<style>
+    .hover-effect {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+        .hover-effect:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+
+    .card-img-top {
+        border-top-left-radius: 0.375rem;
+        border-top-right-radius: 0.375rem;
+    }
+
+    .text-primary {
+        color: #3a86ff !important;
+    }
+
+    .bg-primary {
+        background-color: #3a86ff !important;
+    }
+
+    .accordion-button:not(.collapsed) {
+        background-color: #f8f9fa;
+        color: #3a86ff;
+    }
+
+    .accordion-button:focus {
+        box-shadow: none;
+        border-color: rgba(0,0,0,.125);
+    }
+</style>

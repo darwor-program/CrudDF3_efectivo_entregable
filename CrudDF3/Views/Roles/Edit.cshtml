@@ -1,0 +1,70 @@
+﻿@model CrudDF3.Models.EditRoleViewModel
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h1>Edit</h1>
+
+<h4>Role</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="IdRol" />
+
+            <!-- Campo NombreRol -->
+            <div class="form-group">
+                <label asp-for="NombreRol" class="control-label"></label>
+                <input asp-for="NombreRol" class="form-control" />
+                <span asp-validation-for="NombreRol" class="text-danger"></span>
+            </div>
+
+            <!-- Campo DescripcionRol -->
+            <div class="form-group">
+                <label asp-for="DescripcionRol" class="control-label"></label>
+                <input asp-for="DescripcionRol" class="form-control" />
+                <span asp-validation-for="DescripcionRol" class="text-danger"></span>
+            </div>
+
+            <!-- Campo EstadoRol -->
+            <div class="form-group form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="EstadoRol" type="checkbox" /> @Html.DisplayNameFor(model => model.EstadoRol)
+                </label>
+            </div>
+
+            <div class="form-group">
+                <label>Assign Permissions</label>
+                @foreach (var permission in Model.AllPermissions)
+                {
+                    <div class="form-check">
+                        <input type="checkbox" class="form-check-input"
+                               name="SelectedPermissions"
+                               value="@permission.IdPermiso"
+                        @(Model.SelectedPermissions.Contains(permission.IdPermiso) ? "checked" : "") />
+                        <label class="form-check-label">
+                            @permission.NombrePermiso
+                        </label>
+                    </div>
+                }
+                <span asp-validation-for="SelectedPermissions" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
