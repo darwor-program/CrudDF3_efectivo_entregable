@@ -21,7 +21,18 @@ namespace CrudDF3.Controllers
         // GET: Reservas
         public async Task<IActionResult> Index()
         {
-            var reservas = await _context.Reservas
+            var idUsuario = HttpContext.Session.GetString("idUsuario");
+            var idRol = HttpContext.Session.GetString("idRol");
+
+            IQueryable<Reserva> query = _context.Reservas;
+
+            // Si es cliente (rol 2), filtrar solo sus reservas
+            if (idRol == "2" && !string.IsNullOrEmpty(idUsuario))
+            {
+                query = query.Where(r => r.IdUsuario == int.Parse(idUsuario));
+            }
+
+            var reservas = await query
                 .Include(r => r.IdUsuarioNavigation)
                 .Include(r => r.ReservasPaquetes)
                 .Select(r => new ReservaIndexViewModel
@@ -34,7 +45,7 @@ namespace CrudDF3.Controllers
                     Valor = r.Valor,
                     Anticipo = r.Anticipo,
                     FechaReserva = r.FechaReserva,
-                    EstadoReserva = r.EstadoReserva, // Aquí asignamos el valor booleano
+                    EstadoReserva = r.EstadoReserva,
                     PaquetesCount = r.ReservasPaquetes.Count,
                     NombresPaquetes = string.Join(", ", r.ReservasPaquetes.Select(rp => rp.IdPaqueteNavigation.NombrePaquete))
                 })

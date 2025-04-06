@@ -1,7 +1,8 @@
 ﻿@model IEnumerable<CrudDF3.Models.ReservaIndexViewModel>
 
 @{
-    ViewData["Title"] = "Lista de Reservas";
+    var idRol = Context.Session.GetString("idRol");
+    ViewData["Title"] = idRol == "2" ? "Mis Reservas" : "Lista de Reservas";
 }
 
 <h1>@ViewData["Title"]</h1>
