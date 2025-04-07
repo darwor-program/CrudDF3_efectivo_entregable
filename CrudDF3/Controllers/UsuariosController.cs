@@ -47,16 +47,13 @@ namespace CrudDF3.Controllers
         // GET: Usuarios/Create
         public IActionResult Create()
         {
-            ViewData["IdRol"] = new SelectList(_context.Roles, "IdRol", "IdRol");
+            ViewData["IdRol"] = new SelectList(_context.Roles, "IdRol", "NombreRol");
             return View();
         }
 
-        // POST: Usuarios/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("IdUsuario,CedulaUsuario,NombreUsuario,ApellidoUsuario,CorreoUsuario,ContraseñaUsuario,EstadoUsuario,FechaCreacion,Direccion,Telefono,IdRol")] Usuario usuario)
+        public async Task<IActionResult> Create([Bind("CedulaUsuario,NombreUsuario,ApellidoUsuario,CorreoUsuario,ContraseñaUsuario,EstadoUsuario,FechaCreacion,Direccion,Telefono,IdRol")] Usuario usuario)
         {
             if (ModelState.IsValid)
             {
@@ -64,7 +61,8 @@ namespace CrudDF3.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["IdRol"] = new SelectList(_context.Roles, "IdRol", "IdRol", usuario.IdRol);
+
+            ViewData["IdRol"] = new SelectList(_context.Roles, "IdRol", "NombreRol", usuario.IdRol);
             return View(usuario);
         }
 
@@ -81,13 +79,15 @@ namespace CrudDF3.Controllers
             {
                 return NotFound();
             }
-            ViewData["IdRol"] = new SelectList(_context.Roles, "IdRol", "IdRol", usuario.IdRol);
+
+            // Cambiado para mostrar "NombreRol" en lugar de "IdRol"
+            ViewData["IdRol"] = new SelectList(_context.Roles, "IdRol", "NombreRol", usuario.IdRol);
             return View(usuario);
         }
 
-        // POST: Usuarios/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+
+
+        // GET: Usuarios/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("IdUsuario,CedulaUsuario,NombreUsuario,ApellidoUsuario,CorreoUsuario,ContraseñaUsuario,EstadoUsuario,FechaCreacion,Direccion,Telefono,IdRol")] Usuario usuario)
@@ -115,9 +115,10 @@ namespace CrudDF3.Controllers
                         throw;
                     }
                 }
+                // Asegurar que el dropdown de roles muestre los nombres correctamente
+                ViewData["IdRol"] = new SelectList(_context.Roles, "IdRol", "NombreRol", usuario.IdRol);
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["IdRol"] = new SelectList(_context.Roles, "IdRol", "IdRol", usuario.IdRol);
             return View(usuario);
         }
 

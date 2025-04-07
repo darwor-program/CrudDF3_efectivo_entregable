@@ -1,64 +1,95 @@
 ﻿@model CrudDF3.Models.ViewModels.RegistrarViewModel
-
 @{
-    ViewData["Title"] = "Registro de Cliente";
+    ViewData["Title"] = "Registro de Usuario";
 }
 
-<h2 class="text-center mt-4">Registro de Cliente</h2>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewData["Title"]</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="~/css/Registrar.css" asp-append-version="true">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+</head>
+<body class="bg-light">
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8 col-lg-6">
+                <div class="card shadow">
+                    <div class="card-header bg-primary text-white text-center py-3">
+                        <h3><i class="bi bi-person-plus"></i> Crear Cuenta</h3>
+                    </div>
+                    <div class="card-body p-4">
+                        <form method="post" asp-action="Registro" asp-controller="Account">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label asp-for="CedulaUsuario" class="form-label">Cédula</label>
+                                    <input asp-for="CedulaUsuario" class="form-control" placeholder="1234567890">
+                                    <span asp-validation-for="CedulaUsuario" class="text-danger small"></span>
+                                </div>
 
-@if (ViewBag.ErrorMessage != null)
-{
-    <div class="alert alert-danger text-center">@ViewBag.ErrorMessage</div>
-}
+                                <div class="col-md-6">
+                                    <label asp-for="Telefono" class="form-label">Teléfono</label>
+                                    <input asp-for="Telefono" type="tel" class="form-control" placeholder="3001234567">
+                                    <span asp-validation-for="Telefono" class="text-danger small"></span>
+                                </div>
 
-<div class="container mt-4">
-    <form asp-action="Registrar" asp-controller="Account" method="post" class="col-md-6 mx-auto needs-validation" novalidate>
-        <div class="mb-3">
-            <label class="form-label">Cédula</label>
-            <input asp-for="CedulaUsuario" class="form-control" required />
-            <span asp-validation-for="CedulaUsuario" class="text-danger"></span>
+                                <div class="col-md-6">
+                                    <label asp-for="NombreUsuario" class="form-label">Nombres</label>
+                                    <input asp-for="NombreUsuario" class="form-control" placeholder="Juan Carlos">
+                                    <span asp-validation-for="NombreUsuario" class="text-danger small"></span>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label asp-for="ApellidoUsuario" class="form-label">Apellidos</label>
+                                    <input asp-for="ApellidoUsuario" class="form-control" placeholder="Pérez Gómez">
+                                    <span asp-validation-for="ApellidoUsuario" class="text-danger small"></span>
+                                </div>
+
+                                <div class="col-12">
+                                    <label asp-for="CorreoUsuario" class="form-label">Correo Electrónico</label>
+                                    <input asp-for="CorreoUsuario" type="email" class="form-control" placeholder="ejemplo@correo.com">
+                                    <span asp-validation-for="CorreoUsuario" class="text-danger small"></span>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label asp-for="ContraseñaUsuario" class="form-label">Contraseña</label>
+                                    <div class="input-group">
+                                        <input asp-for="ContraseñaUsuario" type="password" class="form-control" placeholder="Mínimo 8 caracteres">
+                                        <button class="btn btn-outline-secondary toggle-password" type="button">
+                                            <i class="bi bi-eye"></i>
+                                        </button>
+                                    </div>
+                                    <span asp-validation-for="ContraseñaUsuario" class="text-danger small"></span>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label asp-for="Direccion" class="form-label">Dirección</label>
+                                    <input asp-for="Direccion" class="form-control" placeholder="Carrera 123 #45-67">
+                                    <span asp-validation-for="Direccion" class="text-danger small"></span>
+                                </div>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary w-100 mt-4 py-2">
+                                <i class="bi bi-person-check"></i> Registrarse
+                            </button>
+
+                            <div class="text-center mt-3">
+                                <a asp-action="Login" class="text-decoration-none">
+                                    <i class="bi bi-arrow-left"></i> ¿Ya tienes cuenta? Inicia sesión
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
         </div>
+    </div>
 
-        <div class="mb-3">
-            <label class="form-label">Nombre</label>
-            <input asp-for="NombreUsuario" class="form-control" required />
-            <span asp-validation-for="NombreUsuario" class="text-danger"></span>
-        </div>
-
-        <div class="mb-3">
-            <label class="form-label">Apellido</label>
-            <input asp-for="ApellidoUsuario" class="form-control" required />
-            <span asp-validation-for="ApellidoUsuario" class="text-danger"></span>
-        </div>
-
-        <div class="mb-3">
-            <label class="form-label">Correo Electrónico</label>
-            <input asp-for="CorreoUsuario" type="email" class="form-control" required />
-            <span asp-validation-for="CorreoUsuario" class="text-danger"></span>
-        </div>
-
-        <div class="mb-3">
-            <label class="form-label">Teléfono</label>
-            <input asp-for="Telefono" class="form-control" required />
-            <span asp-validation-for="Telefono" class="text-danger"></span>
-        </div>
-
-        <div class="mb-3">
-            <label class="form-label">Dirección</label>
-            <input asp-for="Direccion" class="form-control" required />
-            <span asp-validation-for="Direccion" class="text-danger"></span>
-        </div>
-
-        <div class="mb-3">
-            <label class="form-label">Contraseña</label>
-            <input asp-for="ContraseñaUsuario" type="password" class="form-control" required />
-            <span asp-validation-for="ContraseñaUsuario" class="text-danger"></span>
-        </div>
-
-        <button type="submit" class="btn btn-primary w-100">Registrarse</button>
-    </form>
-</div>
-
-@section Scripts {
-    <partial name="_ValidationScriptsPartial" />
-}
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/registro.js" asp-append-version="true"></script>
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+</body>
+</html>
