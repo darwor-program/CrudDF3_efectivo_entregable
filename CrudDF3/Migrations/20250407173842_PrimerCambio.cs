@@ -223,27 +223,21 @@ namespace CrudDF3.Migrations
                     IdReserva = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     IdUsuario = table.Column<int>(type: "int", nullable: true),
-                    IdHuesped = table.Column<int>(type: "int", nullable: true),
-                    IdHabitacion = table.Column<int>(type: "int", nullable: true),
                     FechaInicial = table.Column<DateTime>(type: "datetime", nullable: true),
                     FechaFinal = table.Column<DateTime>(type: "datetime", nullable: true),
                     NumeroPersonas = table.Column<int>(type: "int", nullable: true),
                     Valor = table.Column<decimal>(type: "decimal(10,2)", nullable: true),
                     Anticipo = table.Column<decimal>(type: "decimal(10,2)", nullable: true),
                     FechaReserva = table.Column<DateTime>(type: "datetime", nullable: true),
-                    EstadoReserva = table.Column<bool>(type: "bit", nullable: false)
+                    EstadoReserva = table.Column<bool>(type: "bit", nullable: false),
+                    HuespedeIdHuesped = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK__Reservas__0E49C69DE86ED4F0", x => x.IdReserva);
                     table.ForeignKey(
-                        name: "FK__Reservas__IdHabi__59FA5E80",
-                        column: x => x.IdHabitacion,
-                        principalTable: "Habitaciones",
-                        principalColumn: "IdHabitacion");
-                    table.ForeignKey(
-                        name: "FK__Reservas__IdHues__59063A47",
-                        column: x => x.IdHuesped,
+                        name: "FK_Reservas_Huespedes_HuespedeIdHuesped",
+                        column: x => x.HuespedeIdHuesped,
                         principalTable: "Huespedes",
                         principalColumn: "IdHuesped");
                     table.ForeignKey(
@@ -260,7 +254,7 @@ namespace CrudDF3.Migrations
                     IdReservaPaquete = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     IdReserva = table.Column<int>(type: "int", nullable: true),
-                    IdPaquete = table.Column<int>(type: "int", nullable: true)
+                    IdPaquete = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -269,36 +263,13 @@ namespace CrudDF3.Migrations
                         name: "FK__ReservasP__IdPaq__656C112C",
                         column: x => x.IdPaquete,
                         principalTable: "PaquetesTuristicos",
-                        principalColumn: "IdPaquete");
+                        principalColumn: "IdPaquete",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK__ReservasP__IdRes__6477ECF3",
                         column: x => x.IdReserva,
                         principalTable: "Reservas",
                         principalColumn: "IdReserva");
-                });
-
-            migrationBuilder.CreateTable(
-                name: "ReservasServicios",
-                columns: table => new
-                {
-                    IdReservaServicio = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    IdReserva = table.Column<int>(type: "int", nullable: true),
-                    IdServicio = table.Column<int>(type: "int", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK__Reservas__B3FBC747E65BE0F4", x => x.IdReservaServicio);
-                    table.ForeignKey(
-                        name: "FK__ReservasS__IdRes__60A75C0F",
-                        column: x => x.IdReserva,
-                        principalTable: "Reservas",
-                        principalColumn: "IdReserva");
-                    table.ForeignKey(
-                        name: "FK__ReservasS__IdSer__619B8048",
-                        column: x => x.IdServicio,
-                        principalTable: "Servicios",
-                        principalColumn: "IdServicio");
                 });
 
             migrationBuilder.CreateIndex(
@@ -312,14 +283,9 @@ namespace CrudDF3.Migrations
                 column: "IdServicio");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Reservas_IdHabitacion",
+                name: "IX_Reservas_HuespedeIdHuesped",
                 table: "Reservas",
-                column: "IdHabitacion");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Reservas_IdHuesped",
-                table: "Reservas",
-                column: "IdHuesped");
+                column: "HuespedeIdHuesped");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Reservas_IdUsuario",
@@ -335,16 +301,6 @@ namespace CrudDF3.Migrations
                 name: "IX_ReservasPaquetes_IdReserva",
                 table: "ReservasPaquetes",
                 column: "IdReserva");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ReservasServicios_IdReserva",
-                table: "ReservasServicios",
-                column: "IdReserva");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ReservasServicios_IdServicio",
-                table: "ReservasServicios",
-                column: "IdServicio");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Rol_Permisos_IdPermiso",
@@ -375,10 +331,13 @@ namespace CrudDF3.Migrations
                 name: "ReservasPaquetes");
 
             migrationBuilder.DropTable(
-                name: "ReservasServicios");
+                name: "Rol_Permisos");
 
             migrationBuilder.DropTable(
-                name: "Rol_Permisos");
+                name: "Habitaciones");
+
+            migrationBuilder.DropTable(
+                name: "Servicios");
 
             migrationBuilder.DropTable(
                 name: "PaquetesTuristicos");
@@ -387,13 +346,7 @@ namespace CrudDF3.Migrations
                 name: "Reservas");
 
             migrationBuilder.DropTable(
-                name: "Servicios");
-
-            migrationBuilder.DropTable(
                 name: "Permisos");
-
-            migrationBuilder.DropTable(
-                name: "Habitaciones");
 
             migrationBuilder.DropTable(
                 name: "Huespedes");

@@ -82,6 +82,21 @@ namespace CrudDF3.Controllers
 
         public IActionResult Create()
         {
+            var idRol = HttpContext.Session.GetString("idRol");
+            var idUsuario = HttpContext.Session.GetString("idUsuario");
+
+            // Si es cliente (rol 2), cargar vista específica
+            if (idRol == "2" && !string.IsNullOrEmpty(idUsuario))
+            {
+                return CreateForClient(int.Parse(idUsuario));
+            }
+
+            // Vista normal para administradores/otros roles
+            return CreateForAdmin();
+        }
+
+        private IActionResult CreateForAdmin()
+        {
             var model = new CreateReservaViewModel
             {
                 Usuarios = new SelectList(_context.Usuarios, "IdUsuario", "NombreUsuario"),
@@ -99,21 +114,58 @@ namespace CrudDF3.Controllers
                 FechaReserva = DateTime.Now
             };
 
-            return View(model);
+            return View("Create", model);
+        }
+
+        private IActionResult CreateForClient(int userId)
+        {
+            var usuario = _context.Usuarios.Find(userId);
+            if (usuario == null)
+            {
+                return NotFound();
+            }
+
+            var model = new CreateReservaViewModel
+            {
+                IdUsuario = userId,
+                Usuarios = new SelectList(new List<Usuario> { usuario }, "IdUsuario", "NombreUsuario", userId),
+                PaquetesDisponibles = _context.PaquetesTuristicos
+                    .Where(p => p.DisponibilidadPaquete && p.EstadoPaquete)
+                    .Select(p => new PaqueteSelectionViewModel
+                    {
+                        IdPaquete = p.IdPaquete,
+                        NombrePaquete = p.NombrePaquete,
+                        DescripcionPaquete = p.DescripcionPaquete,
+                        PrecioPaquete = p.PrecioPaquete,
+                        DestinoPaquete = p.DestinoPaquete,
+                        TipoViajePaquete = p.TipoViajePaquete
+                    }).ToList(),
+                FechaReserva = DateTime.Now
+            };
+
+            return View("CreateForClient", model);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Create(CreateReservaViewModel model)
         {
+            var idRol = HttpContext.Session.GetString("idRol");
+            var idUsuario = HttpContext.Session.GetString("idUsuario");
+
+            // Si es cliente, forzar el ID de usuario de la sesión
+            if (idRol == "2" && !string.IsNullOrEmpty(idUsuario))
+            {
+                model.IdUsuario = int.Parse(idUsuario);
+            }
+
             if (ModelState.IsValid)
             {
-                // Calcular el valor total basado en los paquetes seleccionados
+                // Resto del código de creación permanece igual
                 var valorTotal = model.PaquetesDisponibles
                     .Where(p => model.PaquetesSeleccionados.Contains(p.IdPaquete))
                     .Sum(p => p.PrecioPaquete) ?? 0;
 
-                // Calcular el anticipo (30% del total)
                 var anticipo = valorTotal * 0.3m;
 
                 var reserva = new Reserva
@@ -122,8 +174,8 @@ namespace CrudDF3.Controllers
                     FechaInicial = model.FechaInicial,
                     FechaFinal = model.FechaFinal,
                     NumeroPersonas = model.NumeroPersonas,
-                    Valor = valorTotal, // Usar el valor calculado
-                    Anticipo = anticipo, // Usar el anticipo calculado
+                    Valor = valorTotal,
+                    Anticipo = anticipo,
                     FechaReserva = model.FechaReserva ?? DateTime.Now,
                     EstadoReserva = model.EstadoReserva
                 };
@@ -131,7 +183,6 @@ namespace CrudDF3.Controllers
                 _context.Reservas.Add(reserva);
                 _context.SaveChanges();
 
-                // Agregar los paquetes seleccionados
                 foreach (var paqueteId in model.PaquetesSeleccionados)
                 {
                     _context.ReservasPaquetes.Add(new ReservasPaquete
@@ -147,7 +198,16 @@ namespace CrudDF3.Controllers
             }
 
             // Repoblar datos si hay error
-            model.Usuarios = new SelectList(_context.Usuarios, "IdUsuario", "Nombre", model.IdUsuario);
+            if (idRol == "2" && !string.IsNullOrEmpty(idUsuario))
+            {
+                var usuario = _context.Usuarios.Find(int.Parse(idUsuario));
+                model.Usuarios = new SelectList(new List<Usuario> { usuario }, "IdUsuario", "NombreUsuario", model.IdUsuario);
+            }
+            else
+            {
+                model.Usuarios = new SelectList(_context.Usuarios, "IdUsuario", "NombreUsuario", model.IdUsuario);
+            }
+
             model.PaquetesDisponibles = _context.PaquetesTuristicos
                 .Where(p => p.DisponibilidadPaquete && p.EstadoPaquete)
                 .Select(p => new PaqueteSelectionViewModel
@@ -160,7 +220,8 @@ namespace CrudDF3.Controllers
                     TipoViajePaquete = p.TipoViajePaquete
                 }).ToList();
 
-            return View(model);
+            // Devolver la vista adecuada según el rol
+            return View(idRol == "2" ? "CreateForClient" : "Create", model);
         }
 
         // POST: Reservas/Creat
