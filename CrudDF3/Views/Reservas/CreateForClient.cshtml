@@ -1,4 +1,5 @@
-﻿@model CrudDF3.Models.CreateReservaViewModel
+﻿@model CrudDF3.Models.ViewModels.CreateReservaViewModel
+@using CrudDF3.Models.ViewModels
 
 @{
     ViewData["Title"] = "Crear Nueva Reserva";
@@ -49,12 +50,12 @@
                         <input asp-for="NumeroPersonas" class="form-control" min="1" />
                         <span asp-validation-for="NumeroPersonas" class="text-danger"></span>
                     </div>
-
+                    
                     <div class="form-group">
                         <label asp-for="Valor" class="control-label">Valor Total</label>
                         <input asp-for="Valor" class="form-control" readonly id="valorTotal" />
                     </div>
-
+                    
                     <div class="form-group">
                         <label asp-for="Anticipo" class="control-label">Anticipo (30%)</label>
                         <input asp-for="Anticipo" class="form-control" readonly id="anticipoInput" />
@@ -84,19 +85,19 @@
                                             <input type="hidden" asp-for="@Model.PaquetesDisponibles[i].PrecioPaquete" class="paquete-precio" />
 
                                             <div class="form-check">
-                                                <input class="form-check-input paquete-checkbox"
+                                                <input class="form-check-input paquete-checkbox" 
                                                        type="checkbox"
-                                                       name="PaquetesSeleccionados"
+                                                       name="PaquetesSeleccionados" 
                                                        value="@paquetes[i].IdPaquete"
                                                        data-precio="@paquetes[i].PrecioPaquete"
-                                                @(Model.PaquetesSeleccionados.Contains(paquetes[i].IdPaquete) ? "checked" : "") />
+                                                       @(Model.PaquetesSeleccionados.Contains(paquetes[i].IdPaquete) ? "checked" : "") />
                                                 <label class="form-check-label">
                                                     <strong>@paquetes[i].NombrePaquete</strong>
                                                 </label>
                                             </div>
 
                                             <p class="card-text small mt-2">@paquetes[i].DescripcionPaquete</p>
-
+                                            
                                             <div class="d-flex justify-content-between align-items-center mt-2">
                                                 <span class="badge bg-success">@paquetes[i].PrecioPaquete?.ToString("C")</span>
                                                 <small class="text-muted">@paquetes[i].DestinoPaquete</small>
@@ -163,7 +164,7 @@
             $('#FechaFinal').change(function() {
                 const fechaInicial = new Date($('#FechaInicial').val());
                 const fechaFinal = new Date($(this).val());
-
+                
                 if (fechaFinal < fechaInicial) {
                     alert('La fecha final no puede ser anterior a la fecha inicial');
                     $(this).val('');
