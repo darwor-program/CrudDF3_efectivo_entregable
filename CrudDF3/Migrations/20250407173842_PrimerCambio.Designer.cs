@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CrudDF3.Migrations
 {
     [DbContext(typeof(CrudDf3Context))]
-    [Migration("20250403232403_PrimerCambio")]
+    [Migration("20250407173842_PrimerCambio")]
     partial class PrimerCambio
     {
         /// <inheritdoc />
@@ -227,10 +227,7 @@ namespace CrudDF3.Migrations
                     b.Property<DateTime?>("FechaReserva")
                         .HasColumnType("datetime");
 
-                    b.Property<int?>("IdHabitacion")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("IdHuesped")
+                    b.Property<int?>("HuespedeIdHuesped")
                         .HasColumnType("int");
 
                     b.Property<int?>("IdUsuario")
@@ -245,9 +242,7 @@ namespace CrudDF3.Migrations
                     b.HasKey("IdReserva")
                         .HasName("PK__Reservas__0E49C69DE86ED4F0");
 
-                    b.HasIndex("IdHabitacion");
-
-                    b.HasIndex("IdHuesped");
+                    b.HasIndex("HuespedeIdHuesped");
 
                     b.HasIndex("IdUsuario");
 
@@ -262,7 +257,7 @@ namespace CrudDF3.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdReservaPaquete"));
 
-                    b.Property<int?>("IdPaquete")
+                    b.Property<int>("IdPaquete")
                         .HasColumnType("int");
 
                     b.Property<int?>("IdReserva")
@@ -276,30 +271,6 @@ namespace CrudDF3.Migrations
                     b.HasIndex("IdReserva");
 
                     b.ToTable("ReservasPaquetes");
-                });
-
-            modelBuilder.Entity("CrudDF3.Models.ReservasServicio", b =>
-                {
-                    b.Property<int>("IdReservaServicio")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdReservaServicio"));
-
-                    b.Property<int?>("IdReserva")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("IdServicio")
-                        .HasColumnType("int");
-
-                    b.HasKey("IdReservaServicio")
-                        .HasName("PK__Reservas__B3FBC747E65BE0F4");
-
-                    b.HasIndex("IdReserva");
-
-                    b.HasIndex("IdServicio");
-
-                    b.ToTable("ReservasServicios");
                 });
 
             modelBuilder.Entity("CrudDF3.Models.RolPermiso", b =>
@@ -499,24 +470,14 @@ namespace CrudDF3.Migrations
 
             modelBuilder.Entity("CrudDF3.Models.Reserva", b =>
                 {
-                    b.HasOne("CrudDF3.Models.Habitacione", "IdHabitacionNavigation")
+                    b.HasOne("CrudDF3.Models.Huespede", null)
                         .WithMany("Reservas")
-                        .HasForeignKey("IdHabitacion")
-                        .HasConstraintName("FK__Reservas__IdHabi__59FA5E80");
-
-                    b.HasOne("CrudDF3.Models.Huespede", "IdHuespedNavigation")
-                        .WithMany("Reservas")
-                        .HasForeignKey("IdHuesped")
-                        .HasConstraintName("FK__Reservas__IdHues__59063A47");
+                        .HasForeignKey("HuespedeIdHuesped");
 
                     b.HasOne("CrudDF3.Models.Usuario", "IdUsuarioNavigation")
                         .WithMany("Reservas")
                         .HasForeignKey("IdUsuario")
                         .HasConstraintName("FK__Reservas__IdUsua__5812160E");
-
-                    b.Navigation("IdHabitacionNavigation");
-
-                    b.Navigation("IdHuespedNavigation");
 
                     b.Navigation("IdUsuarioNavigation");
                 });
@@ -526,6 +487,8 @@ namespace CrudDF3.Migrations
                     b.HasOne("CrudDF3.Models.PaquetesTuristico", "IdPaqueteNavigation")
                         .WithMany("ReservasPaquetes")
                         .HasForeignKey("IdPaquete")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
                         .HasConstraintName("FK__ReservasP__IdPaq__656C112C");
 
                     b.HasOne("CrudDF3.Models.Reserva", "IdReservaNavigation")
@@ -536,23 +499,6 @@ namespace CrudDF3.Migrations
                     b.Navigation("IdPaqueteNavigation");
 
                     b.Navigation("IdReservaNavigation");
-                });
-
-            modelBuilder.Entity("CrudDF3.Models.ReservasServicio", b =>
-                {
-                    b.HasOne("CrudDF3.Models.Reserva", "IdReservaNavigation")
-                        .WithMany("ReservasServicios")
-                        .HasForeignKey("IdReserva")
-                        .HasConstraintName("FK__ReservasS__IdRes__60A75C0F");
-
-                    b.HasOne("CrudDF3.Models.Servicio", "IdServicioNavigation")
-                        .WithMany("ReservasServicios")
-                        .HasForeignKey("IdServicio")
-                        .HasConstraintName("FK__ReservasS__IdSer__619B8048");
-
-                    b.Navigation("IdReservaNavigation");
-
-                    b.Navigation("IdServicioNavigation");
                 });
 
             modelBuilder.Entity("CrudDF3.Models.RolPermiso", b =>
@@ -585,8 +531,6 @@ namespace CrudDF3.Migrations
             modelBuilder.Entity("CrudDF3.Models.Habitacione", b =>
                 {
                     b.Navigation("PaqueteHabitaciones");
-
-                    b.Navigation("Reservas");
                 });
 
             modelBuilder.Entity("CrudDF3.Models.Huespede", b =>
@@ -611,8 +555,6 @@ namespace CrudDF3.Migrations
             modelBuilder.Entity("CrudDF3.Models.Reserva", b =>
                 {
                     b.Navigation("ReservasPaquetes");
-
-                    b.Navigation("ReservasServicios");
                 });
 
             modelBuilder.Entity("CrudDF3.Models.Role", b =>
@@ -625,8 +567,6 @@ namespace CrudDF3.Migrations
             modelBuilder.Entity("CrudDF3.Models.Servicio", b =>
                 {
                     b.Navigation("PaqueteServicios");
-
-                    b.Navigation("ReservasServicios");
                 });
 
             modelBuilder.Entity("CrudDF3.Models.Usuario", b =>

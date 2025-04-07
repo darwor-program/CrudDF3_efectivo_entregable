@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace CrudDF3.Models
+namespace CrudDF3.Models.ViewModels
 {
     public class PaqueteSelectionViewModel
     {

@@ -254,7 +254,7 @@ namespace CrudDF3.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdReservaPaquete"));
 
-                    b.Property<int?>("IdPaquete")
+                    b.Property<int>("IdPaquete")
                         .HasColumnType("int");
 
                     b.Property<int?>("IdReserva")
@@ -484,6 +484,8 @@ namespace CrudDF3.Migrations
                     b.HasOne("CrudDF3.Models.PaquetesTuristico", "IdPaqueteNavigation")
                         .WithMany("ReservasPaquetes")
                         .HasForeignKey("IdPaquete")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
                         .HasConstraintName("FK__ReservasP__IdPaq__656C112C");
 
                     b.HasOne("CrudDF3.Models.Reserva", "IdReservaNavigation")

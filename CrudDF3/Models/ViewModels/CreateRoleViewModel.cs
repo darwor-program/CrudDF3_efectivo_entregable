@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc.Rendering;
 
-namespace CrudDF3.Models
+namespace CrudDF3.Models.ViewModels
 {
     public class CreateRoleViewModel
     {

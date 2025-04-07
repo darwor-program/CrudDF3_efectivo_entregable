@@ -1,42 +1,35 @@
-﻿@using CrudDF3.Models.ViewModels
-@model CreateReservaViewModel
+﻿@model CrudDF3.Models.CreateReservaViewModel
 
 @{
-    ViewData["Title"] = "Crear Reserva";
+    ViewData["Title"] = "Crear Nueva Reserva";
     var paquetes = Model.PaquetesDisponibles as IList<PaqueteSelectionViewModel> ?? new List<PaqueteSelectionViewModel>();
-    var usuarios = Model.Usuarios ?? new SelectList(Enumerable.Empty<SelectListItem>());
-
-    // Verificar si el usuario actual es administrador
-    var idRol = Context.Session.GetString("idRol");
-    var isAdmin = idRol != "2"; // Rol 2 es cliente
 }
 
 <h1>@ViewData["Title"]</h1>
 <hr />
 
-<<div class="row">
+<div class="row">
     <div class="col-md-12">
         <form asp-action="Create" method="post" id="reservaForm">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
+            <!-- Información del Usuario (solo lectura para clientes) -->
+            <div class="card mb-4">
+                <div class="card-header bg-info text-white">
+                    <h5>Información del Cliente</h5>
+                </div>
+                <div class="card-body">
+                    <div class="form-group">
+                        <label class="control-label">Usuario</label>
+                        <input type="text" class="form-control" value="@Model.Usuarios.First().Text" readonly />
+                        <input type="hidden" asp-for="IdUsuario" />
+                    </div>
+                </div>
+            </div>
+
             <!-- Sección de Datos de Reserva -->
             <div class="row">
                 <div class="col-md-6">
-                    @if (isAdmin)
-                    {
-                        <div class="form-group">
-                            <label asp-for="IdUsuario" class="control-label">Usuario</label>
-                            <select asp-for="IdUsuario" asp-items="usuarios" class="form-control">
-                                <option value="">-- Seleccione un usuario --</option>
-                            </select>
-                            <span asp-validation-for="IdUsuario" class="text-danger"></span>
-                        </div>
-                    }
-                    else
-                    {
-                        <input type="hidden" asp-for="IdUsuario" />
-                    }
-
                     <div class="form-group">
                         <label asp-for="FechaInicial" class="control-label">Fecha Inicial</label>
                         <input asp-for="FechaInicial" class="form-control" type="date" />
@@ -78,13 +71,13 @@
                     @if (paquetes.Count > 0)
                     {
                         <div class="alert alert-info">
-                            Seleccione uno o más paquetes para esta reserva
+                            Seleccione uno o más paquetes para su reserva
                         </div>
 
                         <div class="row">
                             @for (int i = 0; i < paquetes.Count; i++)
                             {
-                                <div class="col-md-6 mb-3">
+                                <div class="col-md-4 mb-3">
                                     <div class="card h-100">
                                         <div class="card-body">
                                             <input type="hidden" asp-for="@Model.PaquetesDisponibles[i].IdPaquete" />
@@ -117,63 +110,23 @@
                     else
                     {
                         <div class="alert alert-warning">
-                            No hay paquetes turísticos disponibles
+                            No hay paquetes turísticos disponibles en este momento
                         </div>
                     }
                 </div>
             </div>
 
-            <!-- Campos adicionales -->
-            <div class="row mt-3">
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label asp-for="FechaReserva" class="control-label">Fecha de Reserva</label>
-                        <input asp-for="FechaReserva" class="form-control" type="date" />
-                        <span asp-validation-for="FechaReserva" class="text-danger"></span>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="form-group form-check mt-4 pt-2">
-                        <label class="form-check-label">
-                            <input class="form-check-input" asp-for="EstadoReserva" /> @Html.DisplayNameFor(model => model.EstadoReserva)
-                        </label>
-                    </div>
-                </div>
-            </div>
-
-            @if (isAdmin)
-            {
-                <div class="row mt-3">
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label asp-for="FechaReserva" class="control-label">Fecha de Reserva</label>
-                            <input asp-for="FechaReserva" class="form-control" type="date" />
-                            <span asp-validation-for="FechaReserva" class="text-danger"></span>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="form-group form-check mt-4 pt-2">
-                            <label class="form-check-label">
-                                <input class="form-check-input" asp-for="EstadoReserva" /> @Html.DisplayNameFor(model => model.EstadoReserva)
-                            </label>
-                        </div>
-                    </div>
-                </div>
-            }
-            else
-            {
-                <input type="hidden" asp-for="FechaReserva" value="@DateTime.Now" />
-                <input type="hidden" asp-for="EstadoReserva" value="true" />
-            }
-
+            <!-- Fecha de Reserva (oculta, se establecerá automáticamente) -->
+            <input type="hidden" asp-for="FechaReserva" value="@DateTime.Now" />
+            <input type="hidden" asp-for="EstadoReserva" value="true" />
 
             <!-- Botones de Acción -->
             <div class="form-group mt-4">
                 <button type="submit" class="btn btn-primary">
-                    <i class="fas fa-save"></i> Crear Reserva
+                    <i class="fas fa-calendar-plus"></i> Solicitar Reserva
                 </button>
                 <a asp-action="Index" class="btn btn-secondary">
-                    <i class="fas fa-arrow-left"></i> Volver al Listado
+                    <i class="fas fa-arrow-left"></i> Volver a Mis Reservas
                 </a>
             </div>
         </form>
@@ -188,29 +141,33 @@
     <script>
         $(document).ready(function() {
             // Función para calcular el total
-        function calcularTotal() {
-            let total = 0;
+            function calcularTotal() {
+                let total = 0;
 
-            $('.paquete-checkbox:checked').each(function() {
-                const precio = parseFloat($(this).data('precio')) || 0;
-                total += precio;
-            });
+                $('.paquete-checkbox:checked').each(function() {
+                    const precio = parseFloat($(this).data('precio')) || 0;
+                    total += precio;
+                });
 
-            $('#valorTotal').val(total.toFixed(2));
-            $('#anticipoInput').val((total * 0.3).toFixed(2));
-        }
+                $('#valorTotal').val(total.toFixed(2));
+                $('#anticipoInput').val((total * 0.3).toFixed(2));
+            }
 
-            // Calcular al cargar la página (por si hay selecciones iniciales)
+            // Calcular al cargar la página
             calcularTotal();
 
             // Recalcular cuando cambia cualquier checkbox
-            $('.paquete-checkbox').change(function() {
-                calcularTotal();
-            });
+            $('.paquete-checkbox').change(calcularTotal);
 
-            // También recalcular cuando se hace clic en las etiquetas (por si acaso)
-            $('.form-check-label').click(function() {
-                setTimeout(calcularTotal, 50); // Pequeño retraso para permitir que el checkbox cambie
+            // Validar fechas
+            $('#FechaFinal').change(function() {
+                const fechaInicial = new Date($('#FechaInicial').val());
+                const fechaFinal = new Date($(this).val());
+
+                if (fechaFinal < fechaInicial) {
+                    alert('La fecha final no puede ser anterior a la fecha inicial');
+                    $(this).val('');
+                }
             });
         });
     </script>
