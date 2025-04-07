@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using CrudDF3.Models;
+using CrudDF3.Models.ViewModels;
 
 namespace CrudDF3.Controllers
 {

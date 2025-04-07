@@ -1,89 +1,115 @@
 ﻿@model IEnumerable<CrudDF3.Models.Usuario>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Gestión de Usuarios";
+    Layout = "_Layout";
 }
 
-<h1>Index</h1>
+<div class="container mt-4">
+    <div class="card border-0 shadow-sm">
+        <div class="card-header bg-white border-bottom">
+            <div class="d-flex justify-content-between align-items-center py-2">
+                <h3 class="h5 mb-0">Gestión de Usuarios</h3>
+                <a asp-action="Create" class="btn btn-outline-dark btn-sm">
+                    <span class="me-1">+</span> Nuevo Usuario
+                </a>
+            </div>
+        </div>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.CedulaUsuario)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.NombreUsuario)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.ApellidoUsuario)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.CorreoUsuario)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.ContraseñaUsuario)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.EstadoUsuario)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.FechaCreacion)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Direccion)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Telefono)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.IdRolNavigation)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.CedulaUsuario)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.NombreUsuario)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ApellidoUsuario)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.CorreoUsuario)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ContraseñaUsuario)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.EstadoUsuario)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.FechaCreacion)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Direccion)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Telefono)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.IdRolNavigation.IdRol)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.IdUsuario">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.IdUsuario">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.IdUsuario">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0" id="usuariosTable">
+                    <thead class="bg-light">
+                        <tr>
+                            <th class="py-3">Cédula</th>
+                            <th class="py-3">Nombre</th>
+                            <th class="py-3">Apellido</th>
+                            <th class="py-3">Email</th>
+                            <th class="py-3">Rol</th>
+                            <th class="py-3">Registro</th>
+                            <th class="py-3">Estado</th>
+                            <th class="py-3 text-end">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr class="border-top">
+                                <td class="align-middle">@(item.CedulaUsuario?.ToString() ?? "N/A")</td>
+                                <td class="align-middle">@(item.NombreUsuario ?? "N/A")</td>
+                                <td class="align-middle">@(item.ApellidoUsuario ?? "N/A")</td>
+                                <td class="align-middle">@(item.CorreoUsuario ?? "N/A")</td>
+                                <td class="align-middle">
+                                    <span class="badge bg-light text-dark border">
+                                        @(item.IdRolNavigation?.NombreRol ?? "Sin rol")
+                                    </span>
+                                </td>
+                                <td class="align-middle">@(item.FechaCreacion?.ToString("dd/MM/yyyy") ?? "N/A")</td>
+                                <td class="align-middle">
+                                    @if (item.EstadoUsuario)
+                                    {
+                                        <span class="badge bg-light text-success border border-success">Activo</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-light text-danger border border-danger">Inactivo</span>
+                                    }
+                                </td>
+                                <td class="align-middle text-end">
+                                    <div class="btn-group btn-group-sm" role="group">
+                                        <a asp-action="Edit" asp-route-id="@item.IdUsuario" class="btn btn-outline-secondary border-0">
+                                            Editar
+                                        </a>
+                                        <a asp-action="Details" asp-route-id="@item.IdUsuario" class="btn btn-outline-secondary border-0">
+                                            Detalles
+                                        </a>
+                                        <a asp-action="Delete" asp-route-id="@item.IdUsuario" class="btn btn-outline-danger border-0">
+                                            Eliminar
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .card {
+        border-radius: 0.5rem;
+        overflow: hidden;
+    }
+
+    .table {
+        font-size: 0.875rem;
+    }
+
+        .table th {
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-size: 0.75rem;
+            color: #6c757d;
+        }
+
+    .btn-outline-secondary {
+        border-color: #dee2e6;
+    }
+
+        .btn-outline-secondary:hover {
+            background-color: #f8f9fa;
+        }
+
+    tr:hover {
+        background-color: #f8f9fa;
+    }
+
+    .badge {
+        font-weight: 400;
+        padding: 0.35em 0.65em;
+        font-size: 0.75em;
+    }
+</style>|

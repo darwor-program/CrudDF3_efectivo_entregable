@@ -1,6 +1,7 @@
 ﻿@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
 @{
-    var idRol = Context.Session.GetString("idRol");
+    var nombreRol = Context.Session.GetString("nombreRol");
+    var usuarioAutenticado = Context.Session.GetString("idUsuario") != null;
 }
 
 <!DOCTYPE html>
@@ -30,7 +31,7 @@
                     @if (Context.Session.GetString("idUsuario") != null)
                     {
                         <ul class="navbar-nav me-auto">
-                            @if (idRol == "1")
+                            @if (nombreRol == "Administrador")
                             {
                                 <li class="nav-item"><a class="nav-link text-dark" asp-controller="Habitaciones" asp-action="Index">Habitaciones</a></li>
                                 <li class="nav-item"><a class="nav-link text-dark" asp-controller="Huespedes" asp-action="Index">Huespedes</a></li>
@@ -41,7 +42,7 @@
                                 <li class="nav-item"><a class="nav-link text-dark" asp-controller="Servicios" asp-action="Index">Servicios</a></li>
                                 <li class="nav-item"><a class="nav-link text-dark" asp-controller="Permisoes" asp-action="Index">Permisos</a></li>
                             }
-                            else if (idRol == "2")
+                            else if (nombreRol == "Cliente")
                             {
                                 <li class="nav-item"><a class="nav-link text-dark" asp-controller="Reservas" asp-action="Index">Mis Reservas</a></li>
                             }
