@@ -172,34 +172,88 @@
 
     <script>
         $(document).ready(function() {
-            // Función para calcular el total basado en paquetes seleccionados
-            function calcularValorTotal() {
+            // Función mejorada para calcular valores
+            function calcularValores() {
                 let total = 0;
+
+                // Calcular total basado en paquetes seleccionados
                 $('.paquete-checkbox:checked').each(function() {
-                    const precio = parseFloat($(this).closest('.card-body').find('.paquete-precio').val()) || 0;
+                    const precioText = $(this).closest('.card-body').find('.paquete-precio').val();
+                    const precio = parseFloat(precioText) || 0;
                     total += precio;
                 });
-                $('#valorTotal').val(total.toFixed(2));
+
+                // Formatear valores
+                const formattedTotal = total.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                const anticipo = total * 0.3;
+                const formattedAnticipo = anticipo.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+
+                // Actualizar campos
+                $('#valorTotal').val(formattedTotal);
+                $('#Anticipo').val(formattedAnticipo);
+
+                // Actualizar también los campos del modelo
+                $('input[name="Valor"]').val(total.toFixed(2));
+                $('input[name="Anticipo"]').val(anticipo.toFixed(2));
             }
 
-            // Calcular total al cambiar selección
-            $('.paquete-checkbox').change(function() {
-                calcularValorTotal();
+            // Calcular valores al cambiar selección de paquetes
+            $(document).on('change', '.paquete-checkbox', function() {
+                calcularValores();
             });
 
-            // Calcular valor inicial
-            calcularValorTotal();
-
             // Validación de fechas
-            $('#FechaFinal').change(function() {
+            $('#FechaFinal').on('change', function() {
                 const fechaInicial = new Date($('#FechaInicial').val());
                 const fechaFinal = new Date($('#FechaFinal').val());
 
-                if (fechaFinal < fechaInicial) {
+                if (fechaInicial && fechaFinal && fechaFinal < fechaInicial) {
                     alert('La fecha final no puede ser anterior a la fecha inicial');
                     $('#FechaFinal').val('');
                 }
             });
+
+            // Validación de stock antes de enviar
+            $('#reservaForm').on('submit', function(e) {
+                let sinStock = false;
+                let paquetesSinStock = [];
+                let checkedBoxes = $('.paquete-checkbox:checked');
+
+                if (checkedBoxes.length === 0) {
+                    e.preventDefault();
+                    alert('Debe seleccionar al menos un paquete turístico');
+                    return false;
+                }
+
+                // Verificar stock para cada paquete seleccionado
+                const verificaciones = checkedBoxes.map(function() {
+                    const paqueteId = $(this).val();
+                    return $.ajax({
+                        url: '/PaquetesTuristicos/VerificarStock',
+                        type: 'GET',
+                        data: { id: paqueteId },
+                        async: false
+                    }).then(function(data) {
+                        if (data.stock <= 0) {
+                            sinStock = true;
+                            paquetesSinStock.push(data.nombre);
+                        }
+                    });
+                });
+
+                $.when.apply($, verificaciones).done(function() {
+                    if (sinStock) {
+                        e.preventDefault();
+                        alert('Los siguientes paquetes no tienen stock disponible:\n' + paquetesSinStock.join('\n'));
+                        return false;
+                    }
+                });
+
+                return true;
+            });
+
+            // Calcular valores iniciales al cargar la página
+            calcularValores();
         });
     </script>
 }

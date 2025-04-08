@@ -32,6 +32,20 @@ namespace CrudDF3.Controllers
             return View(paquetes);
         }
 
+        [HttpGet]
+        public IActionResult VerificarStock(int id)
+        {
+            var paquete = _context.PaquetesTuristicos.Find(id);
+            if (paquete == null)
+            {
+                return Json(new { stock = 0, nombre = "Paquete no encontrado" });
+            }
+            return Json(new
+            {
+                stock = paquete.StockPaquete,
+                nombre = paquete.NombrePaquete
+            });
+        }
         // GET: PaquetesTuristicoes
         public async Task<IActionResult> Index()
         {
@@ -80,7 +94,7 @@ namespace CrudDF3.Controllers
         // POST: PaquetesTuristicoes/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("IdPaquete,NombrePaquete,DescripcionPaquete,PrecioPaquete,DisponibilidadPaquete,FechaPaquete,DestinoPaquete,EstadoPaquete,TipoViajePaquete,SelectedServicios,SelectedHabitaciones")] PaquetesTuristico paquete)
+        public async Task<IActionResult> Create([Bind("IdPaquete,NombrePaquete,DescripcionPaquete,PrecioPaquete,DisponibilidadPaquete,FechaPaquete,DestinoPaquete,EstadoPaquete,TipoViajePaquete,StockPaquete,SelectedServicios,SelectedHabitaciones")] PaquetesTuristico paquete)
         {
             if (ModelState.IsValid)
             {
@@ -151,7 +165,7 @@ namespace CrudDF3.Controllers
         // POST: PaquetesTuristicoes/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("IdPaquete,NombrePaquete,DescripcionPaquete,PrecioPaquete,DisponibilidadPaquete,FechaPaquete,DestinoPaquete,EstadoPaquete,TipoViajePaquete,SelectedServicios,SelectedHabitaciones")] PaquetesTuristico paquete)
+        public async Task<IActionResult> Edit(int id, [Bind("IdPaquete,NombrePaquete,DescripcionPaquete,PrecioPaquete,DisponibilidadPaquete,FechaPaquete,DestinoPaquete,EstadoPaquete,TipoViajePaquete,StockPaquete,SelectedServicios,SelectedHabitaciones")] PaquetesTuristico paquete)
         {
             if (id != paquete.IdPaquete)
             {

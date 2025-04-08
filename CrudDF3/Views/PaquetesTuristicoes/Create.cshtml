@@ -53,6 +53,12 @@
                                 <label class="form-check-label" asp-for="DisponibilidadPaquete"></label>
                                 <small class="form-text text-muted">Indica si el paquete está disponible para reservas.</small>
                             </div>
+                            <div class="form-group">
+                                <label asp-for="StockPaquete" class="control-label"></label>
+                                <input asp-for="StockPaquete" class="form-control" type="number" min="0" />
+                                <span asp-validation-for="StockPaquete" class="text-danger"></span>
+                                <small class="form-text text-muted">Cantidad disponible de este paquete.</small>
+                            </div>
                         </div>
                         <div class="col-md-6">
                             <div class="form-group form-check">

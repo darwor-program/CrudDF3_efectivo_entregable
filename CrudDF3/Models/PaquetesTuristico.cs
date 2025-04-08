@@ -13,6 +13,7 @@ namespace CrudDF3.Models
         public string? DestinoPaquete { get; set; }
         public bool EstadoPaquete { get; set; }
         public string? TipoViajePaquete { get; set; }
+        public int StockPaquete { get; set; }
 
         public virtual ICollection<ReservasPaquete> ReservasPaquetes { get; set; } = new List<ReservasPaquete>();
         public virtual ICollection<PaqueteServicio> PaqueteServicios { get; set; } = new List<PaqueteServicio>();

@@ -162,6 +162,11 @@
     </div>
 </div>
 
+@@section Scripts {
+@{
+    await Html.RenderPartialAsync("_ValidationScriptsPartial");
+}
+
 @section Scripts {
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
@@ -169,31 +174,88 @@
 
     <script>
         $(document).ready(function() {
-            // Función para calcular el total
+            // Función mejorada para calcular el total
             function calcularTotal() {
                 let total = 0;
+                let hasSelection = false;
 
                 $('.paquete-checkbox:checked').each(function() {
-                    const precio = parseFloat($(this).data('precio')) || 0;
+                    const precioText = $(this).data('precio');
+                    const precio = parseFloat(precioText) || 0;
                     total += precio;
+                    hasSelection = true;
                 });
 
-                $('#valorTotal').val(total.toFixed(2));
-                $('#anticipoInput').val((total * 0.3).toFixed(2));
+                // Formatear con 2 decimales y separador de miles
+                const formattedTotal = hasSelection ? total.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") : "0.00";
+                const formattedAnticipo = hasSelection ? (total * 0.3).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") : "0.00";
+
+                $('#valorTotal').val(formattedTotal);
+                $('#anticipoInput').val(formattedAnticipo);
+
+                // Actualizar también los campos hidden del modelo
+                $('input[name="Valor"]').val(total.toFixed(2));
+                $('input[name="Anticipo"]').val((total * 0.3).toFixed(2));
             }
 
-            // Calcular al cargar la página (por si hay selecciones iniciales)
+            // Calcular al cargar la página
             calcularTotal();
 
-            // Recalcular cuando cambia cualquier checkbox
-            $('.paquete-checkbox').change(function() {
+            // Mejor manejo del evento change
+            $(document).on('change', '.paquete-checkbox', function() {
                 calcularTotal();
             });
 
-            // También recalcular cuando se hace clic en las etiquetas (por si acaso)
-            $('.form-check-label').click(function() {
-                setTimeout(calcularTotal, 50); // Pequeño retraso para permitir que el checkbox cambie
+            // Validar stock antes de enviar el formulario
+            $('#reservaForm').on('submit', function(e) {
+                let sinStock = false;
+                let paquetesSinStock = [];
+                let checkedBoxes = $('.paquete-checkbox:checked');
+
+                if (checkedBoxes.length === 0) {
+                    e.preventDefault();
+                    alert('Debe seleccionar al menos un paquete turístico');
+                    return false;
+                }
+
+                // Verificar stock para cada paquete seleccionado
+                const verificaciones = checkedBoxes.map(function() {
+                    const paqueteId = $(this).val();
+                    return $.ajax({
+                        url: '/PaquetesTuristicos/VerificarStock',
+                        type: 'GET',
+                        data: { id: paqueteId },
+                        async: false
+                    }).then(function(data) {
+                        if (data.stock <= 0) {
+                            sinStock = true;
+                            paquetesSinStock.push(data.nombre);
+                        }
+                    });
+                });
+
+                $.when.apply($, verificaciones).done(function() {
+                    if (sinStock) {
+                        e.preventDefault();
+                        alert('Los siguientes paquetes no tienen stock disponible:\n' + paquetesSinStock.join('\n'));
+                        return false;
+                    }
+                });
+
+                return true;
+            });
+
+            // Validación adicional cuando cambian las fechas
+            $('input[type="date"]').change(function() {
+                const fechaInicial = new Date($('#FechaInicial').val());
+                const fechaFinal = new Date($('#FechaFinal').val());
+
+                if (fechaInicial && fechaFinal && fechaInicial > fechaFinal) {
+                    alert('La fecha final debe ser posterior a la fecha inicial');
+                    $('#FechaFinal').val('');
+                }
             });
         });
     </script>
+}
 }

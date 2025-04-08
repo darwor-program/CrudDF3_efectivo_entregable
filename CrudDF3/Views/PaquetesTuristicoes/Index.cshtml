@@ -19,6 +19,8 @@
                 <th>Nombre</th>
                 <th>Descripción</th>
                 <th>Precio</th>
+                <th>Stock</th>
+                <th>Disponible</th>
                 <th>Servicios</th>
                 <th>Habitaciones</th>
                 <th>Acciones</th>
@@ -31,6 +33,26 @@
                     <td>@Html.DisplayFor(modelItem => item.NombrePaquete)</td>
                     <td>@Html.DisplayFor(modelItem => item.DescripcionPaquete)</td>
                     <td>@item.PrecioPaquete?.ToString("C")</td>
+                    <td>
+                        @if (item.StockPaquete > 0)
+                        {
+                            <span class="badge bg-success">@item.StockPaquete</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-danger">@item.StockPaquete</span>
+                        }
+                    </td>
+                    <td>
+                        @if (item.DisponibilidadPaquete)
+                        {
+                            <span class="badge bg-success">Sí</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-danger">No</span>
+                        }
+                    </td>
                     <td>
                         @if (item.PaqueteServicios != null && item.PaqueteServicios.Any())
                         {
@@ -94,9 +116,11 @@
             font-size: 0.85rem;
             padding: 0.35em 0.65em;
         }
+
         .gap-1 {
             gap: 0.25rem;
         }
+
         .table th, .table td {
             vertical-align: middle;
         }
