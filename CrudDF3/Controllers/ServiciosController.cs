@@ -18,6 +18,14 @@ namespace CrudDF3.Controllers
             _context = context;
         }
 
+        public async Task<IActionResult> IndexPublic()
+        {
+            var servicios = await _context.Servicios
+                .Where(s => s.EstadoServicio && s.Disponibilidad) // Solo servicios activos y disponibles
+                .ToListAsync();
+
+            return View(servicios);
+        }
         // GET: Servicios
         public async Task<IActionResult> Index()
         {

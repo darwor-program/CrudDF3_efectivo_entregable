@@ -1,9 +1,7 @@
-﻿@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
-@{
+﻿@{
     var nombreRol = Context.Session.GetString("nombreRol");
     var usuarioAutenticado = Context.Session.GetString("idUsuario") != null;
 }
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -44,6 +42,9 @@
                             }
                             else if (nombreRol == "Cliente")
                             {
+                                <li class="nav-item"><a class="nav-link text-dark" asp-controller="Habitaciones" asp-action="IndexPublic">Habitaciones</a></li>
+                                <li class="nav-item"><a class="nav-link text-dark" asp-controller="Servicios" asp-action="IndexPublic">Servicios</a></li>
+                                <li class="nav-item"><a class="nav-link text-dark" asp-controller="PaquetesTuristicoes" asp-action="IndexPublic">Paquetes</a></li>
                                 <li class="nav-item"><a class="nav-link text-dark" asp-controller="Reservas" asp-action="Index">Mis Reservas</a></li>
                             }
                         </ul>
@@ -53,6 +54,12 @@
                     }
                     else
                     {
+                        <ul class="navbar-nav me-auto">
+                            <!-- Opciones para usuarios no autenticados -->
+                            <li class="nav-item"><a class="nav-link text-dark" asp-controller="Habitaciones" asp-action="IndexPublic">Habitaciones</a></li>
+                            <li class="nav-item"><a class="nav-link text-dark" asp-controller="Servicios" asp-action="IndexPublic">Servicios</a></li>
+                            <li class="nav-item"><a class="nav-link text-dark" asp-controller="PaquetesTuristicoes" asp-action="IndexPublic">Paquetes</a></li>
+                        </ul>
                         <ul class="navbar-nav ms-auto">
                             <li class="nav-item"><a class="nav-link text-dark" asp-controller="Account" asp-action="Login">Iniciar Sesión</a></li>
                             <li class="nav-item"><a class="nav-link text-dark" asp-controller="Account" asp-action="Registrar">Registrarse</a></li>
