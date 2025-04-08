@@ -1,4 +1,4 @@
-﻿@{
+@{
     var nombreRol = Context.Session.GetString("nombreRol");
     var usuarioAutenticado = Context.Session.GetString("idUsuario") != null;
 }
@@ -7,62 +7,240 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - CrudDF</title>
+    <title>@ViewData["Title"] - Traveler's Home</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <!-- Agregamos Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-    <!-- Renderizamos la sección de estilos si existe -->
+    <style>
+        :root {
+            --primary-dark: #274c77;
+            --primary-light: #a3cef1;
+            --primary-accent: #6096ba;
+            --text-dark: #2b2d42;
+            --text-light: #edf2f4;
+            --neon-effect: #00f7ff;
+        }
+
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .navbar {
+            background: linear-gradient(135deg, var(--primary-dark), var(--primary-accent)) !important;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar-brand {
+            color: var(--text-light) !important;
+            font-weight: 700;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .navbar-nav .nav-link {
+            color: var(--text-light) !important;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            margin: 0 0.2rem;
+            border-radius: 4px;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+        }
+
+        .navbar-nav .nav-link:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .navbar-nav .nav-link i {
+            margin-right: 8px;
+            width: 20px;
+            text-align: center;
+        }
+
+        .navbar-toggler {
+            border-color: var(--text-light) !important;
+        }
+
+        .navbar-toggler-icon {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28255, 255, 255, 1%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+        }
+
+        .main-container {
+            flex: 1;
+            padding: 2rem 0;
+        }
+
+        /* Estilos para tarjetas públicas */
+        .public-card {
+            transition: all 0.3s ease;
+            border-radius: 10px;
+            overflow: hidden;
+            border: none;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            margin-bottom: 2rem;
+            height: 100%;
+        }
+
+        .public-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .public-card-header {
+            background-color: var(--primary-dark);
+            color: white;
+            font-weight: 600;
+            padding: 1rem;
+            border-bottom: none;
+        }
+
+        .public-card-body {
+            padding: 1.5rem;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-accent);
+            border: none;
+            border-radius: 6px;
+            padding: 10px 20px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(39, 76, 119, 0.3);
+        }
+
+        .badge {
+            font-size: 0.85rem;
+            padding: 0.35em 0.65em;
+            font-weight: 500;
+            border-radius: 50px;
+        }
+
+        .site-footer {
+            background: linear-gradient(135deg, var(--primary-dark), var(--primary-accent));
+            color: var(--text-light);
+            padding: 2.5rem 0;
+            text-align: center;
+            margin-top: auto;
+        }
+
+        .site-footer .copyright {
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+            opacity: 0.9;
+        }
+
+        .site-footer .politica-link {
+            font-size: 1.1rem;
+            margin: 0;
+        }
+
+        .site-footer a {
+            color: var(--text-light);
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        .site-footer a:hover {
+            text-decoration: underline;
+            color: var(--primary-light);
+        }
+
+        .footer-logo {
+            height: 50px;
+            margin-bottom: 1rem;
+            filter: brightness(0) invert(1);
+        }
+
+        /* Responsive adjustments */
+        @@media (max-width: 768px) {
+            .navbar-nav {
+                padding-top: 1rem;
+            }
+            
+            .navbar-nav .nav-link {
+                margin: 0.2rem 0;
+                padding: 0.8rem 1rem;
+            }
+            
+            .main-container {
+                padding: 1.5rem 0;
+            }
+        }
+    </style>
     @await RenderSectionAsync("Styles", required: false)
 </head>
 
 <body>
-    <header class="Layout">
-        <nav class="navbar navbar-expand-sm navbar-light bg-white border-bottom box-shadow mb-3">
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-dark">
             <div class="container">
-                <a class="navbar-brand" asp-controller="Home" asp-action="Index">CrudDF</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <a class="navbar-brand" asp-controller="Home" asp-action="Index">
+                    <i class="fas fa-home me-2"></i>Traveler's Home
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
 
                 <div class="collapse navbar-collapse" id="navbarNav">
-                    @if (Context.Session.GetString("idUsuario") != null)
+                    @if (usuarioAutenticado)
                     {
                         <ul class="navbar-nav me-auto">
                             @if (nombreRol == "Administrador")
                             {
-                                <li class="nav-item"><a class="nav-link text-dark" asp-controller="Habitaciones" asp-action="Index">Habitaciones</a></li>
-                                <li class="nav-item"><a class="nav-link text-dark" asp-controller="Huespedes" asp-action="Index">Huespedes</a></li>
-                                <li class="nav-item"><a class="nav-link text-dark" asp-controller="PaquetesTuristicoes" asp-action="Index">Paquetes</a></li>
-                                <li class="nav-item"><a class="nav-link text-dark" asp-controller="Reservas" asp-action="Index">Reservas</a></li>
-                                <li class="nav-item"><a class="nav-link text-dark" asp-controller="Usuarios" asp-action="Index">Usuarios</a></li>
-                                <li class="nav-item"><a class="nav-link text-dark" asp-controller="Roles" asp-action="Index">Roles</a></li>
-                                <li class="nav-item"><a class="nav-link text-dark" asp-controller="Servicios" asp-action="Index">Servicios</a></li>
-                                <li class="nav-item"><a class="nav-link text-dark" asp-controller="Permisoes" asp-action="Index">Permisos</a></li>
+                                <li class="nav-item"><a class="nav-link" asp-controller="Habitaciones" asp-action="Index"><i class="fas fa-bed"></i>Habitaciones</a></li>
+                                <li class="nav-item"><a class="nav-link" asp-controller="Huespedes" asp-action="Index"><i class="fas fa-users"></i>Huéspedes</a></li>
+                                <li class="nav-item"><a class="nav-link" asp-controller="PaquetesTuristicoes" asp-action="Index"><i class="fas fa-suitcase"></i>Paquetes</a></li>
+                                <li class="nav-item"><a class="nav-link" asp-controller="Reservas" asp-action="Index"><i class="fas fa-calendar-check"></i>Reservas</a></li>
+                                <li class="nav-item"><a class="nav-link" asp-controller="Usuarios" asp-action="Index"><i class="fas fa-user-cog"></i>Usuarios</a></li>
+                                <li class="nav-item"><a class="nav-link" asp-controller="Roles" asp-action="Index"><i class="fas fa-user-tag"></i>Roles</a></li>
+                                <li class="nav-item"><a class="nav-link" asp-controller="Servicios" asp-action="Index"><i class="fas fa-concierge-bell"></i>Servicios</a></li>
                             }
                             else if (nombreRol == "Cliente")
                             {
-                                <li class="nav-item"><a class="nav-link text-dark" asp-controller="Habitaciones" asp-action="IndexPublic">Habitaciones</a></li>
-                                <li class="nav-item"><a class="nav-link text-dark" asp-controller="Servicios" asp-action="IndexPublic">Servicios</a></li>
-                                <li class="nav-item"><a class="nav-link text-dark" asp-controller="PaquetesTuristicoes" asp-action="IndexPublic">Paquetes</a></li>
-                                <li class="nav-item"><a class="nav-link text-dark" asp-controller="Reservas" asp-action="Index">Mis Reservas</a></li>
+                                <li class="nav-item"><a class="nav-link" asp-controller="Habitaciones" asp-action="IndexPublic"><i class="fas fa-bed"></i>Habitaciones</a></li>
+                                <li class="nav-item"><a class="nav-link" asp-controller="Servicios" asp-action="IndexPublic"><i class="fas fa-concierge-bell"></i>Servicios</a></li>
+                                <li class="nav-item"><a class="nav-link" asp-controller="PaquetesTuristicoes" asp-action="IndexPublic"><i class="fas fa-suitcase"></i>Paquetes</a></li>
+                                <li class="nav-item"><a class="nav-link" asp-controller="Reservas" asp-action="Index"><i class="fas fa-calendar-check"></i>Mis Reservas</a></li>
                             }
                         </ul>
                         <ul class="navbar-nav ms-auto">
-                            <li class="nav-item"><a class="nav-link text-dark" asp-controller="Account" asp-action="Logout">Cerrar Sesión</a></li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Account" asp-action="Logout">
+                                    <i class="fas fa-sign-out-alt"></i>Cerrar Sesión
+                                </a>
+                            </li>
                         </ul>
                     }
                     else
                     {
                         <ul class="navbar-nav me-auto">
-                            <!-- Opciones para usuarios no autenticados -->
-                            <li class="nav-item"><a class="nav-link text-dark" asp-controller="Habitaciones" asp-action="IndexPublic">Habitaciones</a></li>
-                            <li class="nav-item"><a class="nav-link text-dark" asp-controller="Servicios" asp-action="IndexPublic">Servicios</a></li>
-                            <li class="nav-item"><a class="nav-link text-dark" asp-controller="PaquetesTuristicoes" asp-action="IndexPublic">Paquetes</a></li>
+                            <li class="nav-item"><a class="nav-link" asp-controller="Habitaciones" asp-action="IndexPublic"><i class="fas fa-bed"></i>Habitaciones</a></li>
+                            <li class="nav-item"><a class="nav-link" asp-controller="Servicios" asp-action="IndexPublic"><i class="fas fa-concierge-bell"></i>Servicios</a></li>
+                            <li class="nav-item"><a class="nav-link" asp-controller="PaquetesTuristicoes" asp-action="IndexPublic"><i class="fas fa-suitcase"></i>Paquetes</a></li>
                         </ul>
                         <ul class="navbar-nav ms-auto">
-                            <li class="nav-item"><a class="nav-link text-dark" asp-controller="Account" asp-action="Login">Iniciar Sesión</a></li>
-                            <li class="nav-item"><a class="nav-link text-dark" asp-controller="Account" asp-action="Registrar">Registrarse</a></li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Account" asp-action="Login">
+                                    <i class="fas fa-sign-in-alt"></i>Iniciar Sesión
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Account" asp-action="Registrar">
+                                    <i class="fas fa-user-plus"></i>Registrarse
+                                </a>
+                            </li>
                         </ul>
                     }
                 </div>
@@ -70,15 +248,17 @@
         </nav>
     </header>
 
-    <div class="container">
+    <div class="container main-container">
         <main role="main" class="pb-3">
             @RenderBody()
         </main>
     </div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2025 - CrudDF - <a asp-controller="Home" asp-action="Privacy">Privacy</a>
+    <footer class="site-footer">
+        <div class="container text-center">
+            <img src="/Imagenes/Imagen.jpg" class="footer-logo" alt="Traveler's Home Logo">
+            <p class="copyright">&copy; 2025 Traveler's Home - Tu hogar lejos de casa</p>
+            <a class="politica-link" asp-controller="Home" asp-action="Privacy">Política de Privacidad</a>
         </div>
     </footer>
 
