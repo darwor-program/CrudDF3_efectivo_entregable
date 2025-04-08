@@ -1,0 +1,73 @@
+﻿@model IEnumerable<CrudDF3.Models.Servicio>
+
+@{
+    ViewData["Title"] = "Nuestros Servicios";
+}
+@section Styles {
+    <style>
+        /* Estilos específicos para habitaciones */
+        .card {
+            transition: transform 0.3s ease;
+            border-radius: 8px;
+            overflow: hidden;
+            border: none;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+        }
+        .card-header {
+            font-weight: 600;
+            background-color: #2c3e50;
+            color: white;
+        }
+        .badge {
+            font-size: 0.85rem;
+            padding: 0.35em 0.65em;
+            font-weight: 500;
+        }
+        .container {
+            max-width: 1200px;
+        }
+        .py-5 {
+            padding-top: 3rem;
+            padding-bottom: 3rem;
+        }
+        .mb-5 {
+            margin-bottom: 3rem;
+        }
+        .fas {
+            margin-right: 0.3rem;
+        }
+    </style>
+}
+
+<div class="container py-5">
+    <h1 class="text-center mb-5">@ViewData["Title"]</h1>
+
+    <div class="row g-4">
+        @foreach (var item in Model)
+        {
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="card-title mb-0">@item.NombreServicio</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between mb-3">
+                            <span class="badge bg-primary">
+                                @item.TipoServicio
+                            </span>
+                            <span class="badge bg-warning text-dark">
+                                <i class="fas fa-tag"></i> @item.Costo?.ToString("C")
+                            </span>
+                        </div>
+                        <p class="card-text">@item.Descripcion</p>
+                        <p class="text-muted"><small>@item.Observacion</small></p>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>

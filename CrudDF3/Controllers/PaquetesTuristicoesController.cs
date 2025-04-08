@@ -19,6 +19,19 @@ namespace CrudDF3.Controllers
             _context = context;
         }
 
+        public async Task<IActionResult> IndexPublic()
+        {
+            var paquetes = await _context.PaquetesTuristicos
+                .Where(p => p.EstadoPaquete && p.DisponibilidadPaquete) // Solo paquetes activos y disponibles
+                .Include(p => p.PaqueteHabitaciones)
+                .ThenInclude(ph => ph.IdHabitacionNavigation)
+                .Include(p => p.PaqueteServicios)
+                .ThenInclude(ps => ps.IdServicioNavigation)
+                .ToListAsync();
+
+            return View(paquetes);
+        }
+
         // GET: PaquetesTuristicoes
         public async Task<IActionResult> Index()
         {

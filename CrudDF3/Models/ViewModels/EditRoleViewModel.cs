@@ -1,6 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using CrudDF3.Models;
+using System.Collections.Generic;
 
-namespace CrudDF3.Models
+namespace CrudDF3.Models.ViewModels
 {
     public class EditRoleViewModel
     {

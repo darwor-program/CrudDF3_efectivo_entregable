@@ -1,0 +1,93 @@
+﻿@model IEnumerable<CrudDF3.Models.PaquetesTuristico>
+
+@{
+    ViewData["Title"] = "Paquetes Turísticos";
+}
+
+@section Styles {
+        <style>
+            /* Estilos específicos para habitaciones */
+            .card {
+                transition: transform 0.3s ease;
+                border-radius: 8px;
+                overflow: hidden;
+                border: none;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            }
+            .card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+            }
+            .card-header {
+                font-weight: 600;
+                background-color: #2c3e50;
+                color: white;
+            }
+            .badge {
+                font-size: 0.85rem;
+                padding: 0.35em 0.65em;
+                font-weight: 500;
+            }
+            .container {
+                max-width: 1200px;
+            }
+            .py-5 {
+                padding-top: 3rem;
+                padding-bottom: 3rem;
+            }
+            .mb-5 {
+                margin-bottom: 3rem;
+            }
+            .fas {
+                margin-right: 0.3rem;
+            }
+        </style>
+}
+
+<div class="container py-5">
+    <h1 class="text-center mb-5">@ViewData["Title"]</h1>
+
+    <div class="row g-4">
+        @foreach (var item in Model)
+        {
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-header bg-warning text-dark">
+                        <h5 class="card-title mb-0">@item.NombrePaquete</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between mb-3">
+                            <span class="badge bg-info">
+                                <i class="fas fa-map-marker-alt"></i> @item.DestinoPaquete
+                            </span>
+                            <span class="badge bg-success">
+                                <i class="fas fa-tag"></i> @item.PrecioPaquete?.ToString("C")
+                            </span>
+                        </div>
+                        <p class="card-text">@item.DescripcionPaquete</p>
+
+                        <div class="mt-3">
+                            <h6>Incluye:</h6>
+                            <ul class="list-unstyled">
+                                @foreach (var habitacion in item.PaqueteHabitaciones)
+                                {
+                                    <li><i class="fas fa-bed text-primary"></i> @habitacion.IdHabitacionNavigation?.TipoHabitacion</li>
+                                }
+                                @foreach (var servicio in item.PaqueteServicios)
+                                {
+                                    <li><i class="fas fa-check-circle text-success"></i> @servicio.IdServicioNavigation?.NombreServicio</li>
+                                }
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="card-footer bg-light">
+                        <small class="text-muted">
+                            <i class="fas fa-calendar-alt"></i> @item.FechaPaquete?.ToString("d")
+                            <span class="ms-2"><i class="fas fa-clock"></i> @item.TipoViajePaquete</span>
+                        </small>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>

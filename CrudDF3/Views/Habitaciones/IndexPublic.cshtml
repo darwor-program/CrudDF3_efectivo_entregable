@@ -1,0 +1,86 @@
+﻿@model IEnumerable<CrudDF3.Models.Habitacione>
+
+@{
+    ViewData["Title"] = "Nuestras Habitaciones";
+}
+
+@section Styles {
+    <style>
+        /* Estilos específicos para habitaciones */
+        .card {
+            transition: transform 0.3s ease;
+            border-radius: 8px;
+            overflow: hidden;
+            border: none;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+            .card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+            }
+
+        .card-header {
+            font-weight: 600;
+            background-color: #2c3e50;
+            color: white;
+        }
+
+        .badge {
+            font-size: 0.85rem;
+            padding: 0.35em 0.65em;
+            font-weight: 500;
+        }
+
+        .container {
+            max-width: 1200px;
+        }
+
+        .py-5 {
+            padding-top: 3rem;
+            padding-bottom: 3rem;
+        }
+
+        .mb-5 {
+            margin-bottom: 3rem;
+        }
+
+        .fas {
+            margin-right: 0.3rem;
+        }
+    </style>
+}
+
+<div class="container py-5">
+    <h1 class="text-center mb-5">@ViewData["Title"]</h1>
+
+    <div class="row g-4">
+        @foreach (var item in Model)
+        {
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="card-title mb-0">@item.TipoHabitacion</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between mb-3">
+                            <span class="badge bg-info">
+                                <i class="fas fa-users"></i> @item.CapacidadHuespedes personas
+                            </span>
+                            <span class="badge bg-success">
+                                <i class="fas fa-money-bill-wave"></i> @item.TarifaHabitacion?.ToString("C")/noche
+                            </span>
+                        </div>
+                        <p class="card-text">@item.DescripcionHabitacion</p>
+                        <ul class="list-unstyled">
+                            @foreach (var caracteristica in item.CaracteristicasHabitacion?.Split(',') ?? new string[0])
+                            {
+                                <li><i class="fas fa-check-circle text-primary"></i> @caracteristica.Trim()</li>
+                            }
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
