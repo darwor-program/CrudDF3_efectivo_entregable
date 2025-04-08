@@ -22,9 +22,15 @@ namespace CrudDF3.Controllers
         // GET: Roles
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Roles.ToListAsync());
-        }
+            var roles = await _context.Roles
+                .AsNoTracking()  // Mejor rendimiento para operaciones de solo lectura
+                .Include(r => r.RolPermisos)
+                    .ThenInclude(rp => rp.IdPermisoNavigation)
+                .OrderBy(r => r.NombreRol)  // Ordenar alfabéticamente
+                .ToListAsync();
 
+            return View(roles);
+        }
         // GET: Roles/Details/5
         public async Task<IActionResult> Details(int? id)
         {
@@ -125,7 +131,7 @@ namespace CrudDF3.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, EditRoleViewModel model)
+        public async Task<IActionResult> Edit(int id, @Models.ViewModels.EditRoleViewModel model)
         {
             if (id != model.IdRol)
             {
@@ -183,7 +189,7 @@ namespace CrudDF3.Controllers
             // Obtener los permisos ya asignados a este rol
             var selectedPermissions = role.RolPermisos.Select(rp => rp.IdPermiso).Cast<int>().ToList();
 
-            var model = new EditRoleViewModel
+            var model = new @Models.ViewModels.EditRoleViewModel
             {
                 IdRol = role.IdRol,
                 NombreRol = role.NombreRol,
