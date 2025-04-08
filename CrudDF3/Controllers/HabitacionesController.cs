@@ -19,6 +19,14 @@ namespace CrudDF3.Controllers
             _context = context;
         }
 
+        public async Task<IActionResult> IndexPublic()
+        {
+            var habitaciones = await _context.Habitaciones
+                .Where(h => h.EstadoHabitacion) // Solo habitaciones activas
+                .ToListAsync();
+
+            return View(habitaciones);
+        }
         // GET: Habitaciones
         public async Task<IActionResult> Index()
         {
