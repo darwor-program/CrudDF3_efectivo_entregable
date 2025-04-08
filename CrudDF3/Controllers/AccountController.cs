@@ -6,6 +6,7 @@ using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using System.Net.Mail;
 using System.Net;
+using System.Threading.Tasks; // ← ESTA LÍNEA ES LA QUE FALTABA
 
 namespace CrudDF3.Controllers
 {
@@ -159,7 +160,6 @@ namespace CrudDF3.Controllers
         [HttpPost]
         public async Task<IActionResult> Recuperar(string correo)
         {
-            // Verificar si el correo existe
             var usuario = await _context.Usuarios.FirstOrDefaultAsync(u => u.CorreoUsuario == correo);
             if (usuario == null)
             {
@@ -167,18 +167,16 @@ namespace CrudDF3.Controllers
                 return View();
             }
 
-            // Generar código de 6 dígitos
             Random rnd = new();
             int codigo = rnd.Next(100000, 999999);
 
-            // Guardar en sesión
             HttpContext.Session.SetString("CorreoRecuperacion", correo);
             HttpContext.Session.SetInt32("CodigoRecuperacion", codigo);
 
-            // Mostrar código en la siguiente vista
-            TempData["CodigoGenerado"] = codigo;
+            TempData["CodigoGenerado"] = codigo; // Solo para pruebas
             return RedirectToAction("VerificarCodigo");
         }
+
 
         // Paso 2: Vista para verificar código
         public IActionResult VerificarCodigo()
@@ -205,44 +203,61 @@ namespace CrudDF3.Controllers
             if (codigoGuardado == null || codigoGuardado != codigoIngresado)
             {
                 ViewBag.ErrorMessage = "Código incorrecto";
-                ViewBag.CodigoGenerado = codigoGuardado; // Mostrar nuevamente el código
+                ViewBag.CodigoGenerado = codigoGuardado;
                 return View();
             }
 
             return RedirectToAction("NuevaContraseña");
         }
 
+
         // Paso 3: Vista para nueva contraseña
         public IActionResult NuevaContraseña()
         {
-            if (HttpContext.Session.GetString("CorreoRecuperacion") == null)
+            var correo = HttpContext.Session.GetString("CorreoRecuperacion");
+
+            if (string.IsNullOrEmpty(correo))
             {
                 return RedirectToAction("Recuperar");
             }
 
+            ViewBag.Correo = correo;
             return View();
         }
 
-        [HttpPost]
-        public async Task<IActionResult> NuevaContraseña(string nuevaContraseña)
-        {
-            string correo = HttpContext.Session.GetString("CorreoRecuperacion");
 
-            var usuario = await _context.Usuarios.FirstOrDefaultAsync(u => u.CorreoUsuario == correo);
-            if (usuario != null)
+        [HttpPost]
+        public async Task<IActionResult> GuardarNuevaContraseña(string usuario, string nuevaContraseña, string confirmarContraseña)
+        {
+            if (nuevaContraseña != confirmarContraseña)
             {
-                usuario.ContraseñaUsuario = nuevaContraseña; // Deberías hashear esto en producción
-                _context.Update(usuario);
-                await _context.SaveChangesAsync();
+                ViewBag.Correo = usuario;
+                ViewBag.ErrorMessage = "Las contraseñas no coinciden.";
+                return View("NuevaContraseña");
             }
 
-            // Limpiar sesión
+            var user = await _context.Usuarios.FirstOrDefaultAsync(u => u.CorreoUsuario == usuario);
+            if (user == null)
+            {
+                ViewBag.Correo = usuario;
+                ViewBag.ErrorMessage = "Usuario no encontrado.";
+                return View("NuevaContraseña");
+            }
+
+            user.ContraseñaUsuario = nuevaContraseña; // RECUERDA USAR HASH EN PRODUCCIÓN
+            _context.Usuarios.Update(user);
+            await _context.SaveChangesAsync();
+
+            // LIMPIAR LA SESIÓN
             HttpContext.Session.Remove("CorreoRecuperacion");
             HttpContext.Session.Remove("CodigoRecuperacion");
 
-            TempData["SuccessMessage"] = "Contraseña actualizada correctamente";
-            return RedirectToAction("Login");
+            // REDIRIGIR AL LOGIN
+            TempData["SuccessMessage"] = "Tu contraseña ha sido restablecida. ¡Ahora puedes iniciar sesión!";
+            return RedirectToAction("Login", "Account");
         }
+
+
     }
 }
 
