@@ -102,19 +102,31 @@
             color: var(--text-dark);
         }
 
-        footer {
+        .site-footer {
             background: linear-gradient(135deg, var(--primary-dark), var(--primary-accent));
             color: var(--text-light);
             padding: 2.5rem 0;
-
+            text-align: center; 
+            font-family: 'Arial', sans-serif;
         }
 
-            footer a {
+            .site-footer .copyright {
+                font-size: 0.9rem;
+                margin-bottom: 1rem;
+                opacity: 0.9; 
+            }
+
+            .site-footer .politica-link {
+                font-size: 1.1rem;
+                margin: 0;
+            }
+
+            .site-footer a {
                 color: var(--text-light);
                 text-decoration: none;
             }
 
-                footer a:hover {
+                .site-footer a:hover {
                     text-decoration: underline;
                 }
     </style>
@@ -186,13 +198,13 @@
         </main>
     </div>
 
-    <footer>
+    <footer class="site-footer">
         <div class="container text-center">
-            <div class="mb-3">
-				<img src="/Imagenes/Imagen.jpg" style=" height:50px;">
+            <div class="mb-3" style="position:relative; top:10px">
+                <img src="/Imagenes/Imagen.jpg" style="height:50px">
             </div>
             <p class="mb-2">&copy; 2025 Traveler's Home - Tu hogar lejos de casa</p>
-            <a asp-controller="Home" asp-action="Privacy">Política de Privacidad</a>
+            <a class="politica-link" asp-controller="Home" asp-action="Privacy">Política de Privacidad</a>
         </div>
     </footer>
 
