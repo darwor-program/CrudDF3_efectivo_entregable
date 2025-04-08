@@ -18,7 +18,6 @@
             --primary-accent: #6096ba;
             --text-dark: #2b2d42;
             --text-light: #edf2f4;
-            --neon-effect: #00f7ff;
         }
 
         body {
@@ -29,153 +28,225 @@
             min-height: 100vh;
         }
 
+        /* Barra de navegación */
         .navbar {
             background: linear-gradient(135deg, var(--primary-dark), var(--primary-accent)) !important;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 0.5rem 1rem;
         }
 
         .navbar-brand {
             color: var(--text-light) !important;
             font-weight: 700;
-            font-size: 1.5rem;
+            font-size: 1.3rem;
             display: flex;
             align-items: center;
+            white-space: nowrap;
         }
 
-        .navbar-nav .nav-link {
-            color: var(--text-light) !important;
-            font-weight: 500;
-            padding: 0.5rem 1rem;
-            margin: 0 0.2rem;
-            border-radius: 4px;
-            transition: all 0.3s;
+        /* Menú específico para administrador */
+        .admin-menu {
             display: flex;
+            flex-wrap: wrap;
+            justify-content: flex-start;
             align-items: center;
+            gap: 0.3rem;
+            width: 100%;
         }
 
-        .navbar-nav .nav-link:hover {
+            .admin-menu .nav-item {
+                flex: 1 0 auto;
+            }
+
+            .admin-menu .nav-link {
+                color: var(--text-light) !important;
+                font-weight: 500;
+                padding: 0.5rem 0.7rem !important;
+                font-size: 0.85rem;
+                white-space: nowrap;
+                text-align: center;
+                margin: 0 !important;
+                border-radius: 4px;
+                transition: all 0.3s;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+                .admin-menu .nav-link i {
+                    margin-right: 5px;
+                    font-size: 0.8rem;
+                    width: auto;
+                }
+
+        .nav-link:hover {
             background-color: rgba(255, 255, 255, 0.2);
             transform: translateY(-2px);
         }
 
-        .navbar-nav .nav-link i {
-            margin-right: 8px;
-            width: 20px;
-            text-align: center;
-        }
-
         .navbar-toggler {
             border-color: var(--text-light) !important;
+            padding: 0.25rem 0.5rem;
         }
 
         .navbar-toggler-icon {
             background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28255, 255, 255, 1%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+            width: 1.2em;
+            height: 1.2em;
         }
 
+        /* Contenido principal */
         .main-container {
             flex: 1;
-            padding: 2rem 0;
+            padding: 1.5rem 0;
         }
 
-        /* Estilos para tarjetas públicas */
+        /* Tarjetas públicas */
         .public-card {
             transition: all 0.3s ease;
-            border-radius: 10px;
+            border-radius: 8px;
             overflow: hidden;
             border: none;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
-            margin-bottom: 2rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            margin-bottom: 1.5rem;
             height: 100%;
         }
 
-        .public-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
-        }
+            .public-card:hover {
+                transform: translateY(-3px);
+                box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+            }
 
         .public-card-header {
             background-color: var(--primary-dark);
             color: white;
             font-weight: 600;
-            padding: 1rem;
+            padding: 0.8rem 1rem;
             border-bottom: none;
+            font-size: 1rem;
         }
 
         .public-card-body {
-            padding: 1.5rem;
+            padding: 1.2rem;
         }
 
+        /* Botones */
         .btn-primary {
             background-color: var(--primary-accent);
             border: none;
-            border-radius: 6px;
-            padding: 10px 20px;
+            border-radius: 5px;
+            padding: 8px 16px;
             font-weight: 600;
             transition: all 0.3s;
+            font-size: 0.9rem;
         }
 
-        .btn-primary:hover {
-            background-color: var(--primary-dark);
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(39, 76, 119, 0.3);
-        }
+            .btn-primary:hover {
+                background-color: var(--primary-dark);
+                transform: translateY(-2px);
+                box-shadow: 0 4px 12px rgba(39, 76, 119, 0.25);
+            }
 
-        .badge {
-            font-size: 0.85rem;
-            padding: 0.35em 0.65em;
-            font-weight: 500;
-            border-radius: 50px;
-        }
-
+        /* Footer */
         .site-footer {
             background: linear-gradient(135deg, var(--primary-dark), var(--primary-accent));
             color: var(--text-light);
-            padding: 2.5rem 0;
+            padding: 2rem 0;
             text-align: center;
             margin-top: auto;
-        }
-
-        .site-footer .copyright {
             font-size: 0.9rem;
-            margin-bottom: 1rem;
-            opacity: 0.9;
-        }
-
-        .site-footer .politica-link {
-            font-size: 1.1rem;
-            margin: 0;
-        }
-
-        .site-footer a {
-            color: var(--text-light);
-            text-decoration: none;
-            transition: all 0.3s;
-        }
-
-        .site-footer a:hover {
-            text-decoration: underline;
-            color: var(--primary-light);
         }
 
         .footer-logo {
-            height: 50px;
-            margin-bottom: 1rem;
+            height: 40px;
+            margin-bottom: 0.8rem;
             filter: brightness(0) invert(1);
         }
 
-        /* Responsive adjustments */
+        .copyright {
+            margin-bottom: 0.8rem;
+        }
+
+        .politica-link {
+            font-size: 1rem;
+        }
+
+        /* Adaptación responsive para el menú de admin */
+        @@media (max-width: 1200px) {
+            .admin-menu .nav-link span {
+                display: none;
+            }
+
+            .admin-menu .nav-link i {
+                margin-right: 0;
+                font-size: 1rem;
+            }
+        }
+
+        @@media (max-width: 992px) {
+            .admin-menu {
+                gap: 0.2rem;
+            }
+
+                .admin-menu .nav-link {
+                    padding: 0.5rem !important;
+                    border-radius: 50%;
+                    width: 36px;
+                    height: 36px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                }
+
+                    .admin-menu .nav-link i {
+                        margin: 0;
+                    }
+
+                    .admin-menu .nav-link::after {
+                        content: attr(data-title);
+                        position: absolute;
+                        background: var(--primary-dark);
+                        color: white;
+                        padding: 0.3rem 0.6rem;
+                        border-radius: 4px;
+                        font-size: 0.8rem;
+                        bottom: -35px;
+                        left: 50%;
+                        transform: translateX(-50%);
+                        opacity: 0;
+                        transition: opacity 0.3s;
+                        white-space: nowrap;
+                        pointer-events: none;
+                        z-index: 1000;
+                    }
+
+                    .admin-menu .nav-link:hover::after {
+                        opacity: 1;
+                    }
+        }
+
         @@media (max-width: 768px) {
-            .navbar-nav {
-                padding-top: 1rem;
+            .admin-menu .nav-item {
+                flex: 0 0 calc(25% - 0.3rem);
             }
-            
-            .navbar-nav .nav-link {
-                margin: 0.2rem 0;
-                padding: 0.8rem 1rem;
+
+            .admin-menu .nav-link {
+                width: 100%;
+                border-radius: 4px;
             }
-            
-            .main-container {
-                padding: 1.5rem 0;
+
+                .admin-menu .nav-link::after {
+                    display: none;
+                }
+        }
+
+        @@media (max-width: 576px) {
+            .navbar-brand {
+                font-size: 1.1rem;
+            }
+
+            .admin-menu .nav-item {
+                flex: 0 0 calc(50% - 0.3rem);
             }
         }
     </style>
@@ -185,7 +256,7 @@
 <body>
     <header>
         <nav class="navbar navbar-expand-lg navbar-dark">
-            <div class="container">
+            <div class="container-fluid px-3 px-md-4">
                 <a class="navbar-brand" asp-controller="Home" asp-action="Index">
                     <i class="fas fa-home me-2"></i>Traveler's Home
                 </a>
@@ -196,29 +267,57 @@
                 <div class="collapse navbar-collapse" id="navbarNav">
                     @if (usuarioAutenticado)
                     {
-                        <ul class="navbar-nav me-auto">
+                        <ul class="navbar-nav me-auto @(nombreRol == "Administrador" ? "admin-menu" : "")">
                             @if (nombreRol == "Administrador")
                             {
-                                <li class="nav-item"><a class="nav-link" asp-controller="Habitaciones" asp-action="Index"><i class="fas fa-bed"></i>Habitaciones</a></li>
-                                <li class="nav-item"><a class="nav-link" asp-controller="Huespedes" asp-action="Index"><i class="fas fa-users"></i>Huéspedes</a></li>
-                                <li class="nav-item"><a class="nav-link" asp-controller="PaquetesTuristicoes" asp-action="Index"><i class="fas fa-suitcase"></i>Paquetes</a></li>
-                                <li class="nav-item"><a class="nav-link" asp-controller="Reservas" asp-action="Index"><i class="fas fa-calendar-check"></i>Reservas</a></li>
-                                <li class="nav-item"><a class="nav-link" asp-controller="Usuarios" asp-action="Index"><i class="fas fa-user-cog"></i>Usuarios</a></li>
-                                <li class="nav-item"><a class="nav-link" asp-controller="Roles" asp-action="Index"><i class="fas fa-user-tag"></i>Roles</a></li>
-                                <li class="nav-item"><a class="nav-link" asp-controller="Servicios" asp-action="Index"><i class="fas fa-concierge-bell"></i>Servicios</a></li>
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-controller="Habitaciones" asp-action="Index" data-title="Habitaciones">
+                                        <i class="fas fa-bed"></i><span> Habitaciones</span>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-controller="Huespedes" asp-action="Index" data-title="Huéspedes">
+                                        <i class="fas fa-users"></i><span> Huéspedes</span>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-controller="PaquetesTuristicoes" asp-action="Index" data-title="Paquetes">
+                                        <i class="fas fa-suitcase"></i><span> Paquetes</span>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-controller="Reservas" asp-action="Index" data-title="Reservas">
+                                        <i class="fas fa-calendar-check"></i><span> Reservas</span>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-controller="Usuarios" asp-action="Index" data-title="Usuarios">
+                                        <i class="fas fa-user-cog"></i><span> Usuarios</span>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-controller="Roles" asp-action="Index" data-title="Roles">
+                                        <i class="fas fa-user-tag"></i><span> Roles</span>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-controller="Servicios" asp-action="Index" data-title="Servicios">
+                                        <i class="fas fa-concierge-bell"></i><span> Servicios</span>
+                                    </a>
+                                </li>
                             }
                             else if (nombreRol == "Cliente")
                             {
-                                <li class="nav-item"><a class="nav-link" asp-controller="Habitaciones" asp-action="IndexPublic"><i class="fas fa-bed"></i>Habitaciones</a></li>
-                                <li class="nav-item"><a class="nav-link" asp-controller="Servicios" asp-action="IndexPublic"><i class="fas fa-concierge-bell"></i>Servicios</a></li>
-                                <li class="nav-item"><a class="nav-link" asp-controller="PaquetesTuristicoes" asp-action="IndexPublic"><i class="fas fa-suitcase"></i>Paquetes</a></li>
-                                <li class="nav-item"><a class="nav-link" asp-controller="Reservas" asp-action="Index"><i class="fas fa-calendar-check"></i>Mis Reservas</a></li>
+                                <li class="nav-item"><a class="nav-link" asp-controller="Habitaciones" asp-action="IndexPublic"><i class="fas fa-bed"></i> Habitaciones</a></li>
+                                <li class="nav-item"><a class="nav-link" asp-controller="Servicios" asp-action="IndexPublic"><i class="fas fa-concierge-bell"></i> Servicios</a></li>
+                                <li class="nav-item"><a class="nav-link" asp-controller="PaquetesTuristicoes" asp-action="IndexPublic"><i class="fas fa-suitcase"></i> Paquetes</a></li>
+                                <li class="nav-item"><a class="nav-link" asp-controller="Reservas" asp-action="Index"><i class="fas fa-calendar-check"></i> Mis Reservas</a></li>
                             }
                         </ul>
                         <ul class="navbar-nav ms-auto">
                             <li class="nav-item">
                                 <a class="nav-link" asp-controller="Account" asp-action="Logout">
-                                    <i class="fas fa-sign-out-alt"></i>Cerrar Sesión
+                                    <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
                                 </a>
                             </li>
                         </ul>
@@ -226,19 +325,19 @@
                     else
                     {
                         <ul class="navbar-nav me-auto">
-                            <li class="nav-item"><a class="nav-link" asp-controller="Habitaciones" asp-action="IndexPublic"><i class="fas fa-bed"></i>Habitaciones</a></li>
-                            <li class="nav-item"><a class="nav-link" asp-controller="Servicios" asp-action="IndexPublic"><i class="fas fa-concierge-bell"></i>Servicios</a></li>
-                            <li class="nav-item"><a class="nav-link" asp-controller="PaquetesTuristicoes" asp-action="IndexPublic"><i class="fas fa-suitcase"></i>Paquetes</a></li>
+                            <li class="nav-item"><a class="nav-link" asp-controller="Habitaciones" asp-action="IndexPublic"><i class="fas fa-bed"></i> Habitaciones</a></li>
+                            <li class="nav-item"><a class="nav-link" asp-controller="Servicios" asp-action="IndexPublic"><i class="fas fa-concierge-bell"></i> Servicios</a></li>
+                            <li class="nav-item"><a class="nav-link" asp-controller="PaquetesTuristicoes" asp-action="IndexPublic"><i class="fas fa-suitcase"></i> Paquetes</a></li>
                         </ul>
                         <ul class="navbar-nav ms-auto">
                             <li class="nav-item">
                                 <a class="nav-link" asp-controller="Account" asp-action="Login">
-                                    <i class="fas fa-sign-in-alt"></i>Iniciar Sesión
+                                    <i class="fas fa-sign-in-alt"></i> Iniciar Sesión
                                 </a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link" asp-controller="Account" asp-action="Registrar">
-                                    <i class="fas fa-user-plus"></i>Registrarse
+                                    <i class="fas fa-user-plus"></i> Registrarse
                                 </a>
                             </li>
                         </ul>
