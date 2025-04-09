@@ -5,8 +5,6 @@
     ViewData["Title"] = "Crear Reserva";
     var paquetes = Model.PaquetesDisponibles as IList<PaqueteSelectionViewModel> ?? new List<PaqueteSelectionViewModel>();
     var usuarios = Model.Usuarios ?? new SelectList(Enumerable.Empty<SelectListItem>());
-
-    // Verificar si el usuario actual es administrador
     var idRol = Context.Session.GetString("idRol");
     var isAdmin = idRol != "2"; // Rol 2 es cliente
 }
@@ -53,7 +51,8 @@
                 <div class="col-md-6">
                     <div class="form-group">
                         <label asp-for="NumeroPersonas" class="control-label">Número de Personas</label>
-                        <input asp-for="NumeroPersonas" class="form-control" min="1" />
+                        <input asp-for="NumeroPersonas" class="form-control" min="1" id="numeroPersonas" readonly />
+                        <small class="text-muted">Calculado automáticamente según las habitaciones seleccionadas</small>
                         <span asp-validation-for="NumeroPersonas" class="text-danger"></span>
                     </div>
 
@@ -162,51 +161,138 @@
     </div>
 </div>
 
-@@section Scripts {
-@{
-    await Html.RenderPartialAsync("_ValidationScriptsPartial");
-}
-
 @section Scripts {
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
-
     <script>
         $(document).ready(function() {
-            // Función mejorada para calcular el total
-            function calcularTotal() {
-                let total = 0;
-                let hasSelection = false;
+            // Función mejorada para calcular capacidad
+            function calcularCapacidad() {
+                let paquetesSeleccionados = $('.paquete-checkbox:checked').map(function() {
+                    return parseInt($(this).val());
+                }).get();
 
+                console.log("Paquetes seleccionados:", paquetesSeleccionados);
+
+                if (paquetesSeleccionados.length > 0) {
+                    $.ajax({
+                        url: '/Reservas/CalcularCapacidad',
+                        type: 'POST',
+                        contentType: 'application/json',
+                        data: JSON.stringify({
+                            paquetesIds: paquetesSeleccionados
+                        }),
+                        success: function(data) {
+                            console.log("Respuesta del servidor:", data);
+                            if(data.error) {
+                                console.error('Error:', data.error);
+                                return;
+                            }
+                            $('#numeroPersonas').val(data.capacidadTotal);
+                            $('input[name="NumeroPersonas"]').val(data.capacidadTotal);
+                        },
+                        error: function(xhr, status, error) {
+                            console.error('Error en la solicitud:', error);
+                            $('#numeroPersonas').val(1);
+                        }
+                    });
+                } else {
+                    $('#numeroPersonas').val(1); // Valor por defecto
+                }
+            }
+
+            // Función para calcular totales
+            function calcularTotales() {
+                let total = 0;
                 $('.paquete-checkbox:checked').each(function() {
-                    const precioText = $(this).data('precio');
-                    const precio = parseFloat(precioText) || 0;
-                    total += precio;
-                    hasSelection = true;
+                    total += parseFloat($(this).data('precio')) || 0;
                 });
 
-                // Formatear con 2 decimales y separador de miles
-                const formattedTotal = hasSelection ? total.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") : "0.00";
-                const formattedAnticipo = hasSelection ? (total * 0.3).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") : "0.00";
-
-                $('#valorTotal').val(formattedTotal);
-                $('#anticipoInput').val(formattedAnticipo);
-
-                // Actualizar también los campos hidden del modelo
+                $('#valorTotal').val(total.toFixed(2));
+                $('#anticipoInput').val((total * 0.3).toFixed(2));
                 $('input[name="Valor"]').val(total.toFixed(2));
                 $('input[name="Anticipo"]').val((total * 0.3).toFixed(2));
             }
 
-            // Calcular al cargar la página
-            calcularTotal();
-
-            // Mejor manejo del evento change
+            // Evento de cambio en los checkboxes
             $(document).on('change', '.paquete-checkbox', function() {
-                calcularTotal();
+                calcularCapacidad();
+                calcularTotales();
             });
 
-            // Validar stock antes de enviar el formulario
+            // Calcular valores iniciales si hay checkboxes marcados
+            if ($('.paquete-checkbox:checked').length > 0) {
+                calcularCapacidad();
+                calcularTotales();
+            }
+
+            // Función para calcular totales
+            function calcularTotales() {
+                let total = 0;
+                $('.paquete-checkbox:checked').each(function() {
+                    total += parseFloat($(this).data('precio')) || 0;
+                });
+
+                $('#valorTotal').val(total.toFixed(2));
+                $('#anticipoInput').val((total * 0.3).toFixed(2));
+                $('input[name="Valor"]').val(total.toFixed(2));
+                $('input[name="Anticipo"]').val((total * 0.3).toFixed(2));
+            }
+
+            // Evento de cambio en los checkboxes
+            $(document).on('change', '.paquete-checkbox', function() {
+                calcularCapacidad();
+                calcularTotales();
+            });
+
+            // Calcular valores iniciales si hay checkboxes marcados
+            if ($('.paquete-checkbox:checked').length > 0) {
+                calcularCapacidad();
+                calcularTotales();
+            }
+
+            // Función para calcular el total y anticipo
+            function calcularTotales() {
+                let total = 0;
+                $('.paquete-checkbox:checked').each(function() {
+                    const precio = parseFloat($(this).data('precio')) || 0;
+                    total += precio;
+                });
+
+                const formattedTotal = total.toFixed(2);
+                const formattedAnticipo = (total * 0.3).toFixed(2);
+
+                $('#valorTotal').val(formattedTotal);
+                $('#anticipoInput').val(formattedAnticipo);
+                $('input[name="Valor"]').val(formattedTotal);
+                $('input[name="Anticipo"]').val(formattedAnticipo);
+            }
+
+            // Evento cuando cambian los paquetes seleccionados
+            $(document).on('change', '.paquete-checkbox', function() {
+                calcularCapacidad();
+                calcularTotales();
+            });
+
+            // Calcular al cargar si hay selecciones
+            if ($('.paquete-checkbox:checked').length > 0) {
+                calcularCapacidad();
+                calcularTotales();
+            }
+
+            // Validación de fechas
+            $('input[type="date"]').change(function() {
+                const fechaInicial = new Date($('#FechaInicial').val());
+                const fechaFinal = new Date($('#FechaFinal').val());
+
+                if (fechaInicial && fechaFinal && fechaInicial > fechaFinal) {
+                    alert('La fecha final debe ser posterior a la fecha inicial');
+                    $('#FechaFinal').val('');
+                }
+            });
+
+            // Validación de stock al enviar
             $('#reservaForm').on('submit', function(e) {
                 let sinStock = false;
                 let paquetesSinStock = [];
@@ -218,14 +304,12 @@
                     return false;
                 }
 
-                // Verificar stock para cada paquete seleccionado
                 const verificaciones = checkedBoxes.map(function() {
                     const paqueteId = $(this).val();
                     return $.ajax({
                         url: '/PaquetesTuristicos/VerificarStock',
                         type: 'GET',
-                        data: { id: paqueteId },
-                        async: false
+                        data: { id: paqueteId }
                     }).then(function(data) {
                         if (data.stock <= 0) {
                             sinStock = true;
@@ -238,24 +322,11 @@
                     if (sinStock) {
                         e.preventDefault();
                         alert('Los siguientes paquetes no tienen stock disponible:\n' + paquetesSinStock.join('\n'));
-                        return false;
                     }
                 });
 
                 return true;
             });
-
-            // Validación adicional cuando cambian las fechas
-            $('input[type="date"]').change(function() {
-                const fechaInicial = new Date($('#FechaInicial').val());
-                const fechaFinal = new Date($('#FechaFinal').val());
-
-                if (fechaInicial && fechaFinal && fechaInicial > fechaFinal) {
-                    alert('La fecha final debe ser posterior a la fecha inicial');
-                    $('#FechaFinal').val('');
-                }
-            });
         });
     </script>
-}
 }

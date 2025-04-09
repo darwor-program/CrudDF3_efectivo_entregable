@@ -20,16 +20,11 @@
                 <dt class="col-sm-4">Precio:</dt>
                 <dd class="col-sm-8">@Model.PrecioPaquete?.ToString("C")</dd>
 
-                <dt class="col-sm-4">Disponibilidad:</dt>
+                <dt class="col-sm-4">Capacidad:</dt>
                 <dd class="col-sm-8">
-                    @if (Model.DisponibilidadPaquete)
-                    {
-                        <span class="badge bg-success">Disponible</span>
-                    }
-                    else
-                    {
-                        <span class="badge bg-danger">No Disponible</span>
-                    }
+                    <span class="badge bg-primary">
+                        @Html.DisplayFor(model => model.CapacidadPaquete) personas
+                    </span>
                 </dd>
             </dl>
         </div>
@@ -43,22 +38,63 @@
 
                 <dt class="col-sm-4">Tipo de Viaje:</dt>
                 <dd class="col-sm-8">@Html.DisplayFor(model => model.TipoViajePaquete)</dd>
-
-                <dt class="col-sm-4">Stock:</dt>
-                <dd class="col-sm-8">@Html.DisplayFor(model => model.StockPaquete)</dd>
-
-                <dt class="col-sm-4">Estado:</dt>
-                <dd class="col-sm-8">
-                    @if (Model.EstadoPaquete)
-                    {
-                        <span class="badge bg-success">Activo</span>
-                    }
-                    else
-                    {
-                        <span class="badge bg-danger">Inactivo</span>
-                    }
-                </dd>
             </dl>
+        </div>
+    </div>
+
+    <!-- Estado y disponibilidad -->
+    <div class="card mt-3">
+        <div class="card-header bg-secondary text-white">
+            <h5 class="mb-0">Estado y Disponibilidad</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-4">
+                    <dl class="row">
+                        <dt class="col-sm-6">Disponibilidad:</dt>
+                        <dd class="col-sm-6">
+                            @if (Model.DisponibilidadPaquete)
+                            {
+                                <span class="badge bg-success">Disponible</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-danger">No Disponible</span>
+                            }
+                        </dd>
+                    </dl>
+                </div>
+                <div class="col-md-4">
+                    <dl class="row">
+                        <dt class="col-sm-6">Estado:</dt>
+                        <dd class="col-sm-6">
+                            @if (Model.EstadoPaquete)
+                            {
+                                <span class="badge bg-success">Activo</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-danger">Inactivo</span>
+                            }
+                        </dd>
+                    </dl>
+                </div>
+                <div class="col-md-4">
+                    <dl class="row">
+                        <dt class="col-sm-6">Stock:</dt>
+                        <dd class="col-sm-6">
+                            @if (Model.StockPaquete > 0)
+                            {
+                                <span class="badge bg-success">@Model.StockPaquete unidades</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-danger">Agotado</span>
+                            }
+                        </dd>
+                    </dl>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -66,6 +102,7 @@
     <div class="card mt-4">
         <div class="card-header bg-primary text-white">
             <h5>Servicios Incluidos</h5>
+            <small class="text-white-50">@Model.PaqueteServicios.Count servicios incluidos</small>
         </div>
         <div class="card-body">
             @if (Model.PaqueteServicios != null && Model.PaqueteServicios.Any())
@@ -99,6 +136,7 @@
     <div class="card mt-4">
         <div class="card-header bg-info text-white">
             <h5>Habitaciones Incluidas</h5>
+            <small class="text-white-50">@Model.PaqueteHabitaciones.Count habitaciones - Capacidad total: @Model.CapacidadPaquete personas</small>
         </div>
         <div class="card-body">
             @if (Model.PaqueteHabitaciones != null && Model.PaqueteHabitaciones.Any())
@@ -112,7 +150,7 @@
                                     <h6 class="card-title">@habitacion.IdHabitacionNavigation?.TipoHabitacion</h6>
                                     <p class="card-text small">@habitacion.IdHabitacionNavigation?.DescripcionHabitacion</p>
                                     <div class="d-flex justify-content-between">
-                                        <span class="badge bg-primary">Capacidad: @habitacion.IdHabitacionNavigation?.CapacidadHuespedes</span>
+                                        <span class="badge bg-primary">Capacidad: @habitacion.IdHabitacionNavigation?.CapacidadHuespedes personas</span>
                                         <span class="badge bg-success">@habitacion.IdHabitacionNavigation?.TarifaHabitacion?.ToString("C")</span>
                                     </div>
                                 </div>

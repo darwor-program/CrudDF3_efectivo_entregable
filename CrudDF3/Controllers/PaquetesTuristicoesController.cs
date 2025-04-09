@@ -86,50 +86,61 @@ namespace CrudDF3.Controllers
         }
 
         // GET: PaquetesTuristicoes/Create
+        [HttpGet]
         public IActionResult Create()
         {
-            ViewData["Servicios"] = _context.Servicios.ToList();
-            ViewData["Habitaciones"] = _context.Habitaciones.ToList();
-            return View();
+            try
+            {
+                // ✅ Verificación explícita y manejo de posibles nulos
+                var servicios = _context.Servicios?.ToList() ?? new List<Servicio>();
+                var habitaciones = _context.Habitaciones?.ToList() ?? new List<Habitacione>();
+
+                ViewData["Servicios"] = servicios;
+                ViewData["Habitaciones"] = habitaciones;
+
+                return View(new PaquetesTuristico()); // ← Asegúrate de pasar un modelo nuevo
+            }
+            catch (Exception ex)
+            {
+                // Loggear el error (opcional)
+                Console.WriteLine($"Error al cargar datos: {ex.Message}");
+
+                // Retornar listas vacías para evitar errores en la vista
+                ViewData["Servicios"] = new List<Servicio>();
+                ViewData["Habitaciones"] = new List<Habitacione>();
+                return View(new PaquetesTuristico());
+            }
         }
 
         // POST: PaquetesTuristicoes/Create
-        [HttpPost]
         [ValidateAntiForgeryToken]
+        [HttpPost]
         public async Task<IActionResult> Create([Bind("IdPaquete,NombrePaquete,DescripcionPaquete,PrecioPaquete,DisponibilidadPaquete,FechaPaquete,DestinoPaquete,EstadoPaquete,TipoViajePaquete,StockPaquete,SelectedServicios,SelectedHabitaciones")] PaquetesTuristico paquete)
         {
             if (ModelState.IsValid)
             {
-                // Asegurar que la disponibilidad sea coherente con el stock
-                ActualizarDisponibilidadSegunStock(paquete);
-
                 _context.Add(paquete);
                 await _context.SaveChangesAsync();
 
-                // Agregar servicios seleccionados
-                if (paquete.SelectedServicios != null)
-                {
-                    foreach (var servicioId in paquete.SelectedServicios)
-                    {
-                        _context.PaqueteServicios.Add(new PaqueteServicio
-                        {
-                            IdPaquete = paquete.IdPaquete,
-                            IdServicio = servicioId
-                        });
-                    }
-                }
-
-                // Agregar habitaciones seleccionadas
+                // Calcular capacidad basada en las habitaciones seleccionadas
                 if (paquete.SelectedHabitaciones != null)
                 {
+                    int capacidadTotal = 0;
                     foreach (var habitacionId in paquete.SelectedHabitaciones)
                     {
-                        _context.PaqueteHabitaciones.Add(new PaqueteHabitacion
+                        var habitacion = await _context.Habitaciones.FindAsync(habitacionId);
+                        if (habitacion != null)
                         {
-                            IdPaquete = paquete.IdPaquete,
-                            IdHabitacion = habitacionId
-                        });
+                            capacidadTotal += habitacion.CapacidadHuespedes;
+
+                            _context.PaqueteHabitaciones.Add(new PaqueteHabitacion
+                            {
+                                IdPaquete = paquete.IdPaquete,
+                                IdHabitacion = habitacionId
+                            });
+                        }
                     }
+                    paquete.CapacidadPaquete = capacidadTotal;
                 }
 
                 await _context.SaveChangesAsync();
@@ -181,6 +192,23 @@ namespace CrudDF3.Controllers
             {
                 try
                 {
+                    if (paquete.SelectedHabitaciones != null && paquete.SelectedHabitaciones.Any())
+                    {
+                        int capacidadTotal = 0;
+                        var habitaciones = await _context.Habitaciones
+                            .Where(h => paquete.SelectedHabitaciones.Contains(h.IdHabitacion))
+                            .ToListAsync();
+
+                        foreach (var habitacion in habitaciones)
+                        {
+                            capacidadTotal += habitacion.CapacidadHuespedes;
+                        }
+                        paquete.CapacidadPaquete = capacidadTotal;
+                    }
+                    else
+                    {
+                        paquete.CapacidadPaquete = 0;
+                    }
                     // Asegurar que la disponibilidad sea coherente con el stock
                     ActualizarDisponibilidadSegunStock(paquete);
 

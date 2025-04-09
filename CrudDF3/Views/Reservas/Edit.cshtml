@@ -3,7 +3,7 @@
 @{
     ViewData["Title"] = $"Editar Reserva #{Model?.IdReserva}";
 
-    // Inicialización ultra-segura
+    // Inicialización segura
     Model.PaquetesDisponibles ??= new List<PaqueteSelectionViewModel>();
     Model.PaquetesSeleccionados ??= new List<int>();
 
@@ -52,7 +52,8 @@
                 <div class="col-md-6">
                     <div class="form-group">
                         <label asp-for="NumeroPersonas" class="control-label">Número de Personas</label>
-                        <input asp-for="NumeroPersonas" class="form-control" min="1" />
+                        <input asp-for="NumeroPersonas" class="form-control" min="1" id="numeroPersonas" readonly />
+                        <small class="text-muted">Calculado según las habitaciones de los paquetes</small>
                         <span asp-validation-for="NumeroPersonas" class="text-danger"></span>
                     </div>
 
@@ -64,7 +65,7 @@
 
                     <div class="form-group">
                         <label asp-for="Anticipo" class="control-label">Anticipo</label>
-                        <input asp-for="Anticipo" class="form-control" type="number" step="0.01" />
+                        <input asp-for="Anticipo" class="form-control" readonly id="anticipoInput" />
                         <span asp-validation-for="Anticipo" class="text-danger"></span>
                     </div>
                 </div>
@@ -99,6 +100,7 @@
                                                        type="checkbox"
                                                        name="PaquetesSeleccionados"
                                                        value="@paquete.IdPaquete"
+                                                       data-precio="@paquete.PrecioPaquete"
                                                        id="paquete_@paquete.IdPaquete"
                                                 @(estaSeleccionado ? "checked" : "") />
                                                 <label class="form-check-label" for="paquete_@paquete.IdPaquete">
@@ -133,25 +135,6 @@
                 </div>
             </div>
 
-            <!-- Campos adicionales -->
-            <div class="row mt-3">
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label asp-for="FechaReserva" class="control-label">Fecha de Reserva</label>
-                        <input asp-for="FechaReserva" class="form-control" type="datetime-local"
-                               value="@Model.FechaReserva?.ToString("yyyy-MM-ddTHH:mm")" />
-                        <span asp-validation-for="FechaReserva" class="text-danger"></span>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="form-group form-check mt-4 pt-2">
-                        <label class="form-check-label">
-                            <input class="form-check-input" asp-for="EstadoReserva" /> @Html.DisplayNameFor(model => model.EstadoReserva)
-                        </label>
-                    </div>
-                </div>
-            </div>
-
             <!-- Botones de Acción -->
             <div class="form-group mt-4">
                 <button type="submit" class="btn btn-primary">
@@ -172,35 +155,60 @@
 
     <script>
         $(document).ready(function() {
-            // Función mejorada para calcular valores
-            function calcularValores() {
-                let total = 0;
+            // Función para calcular capacidad total
+            function calcularCapacidad() {
+                let paquetesSeleccionados = $('.paquete-checkbox:checked').map(function() {
+                    return parseInt($(this).val());
+                }).get();
 
-                // Calcular total basado en paquetes seleccionados
-                $('.paquete-checkbox:checked').each(function() {
-                    const precioText = $(this).closest('.card-body').find('.paquete-precio').val();
-                    const precio = parseFloat(precioText) || 0;
-                    total += precio;
-                });
-
-                // Formatear valores
-                const formattedTotal = total.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-                const anticipo = total * 0.3;
-                const formattedAnticipo = anticipo.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-
-                // Actualizar campos
-                $('#valorTotal').val(formattedTotal);
-                $('#Anticipo').val(formattedAnticipo);
-
-                // Actualizar también los campos del modelo
-                $('input[name="Valor"]').val(total.toFixed(2));
-                $('input[name="Anticipo"]').val(anticipo.toFixed(2));
+                if (paquetesSeleccionados.length > 0) {
+                    $.ajax({
+                        url: '/Reservas/CalcularCapacidad',
+                        type: 'POST',
+                        contentType: 'application/json',
+                        data: JSON.stringify({
+                            paquetesIds: paquetesSeleccionados
+                        }),
+                        success: function(data) {
+                            if(data.error) {
+                                console.error('Error:', data.error);
+                                return;
+                            }
+                            $('#numeroPersonas').val(data.capacidadTotal || 1);
+                            $('input[name="NumeroPersonas"]').val(data.capacidadTotal || 1);
+                        },
+                        error: function(xhr, status, error) {
+                            console.error('Error en la solicitud:', error);
+                            $('#numeroPersonas').val(1);
+                        }
+                    });
+                } else {
+                    $('#numeroPersonas').val(1); // Valor por defecto
+                }
             }
 
-            // Calcular valores al cambiar selección de paquetes
+            // Función para calcular totales
+            function calcularTotales() {
+                let total = 0;
+                $('.paquete-checkbox:checked').each(function() {
+                    total += parseFloat($(this).data('precio')) || 0;
+                });
+
+                $('#valorTotal').val(total.toFixed(2));
+                $('#anticipoInput').val((total * 0.3).toFixed(2));
+                $('input[name="Valor"]').val(total.toFixed(2));
+                $('input[name="Anticipo"]').val((total * 0.3).toFixed(2));
+            }
+
+            // Evento de cambio en los checkboxes
             $(document).on('change', '.paquete-checkbox', function() {
-                calcularValores();
+                calcularCapacidad();
+                calcularTotales();
             });
+
+            // Calcular valores iniciales al cargar la página
+            calcularCapacidad();
+            calcularTotales();
 
             // Validación de fechas
             $('#FechaFinal').on('change', function() {
@@ -212,48 +220,6 @@
                     $('#FechaFinal').val('');
                 }
             });
-
-            // Validación de stock antes de enviar
-            $('#reservaForm').on('submit', function(e) {
-                let sinStock = false;
-                let paquetesSinStock = [];
-                let checkedBoxes = $('.paquete-checkbox:checked');
-
-                if (checkedBoxes.length === 0) {
-                    e.preventDefault();
-                    alert('Debe seleccionar al menos un paquete turístico');
-                    return false;
-                }
-
-                // Verificar stock para cada paquete seleccionado
-                const verificaciones = checkedBoxes.map(function() {
-                    const paqueteId = $(this).val();
-                    return $.ajax({
-                        url: '/PaquetesTuristicos/VerificarStock',
-                        type: 'GET',
-                        data: { id: paqueteId },
-                        async: false
-                    }).then(function(data) {
-                        if (data.stock <= 0) {
-                            sinStock = true;
-                            paquetesSinStock.push(data.nombre);
-                        }
-                    });
-                });
-
-                $.when.apply($, verificaciones).done(function() {
-                    if (sinStock) {
-                        e.preventDefault();
-                        alert('Los siguientes paquetes no tienen stock disponible:\n' + paquetesSinStock.join('\n'));
-                        return false;
-                    }
-                });
-
-                return true;
-            });
-
-            // Calcular valores iniciales al cargar la página
-            calcularValores();
         });
     </script>
 }
