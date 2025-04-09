@@ -32,6 +32,22 @@ namespace CrudDF3.Controllers
             return View(paquetes);
         }
 
+        [HttpGet]
+        public IActionResult VerificarStock(int id)
+        {
+            var paquete = _context.PaquetesTuristicos.Find(id);
+            if (paquete == null)
+            {
+                return Json(new { stock = 0, nombre = "Paquete no encontrado" });
+            }
+            return Json(new
+            {
+                stock = paquete.StockPaquete,
+                nombre = paquete.NombrePaquete,
+                disponible = paquete.DisponibilidadPaquete
+            });
+        }
+
         // GET: PaquetesTuristicoes
         public async Task<IActionResult> Index()
         {
@@ -80,10 +96,13 @@ namespace CrudDF3.Controllers
         // POST: PaquetesTuristicoes/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("IdPaquete,NombrePaquete,DescripcionPaquete,PrecioPaquete,DisponibilidadPaquete,FechaPaquete,DestinoPaquete,EstadoPaquete,TipoViajePaquete,SelectedServicios,SelectedHabitaciones")] PaquetesTuristico paquete)
+        public async Task<IActionResult> Create([Bind("IdPaquete,NombrePaquete,DescripcionPaquete,PrecioPaquete,DisponibilidadPaquete,FechaPaquete,DestinoPaquete,EstadoPaquete,TipoViajePaquete,StockPaquete,SelectedServicios,SelectedHabitaciones")] PaquetesTuristico paquete)
         {
             if (ModelState.IsValid)
             {
+                // Asegurar que la disponibilidad sea coherente con el stock
+                ActualizarDisponibilidadSegunStock(paquete);
+
                 _context.Add(paquete);
                 await _context.SaveChangesAsync();
 
@@ -151,7 +170,7 @@ namespace CrudDF3.Controllers
         // POST: PaquetesTuristicoes/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("IdPaquete,NombrePaquete,DescripcionPaquete,PrecioPaquete,DisponibilidadPaquete,FechaPaquete,DestinoPaquete,EstadoPaquete,TipoViajePaquete,SelectedServicios,SelectedHabitaciones")] PaquetesTuristico paquete)
+        public async Task<IActionResult> Edit(int id, [Bind("IdPaquete,NombrePaquete,DescripcionPaquete,PrecioPaquete,DisponibilidadPaquete,FechaPaquete,DestinoPaquete,EstadoPaquete,TipoViajePaquete,StockPaquete,SelectedServicios,SelectedHabitaciones")] PaquetesTuristico paquete)
         {
             if (id != paquete.IdPaquete)
             {
@@ -162,6 +181,9 @@ namespace CrudDF3.Controllers
             {
                 try
                 {
+                    // Asegurar que la disponibilidad sea coherente con el stock
+                    ActualizarDisponibilidadSegunStock(paquete);
+
                     // Actualizar el paquete
                     _context.Update(paquete);
 
@@ -290,6 +312,21 @@ namespace CrudDF3.Controllers
         private bool PaqueteTuristicoExists(int id)
         {
             return _context.PaquetesTuristicos.Any(e => e.IdPaquete == id);
+        }
+
+        // Método privado para actualizar la disponibilidad según el stock
+        private void ActualizarDisponibilidadSegunStock(PaquetesTuristico paquete)
+        {
+            // Si el stock es 0, desactivar la disponibilidad
+            if (paquete.StockPaquete <= 0)
+            {
+                paquete.DisponibilidadPaquete = false;
+            }
+            // Si el stock es mayor que 0 y el paquete está activo, asegurarse de que esté disponible
+            else if (paquete.EstadoPaquete)
+            {
+                paquete.DisponibilidadPaquete = true;
+            }
         }
     }
 }

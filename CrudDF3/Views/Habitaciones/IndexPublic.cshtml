@@ -260,7 +260,7 @@
             <div class="col-lg-4 col-md-6 mb-4">
                 <div class="room-card">
                     <div class="image-container">
-                        <img src="~/Imagenes/por que quiero.jpg" class="room-image" alt="@item.TipoHabitacion">
+                        <img src="@roomImages[imageIndex % roomImages.Count]" class="room-image" alt="@item.TipoHabitacion">
                         <div class="image-overlay">
                             <span class="room-type-badge">@item.TipoHabitacion</span>
                         </div>

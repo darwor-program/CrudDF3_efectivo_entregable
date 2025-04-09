@@ -163,6 +163,9 @@ namespace CrudDF3.Migrations
                     b.Property<decimal?>("PrecioPaquete")
                         .HasColumnType("decimal(10, 2)");
 
+                    b.Property<int>("StockPaquete")
+                        .HasColumnType("int");
+
                     b.Property<string>("TipoViajePaquete")
                         .HasMaxLength(50)
                         .IsUnicode(false)

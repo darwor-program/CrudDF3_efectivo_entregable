@@ -1,4 +1,4 @@
-﻿@model IEnumerable<CrudDF3.Models.PaquetesTuristico>
+@model IEnumerable<CrudDF3.Models.PaquetesTuristico>
 
 @{
     ViewData["Title"] = "Gestión de Paquetes Turísticos";
@@ -24,6 +24,8 @@
                             <th class="py-3">Nombre</th>
                             <th class="py-3">Descripción</th>
                             <th class="py-3">Precio</th>
+                            <th class="py-3">Stock</th>
+                            <th class="py-3">Disponible</th>
                             <th class="py-3">Servicios</th>
                             <th class="py-3">Habitaciones</th>
                             <th class="py-3 text-end">Acciones</th>
@@ -41,6 +43,26 @@
                                 </td>
                                 <td class="align-middle">
                                     @item.PrecioPaquete?.ToString("C")
+                                </td>
+                                <td class="align-middle">
+                                    @if (item.StockPaquete > 0)
+                                    {
+                                        <span class="badge bg-success">@item.StockPaquete</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-danger">@item.StockPaquete</span>
+                                    }
+                                </td>
+                                <td class="align-middle">
+                                    @if (item.DisponibilidadPaquete)
+                                    {
+                                        <span class="badge bg-success">Sí</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-danger">No</span>
+                                    }
                                 </td>
                                 <td class="align-middle">
                                     @if (item.PaqueteServicios != null && item.PaqueteServicios.Any())
@@ -108,7 +130,6 @@
             </div>
         </div>
 
-        <!-- Pie de tabla con funcionalidades -->
         <div class="card-footer bg-light">
             <div class="d-flex justify-content-between align-items-center">
                 <div class="input-group input-group-sm" style="width: 250px;">
@@ -147,18 +168,19 @@
     </script>
 }
 
-<style>
-    .card {
-        border-radius: 0.5rem;
-        overflow: hidden;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-        border: 1px solid rgba(0, 0, 0, 0.05);
-    }
+@section Styles {
+    <style>
+        .card {
+            border-radius: 0.5rem;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
 
-    .table {
-        font-size: 0.875rem;
-        margin-bottom: 0;
-    }
+        .table {
+            font-size: 0.875rem;
+            margin-bottom: 0;
+        }
 
         .table th {
             font-weight: 600;
@@ -177,25 +199,26 @@
             border-top: 1px solid #dee2e6;
         }
 
-    .badge {
-        font-weight: 500;
-        padding: 0.35em 0.65em;
-        font-size: 0.75em;
-        letter-spacing: 0.05em;
-    }
+        .badge {
+            font-weight: 500;
+            padding: 0.35em 0.65em;
+            font-size: 0.75em;
+            letter-spacing: 0.05em;
+        }
 
-    .text-truncate {
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
+        .text-truncate {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
 
-    .btn-outline-secondary {
-        border-color: #dee2e6;
-        color: #495057;
-    }
+        .btn-outline-secondary {
+            border-color: #dee2e6;
+            color: #495057;
+        }
 
-    .gap-1 {
-        gap: 0.25rem;
-    }
-</style>
+        .gap-1 {
+            gap: 0.25rem;
+        }
+    </style>
+}
