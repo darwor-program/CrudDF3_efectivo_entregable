@@ -1,65 +1,143 @@
 ﻿@model IEnumerable<CrudDF3.Models.Huespede>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Gestión de Huéspedes";
+    Layout = "_Layout";
 }
 
-<h1>Index</h1>
+<div class="container mt-4">
+    <div class="card border-0 shadow-sm">
+        <div class="card-header bg-white border-bottom">
+            <div class="d-flex justify-content-between align-items-center py-2">
+                <h3 class="h5 mb-0">Gestión de Huéspedes</h3>
+                <a asp-action="Create" class="btn btn-outline-dark btn-sm">
+                    <span class="me-1">+</span> Nuevo Huésped
+                </a>
+            </div>
+        </div>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.CedulaHuesped)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.NombreHuesped)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.ApellidoHuesped)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.CorreoHuesped)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.FechaEntradaHuesped)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.FechaSalidaHuesped)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.CedulaHuesped)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.NombreHuesped)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ApellidoHuesped)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.CorreoHuesped)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.FechaEntradaHuesped)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.FechaSalidaHuesped)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.IdHuesped">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.IdHuesped">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.IdHuesped">Delete</a>
-            </td>
-        </tr>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0" id="huespedesTable">
+                    <thead class="bg-light">
+                        <tr>
+                            <th class="py-3">Cédula</th>
+                            <th class="py-3">Nombre</th>
+                            <th class="py-3">Apellido</th>
+                            <th class="py-3">Correo</th>
+                            <th class="py-3">Fecha Entrada</th>
+                            <th class="py-3">Fecha Salida</th>
+                            <th class="py-3 text-end">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr class="border-top">
+                                <td class="align-middle">
+                                    @Html.DisplayFor(modelItem => item.CedulaHuesped)
+                                </td>
+                                <td class="align-middle">
+                                    @Html.DisplayFor(modelItem => item.NombreHuesped)
+                                </td>
+                                <td class="align-middle">
+                                    @Html.DisplayFor(modelItem => item.ApellidoHuesped)
+                                </td>
+                                <td class="align-middle">
+                                    @Html.DisplayFor(modelItem => item.CorreoHuesped)
+                                </td>
+                                <td class="align-middle">
+                                    @item.FechaEntradaHuesped?.ToString("dd/MM/yyyy")
+                                </td>
+                                <td class="align-middle">
+                                    @item.FechaSalidaHuesped?.ToString("dd/MM/yyyy")
+                                </td>
+                                <td class="align-middle text-end">
+                                    <div class="btn-group btn-group-sm" role="group">
+                                        <a asp-action="Edit" asp-route-id="@item.IdHuesped" class="btn btn-outline-secondary border-0">
+                                            Editar
+                                        </a>
+                                        <a asp-action="Details" asp-route-id="@item.IdHuesped" class="btn btn-outline-secondary border-0">
+                                            Detalles
+                                        </a>
+                                        <a asp-action="Delete" asp-route-id="@item.IdHuesped" class="btn btn-outline-danger border-0">
+                                            Eliminar
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Pie de tabla con funcionalidades -->
+        <div class="card-footer bg-light">
+            <div class="d-flex justify-content-between align-items-center">
+                <div class="input-group input-group-sm" style="width: 250px;">
+                    <input type="text" id="searchInput" class="form-control" placeholder="Buscar huéspedes...">
+                    <button class="btn btn-outline-secondary" type="button" id="searchButton">
+                        <i class="bi bi-search"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Función de búsqueda
+        $('#searchButton').click(function() {
+            const searchText = $('#searchInput').val().toLowerCase();
+            $('#huespedesTable tbody tr').each(function() {
+                const rowText = $(this).text().toLowerCase();
+                $(this).toggle(rowText.indexOf(searchText) > -1);
+            });
+        });
+
+        // Búsqueda al presionar Enter
+        $('#searchInput').keypress(function(e) {
+            if (e.which === 13) {
+                $('#searchButton').click();
+            }
+        });
+    </script>
 }
-    </tbody>
-</table>
+
+<style>
+    .card {
+        border-radius: 0.5rem;
+        overflow: hidden;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        border: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    .table {
+        font-size: 0.875rem;
+        margin-bottom: 0;
+    }
+
+        .table th {
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-size: 0.75rem;
+            color: #6c757d;
+            background-color: #f8f9fa;
+            padding: 0.75rem 1rem;
+            border-bottom: 2px solid #dee2e6;
+        }
+
+        .table td {
+            padding: 0.75rem 1rem;
+            vertical-align: middle;
+            border-top: 1px solid #dee2e6;
+        }
+
+    .btn-outline-secondary {
+        border-color: #dee2e6;
+        color: #495057;
+    }
+</style>

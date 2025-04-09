@@ -1,65 +1,149 @@
 ﻿@model IEnumerable<CrudDF3.Models.Habitacione>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Gestión de Habitaciones";
+    Layout = "_Layout";
 }
 
-<h1>Index</h1>
+<div class="container mt-4">
+    <div class="card border-0 shadow-sm">
+        <div class="card-header bg-white border-bottom">
+            <div class="d-flex justify-content-between align-items-center py-2">
+                <h3 class="h5 mb-0">Gestión de Habitaciones</h3>
+                <a asp-action="Create" class="btn btn-outline-dark btn-sm">
+                    <span class="me-1">+</span> Nueva Habitación
+                </a>
+            </div>
+        </div>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.TipoHabitacion)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.CapacidadHuespedes)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.EstadoHabitacion)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.DescripcionHabitacion)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.TarifaHabitacion)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.CaracteristicasHabitacion)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.TipoHabitacion)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.CapacidadHuespedes)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.EstadoHabitacion)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.DescripcionHabitacion)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.TarifaHabitacion)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.CaracteristicasHabitacion)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.IdHabitacion">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.IdHabitacion">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.IdHabitacion">Delete</a>
-            </td>
-        </tr>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0" id="habitacionesTable">
+                    <thead class="bg-light">
+                        <tr>
+                            <th class="py-3">Tipo</th>
+                            <th class="py-3">Capacidad</th>
+                            <th class="py-3">Estado</th>
+                            <th class="py-3">Descripción</th>
+                            <th class="py-3">Tarifa</th>
+                            <th class="py-3">Características</th>
+                            <th class="py-3 text-end">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr class="border-top">
+                                <td class="align-middle">
+                                    <span class="badge bg-light text-dark border">
+                                        @Html.DisplayFor(modelItem => item.TipoHabitacion)
+                                    </span>
+                                </td>
+                                <td class="align-middle">
+                                    @Html.DisplayFor(modelItem => item.CapacidadHuespedes)
+                                </td>
+                                <td class="align-middle">
+                                    @if (item.EstadoHabitacion)
+                                    {
+                                        <span class="badge bg-light text-success border border-success">Disponible</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-light text-danger border border-danger">Ocupada</span>
+                                    }
+                                </td>
+                                <td class="align-middle text-truncate" style="max-width: 200px;" title="@item.DescripcionHabitacion">
+                                    @Html.DisplayFor(modelItem => item.DescripcionHabitacion)
+                                </td>
+                                <td class="align-middle">
+                                    @Html.DisplayFor(modelItem => item.TarifaHabitacion)
+                                </td>
+                                <td class="align-middle">
+                                    @if (!string.IsNullOrEmpty(item.CaracteristicasHabitacion))
+                                    {
+                                        <div class="d-flex flex-wrap gap-1">
+                                            @foreach (var caracteristica in item.CaracteristicasHabitacion.Split(',').Take(3))
+                                            {
+                                                <span class="badge bg-light text-dark border">
+                                                    @caracteristica.Trim()
+                                                </span>
+                                            }
+                                            @if (item.CaracteristicasHabitacion.Split(',').Length > 3)
+                                            {
+                                                <span class="badge bg-light text-dark border">
+                                                    +@(item.CaracteristicasHabitacion.Split(',').Length - 3) más
+                                                </span>
+                                            }
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-light text-muted border">Sin características</span>
+                                    }
+                                </td>
+                                <td class="align-middle text-end">
+                                    <div class="btn-group btn-group-sm" role="group">
+                                        <a asp-action="Edit" asp-route-id="@item.IdHabitacion" class="btn btn-outline-secondary border-0">
+                                            Editar
+                                        </a>
+                                        <a asp-action="Details" asp-route-id="@item.IdHabitacion" class="btn btn-outline-secondary border-0">
+                                            Detalles
+                                        </a>
+                                        <a asp-action="Delete" asp-route-id="@item.IdHabitacion" class="btn btn-outline-danger border-0">
+                                            Eliminar
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Pie de tabla con funcionalidades -->
+        <div class="card-footer bg-light">
+            <div class="d-flex justify-content-between align-items-center">
+                <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" id="toggleInactive">
+                    <label class="form-check-label" for="toggleInactive">Mostrar solo disponibles</label>
+                </div>
+                <div class="input-group input-group-sm" style="width: 250px;">
+                    <input type="text" id="searchInput" class="form-control" placeholder="Buscar habitaciones...">
+                    <button class="btn btn-outline-secondary" type="button" id="searchButton">
+                        <i class="bi bi-search"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Función para filtrar por estado
+        $('#toggleInactive').change(function() {
+            const showOnlyAvailable = $(this).is(':checked');
+            $('#habitacionesTable tbody tr').each(function() {
+                const isAvailable = $(this).find('td').eq(2).text().trim() === 'Disponible';
+                $(this).toggle(!showOnlyAvailable || isAvailable);
+            });
+        });
+
+        // Función de búsqueda
+        $('#searchButton').click(function() {
+            const searchText = $('#searchInput').val().toLowerCase();
+            $('#habitacionesTable tbody tr').each(function() {
+                const rowText = $(this).text().toLowerCase();
+                $(this).toggle(rowText.indexOf(searchText) > -1);
+            });
+        });
+
+        // Búsqueda al presionar Enter
+        $('#searchInput').keypress(function(e) {
+            if (e.which === 13) {
+                $('#searchButton').click();
+            }
+        });
+    </script>
 }
-    </tbody>
-</table>
