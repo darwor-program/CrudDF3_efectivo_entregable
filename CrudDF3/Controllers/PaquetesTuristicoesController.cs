@@ -43,9 +43,11 @@ namespace CrudDF3.Controllers
             return Json(new
             {
                 stock = paquete.StockPaquete,
-                nombre = paquete.NombrePaquete
+                nombre = paquete.NombrePaquete,
+                disponible = paquete.DisponibilidadPaquete
             });
         }
+
         // GET: PaquetesTuristicoes
         public async Task<IActionResult> Index()
         {
@@ -98,6 +100,9 @@ namespace CrudDF3.Controllers
         {
             if (ModelState.IsValid)
             {
+                // Asegurar que la disponibilidad sea coherente con el stock
+                ActualizarDisponibilidadSegunStock(paquete);
+
                 _context.Add(paquete);
                 await _context.SaveChangesAsync();
 
@@ -176,6 +181,9 @@ namespace CrudDF3.Controllers
             {
                 try
                 {
+                    // Asegurar que la disponibilidad sea coherente con el stock
+                    ActualizarDisponibilidadSegunStock(paquete);
+
                     // Actualizar el paquete
                     _context.Update(paquete);
 
@@ -304,6 +312,21 @@ namespace CrudDF3.Controllers
         private bool PaqueteTuristicoExists(int id)
         {
             return _context.PaquetesTuristicos.Any(e => e.IdPaquete == id);
+        }
+
+        // Método privado para actualizar la disponibilidad según el stock
+        private void ActualizarDisponibilidadSegunStock(PaquetesTuristico paquete)
+        {
+            // Si el stock es 0, desactivar la disponibilidad
+            if (paquete.StockPaquete <= 0)
+            {
+                paquete.DisponibilidadPaquete = false;
+            }
+            // Si el stock es mayor que 0 y el paquete está activo, asegurarse de que esté disponible
+            else if (paquete.EstadoPaquete)
+            {
+                paquete.DisponibilidadPaquete = true;
+            }
         }
     }
 }

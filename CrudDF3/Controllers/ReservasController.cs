@@ -335,6 +335,7 @@ namespace CrudDF3.Controllers
 
             if (ModelState.IsValid)
             {
+                using var transaction = await _context.Database.BeginTransactionAsync();
                 try
                 {
                     var reserva = await _context.Reservas
@@ -345,6 +346,9 @@ namespace CrudDF3.Controllers
                     {
                         return NotFound();
                     }
+
+                    // Guardar los paquetes originales antes de la actualización
+                    var paquetesOriginales = reserva.ReservasPaquetes.Select(rp => rp.IdPaquete).ToList();
 
                     // Actualizar propiedades básicas
                     reserva.IdUsuario = viewModel.IdUsuario;
@@ -362,28 +366,81 @@ namespace CrudDF3.Controllers
                     reserva.FechaReserva = viewModel.FechaReserva;
                     reserva.EstadoReserva = viewModel.EstadoReserva;
 
-                    // Manejar paquetes
+                    // Validar stock antes de actualizar
+                    var paquetesNuevos = viewModel.PaquetesSeleccionados;
+                    var paquetesAgregados = paquetesNuevos.Except(paquetesOriginales).ToList();
+
+                    foreach (var paqueteId in paquetesAgregados)
+                    {
+                        var paquete = await _context.PaquetesTuristicos.FindAsync(paqueteId);
+                        if (paquete == null || paquete.StockPaquete <= 0)
+                        {
+                            ModelState.AddModelError("", $"No hay stock disponible para el paquete {paquete?.NombrePaquete ?? "desconocido"}");
+                            await transaction.RollbackAsync();
+                            return await RepoblarViewModelEdit(viewModel);
+                        }
+                    }
+
+                    // Actualizar relaciones de paquetes
                     await ActualizarPaquetesReserva(reserva.IdReserva, viewModel.PaquetesSeleccionados);
+
+                    // Actualizar stock
+                    await ActualizarStockPaquetes(paquetesOriginales, viewModel.PaquetesSeleccionados);
 
                     _context.Update(reserva);
                     await _context.SaveChangesAsync();
+                    await transaction.CommitAsync();
 
                     return RedirectToAction(nameof(Index));
                 }
-                catch (DbUpdateConcurrencyException)
+                catch (Exception ex)
                 {
-                    if (!ReservaExists(viewModel.IdReserva))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
+                    await transaction.RollbackAsync();
+                    ModelState.AddModelError("", "Ocurrió un error al actualizar la reserva.");
+                    // Log the exception (ex)
+                    return await RepoblarViewModelEdit(viewModel);
                 }
             }
 
-            // Si hay errores, repoblar los datos necesarios
+            // Si hay errores de validación
+            return await RepoblarViewModelEdit(viewModel);
+        }
+
+        private async Task ActualizarStockPaquetes(List<int> paquetesOriginales, List<int> paquetesNuevos)
+        {
+            // Paquetes que fueron removidos (aumentar stock)
+            var paquetesRemovidos = paquetesOriginales.Except(paquetesNuevos).ToList();
+
+            // Paquetes que fueron agregados (disminuir stock)
+            var paquetesAgregados = paquetesNuevos.Except(paquetesOriginales).ToList();
+
+            // Aumentar stock para paquetes removidos
+            foreach (var paqueteId in paquetesRemovidos)
+            {
+                var paquete = await _context.PaquetesTuristicos.FindAsync(paqueteId);
+                if (paquete != null)
+                {
+                    paquete.StockPaquete++;
+                    _context.Update(paquete);
+                }
+            }
+
+            // Disminuir stock para paquetes agregados
+            foreach (var paqueteId in paquetesAgregados)
+            {
+                var paquete = await _context.PaquetesTuristicos.FindAsync(paqueteId);
+                if (paquete != null)
+                {
+                    paquete.StockPaquete--;
+                    _context.Update(paquete);
+                }
+            }
+
+            await _context.SaveChangesAsync();
+        }
+
+        private async Task<IActionResult> RepoblarViewModelEdit(EditReservaViewModel viewModel)
+        {
             viewModel.Usuarios = new SelectList(_context.Usuarios, "IdUsuario", "NombreUsuario", viewModel.IdUsuario);
             viewModel.PaquetesDisponibles = await _context.PaquetesTuristicos
                 .Where(p => p.DisponibilidadPaquete && p.EstadoPaquete)
@@ -448,18 +505,39 @@ namespace CrudDF3.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var reserva = await _context.Reservas
-                .Include(r => r.ReservasPaquetes)
-                .FirstOrDefaultAsync(r => r.IdReserva == id);
-
-            if (reserva != null)
+            using var transaction = await _context.Database.BeginTransactionAsync();
+            try
             {
-                _context.ReservasPaquetes.RemoveRange(reserva.ReservasPaquetes);
-                _context.Reservas.Remove(reserva);
-                await _context.SaveChangesAsync();
-            }
+                var reserva = await _context.Reservas
+                    .Include(r => r.ReservasPaquetes)
+                    .FirstOrDefaultAsync(r => r.IdReserva == id);
 
-            return RedirectToAction(nameof(Index));
+                if (reserva != null)
+                {
+                    // Devolver stock de los paquetes
+                    foreach (var reservaPaquete in reserva.ReservasPaquetes)
+                    {
+                        var paquete = await _context.PaquetesTuristicos.FindAsync(reservaPaquete.IdPaquete);
+                        if (paquete != null)
+                        {
+                            paquete.StockPaquete++;
+                            _context.Update(paquete);
+                        }
+                    }
+
+                    _context.ReservasPaquetes.RemoveRange(reserva.ReservasPaquetes);
+                    _context.Reservas.Remove(reserva);
+                    await _context.SaveChangesAsync();
+                }
+
+                await transaction.CommitAsync();
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception)
+            {
+                await transaction.RollbackAsync();
+                throw;
+            }
         }
 
         private bool ReservaExists(int id)

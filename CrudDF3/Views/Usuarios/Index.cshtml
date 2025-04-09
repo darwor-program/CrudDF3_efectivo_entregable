@@ -4,7 +4,6 @@
     ViewData["Title"] = "Gestión de Usuarios";
     Layout = "_Layout";
 }
-
 <div class="container mt-4">
     <div class="card border-0 shadow-sm">
         <div class="card-header bg-white border-bottom">
@@ -13,6 +12,9 @@
                 <a asp-action="Create" class="btn btn-outline-dark btn-sm">
                     <span class="me-1">+</span> Nuevo Usuario
                 </a>
+            </div>
+            <div class="mt-3">
+                <input type="text" id="searchInput" class="form-control" placeholder="Buscar usuarios..." />
             </div>
         </div>
 
@@ -76,6 +78,19 @@
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            $('#searchInput').on('keyup', function() {
+                const searchText = $(this).val().toLowerCase();
+                $('#usuariosTable tbody tr').filter(function() {
+                    $(this).toggle($(this).text().toLowerCase().indexOf(searchText) > -1);
+                });
+            });
+        });
+    </script>
+}
 
 <style>
     .card {
