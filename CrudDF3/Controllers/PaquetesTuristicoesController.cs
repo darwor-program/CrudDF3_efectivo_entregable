@@ -115,7 +115,7 @@ namespace CrudDF3.Controllers
         // POST: PaquetesTuristicoes/Create
         [ValidateAntiForgeryToken]
         [HttpPost]
-        public async Task<IActionResult> Create([Bind("IdPaquete,NombrePaquete,DescripcionPaquete,PrecioPaquete,DisponibilidadPaquete,FechaPaquete,DestinoPaquete,EstadoPaquete,TipoViajePaquete,StockPaquete,SelectedServicios,SelectedHabitaciones")] PaquetesTuristico paquete)
+        public async Task<IActionResult> Create([Bind("IdPaquete,NombrePaquete,DescripcionPaquete,PrecioPaquete,DisponibilidadPaquete,FechaPaquete,DestinoPaquete,EstadoPaquete,TipoViajePaquete,StockPaquete,CapacidadPaquete,SelectedServicios,SelectedHabitaciones")] PaquetesTuristico paquete)
         {
             if (ModelState.IsValid)
             {
@@ -181,7 +181,7 @@ namespace CrudDF3.Controllers
         // POST: PaquetesTuristicoes/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("IdPaquete,NombrePaquete,DescripcionPaquete,PrecioPaquete,DisponibilidadPaquete,FechaPaquete,DestinoPaquete,EstadoPaquete,TipoViajePaquete,StockPaquete,SelectedServicios,SelectedHabitaciones")] PaquetesTuristico paquete)
+        public async Task<IActionResult> Edit(int id, [Bind("IdPaquete,NombrePaquete,DescripcionPaquete,PrecioPaquete,DisponibilidadPaquete,FechaPaquete,DestinoPaquete,EstadoPaquete,TipoViajePaquete,StockPaquete,CapacidadPaquete,SelectedServicios,SelectedHabitaciones")] PaquetesTuristico paquete)
         {
             if (id != paquete.IdPaquete)
             {

@@ -20,7 +20,8 @@
                 <div class="col-md-6">
                     <div class="form-group">
                         <label class="control-label">Capacidad Total</label>
-                        <input class="form-control" value="@Model.CapacidadPaquete" readonly />
+                        <input id="capacidad-total" class="form-control" value="0" readonly />
+                        <input type="hidden" id="capacidad-total-hidden" name="CapacidadPaquete" value="0" />
                         <small class="form-text text-muted">Capacidad total basada en las habitaciones seleccionadas.</small>
                     </div>
                     <div class="form-group">
@@ -37,8 +38,9 @@
                 <div class="col-md-6">
                     <div class="form-group">
                         <label asp-for="PrecioPaquete" class="control-label"></label>
-                        <input asp-for="PrecioPaquete" class="form-control" />
+                        <input asp-for="PrecioPaquete" id="precio-paquete" class="form-control" readonly />
                         <span asp-validation-for="PrecioPaquete" class="text-danger"></span>
+                        <small class="form-text text-muted">Precio calculado automáticamente</small>
                     </div>
                     <div class="form-group">
                         <label asp-for="DestinoPaquete" class="control-label"></label>
@@ -117,11 +119,12 @@
                                     <div class="card h-100">
                                         <div class="card-body">
                                             <div class="form-check">
-                                                <input class="form-check-input"
+                                                <input class="form-check-input servicio-checkbox"
                                                        type="checkbox"
                                                        name="SelectedServicios"
                                                        value="@servicio.IdServicio"
-                                                       id="servicio_@servicio.IdServicio">
+                                                       id="servicio_@servicio.IdServicio"
+                                                       data-price="@servicio.Costo">
                                                 <label class="form-check-label" for="servicio_@servicio.IdServicio">
                                                     <strong>@servicio.NombreServicio</strong>
                                                 </label>
@@ -144,8 +147,7 @@
                 </div>
             </div>
 
-
-            <!-- Selección de Habitaciones -->
+            <!-- Selección de Habitaciones (modificado) -->
             <div class="card mb-4">
                 <div class="card-header bg-info text-white">
                     <h5 class="mb-0">Habitaciones Disponibles</h5>
@@ -160,11 +162,13 @@
                                     <div class="card h-100">
                                         <div class="card-body">
                                             <div class="form-check">
-                                                <input class="form-check-input"
+                                                <input class="form-check-input habitacion-checkbox"
                                                        type="checkbox"
                                                        name="SelectedHabitaciones"
                                                        value="@habitacion.IdHabitacion"
-                                                       id="habitacion_@habitacion.IdHabitacion">
+                                                       id="habitacion_@habitacion.IdHabitacion"
+                                                       data-price="@habitacion.TarifaHabitacion"
+                                                       data-capacity="@habitacion.CapacidadHuespedes">
                                                 <label class="form-check-label" for="habitacion_@habitacion.IdHabitacion">
                                                     <strong>@habitacion.TipoHabitacion</strong>
                                                 </label>
@@ -204,4 +208,38 @@
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
+
+    <script>
+        $(document).ready(function() {
+            // Función para calcular el precio total
+            function calcularPrecioTotal() {
+                let precioTotal = 0;
+                let capacidadTotal = 0;
+
+                // Sumar precios de servicios seleccionados
+                $('.servicio-checkbox:checked').each(function() {
+                    precioTotal += parseFloat($(this).data('price')) || 0;
+                });
+
+                // Sumar precios y capacidades de habitaciones seleccionadas
+                $('.habitacion-checkbox:checked').each(function() {
+                    precioTotal += parseFloat($(this).data('price')) || 0;
+                    capacidadTotal += parseInt($(this).data('capacity')) || 0;
+                });
+
+                // Actualizar los campos
+                $('#precio-paquete').val(precioTotal.toFixed(2));
+                $('#capacidad-total').val(capacidadTotal);
+                $('#capacidad-total-hidden').val(capacidadTotal);
+            }
+
+            // Escuchar cambios en los checkboxes
+            $('.servicio-checkbox, .habitacion-checkbox').change(function() {
+                calcularPrecioTotal();
+            });
+
+            // Calcular inicialmente por si hay valores precargados
+            calcularPrecioTotal();
+        });
+    </script>
 }

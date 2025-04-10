@@ -109,7 +109,8 @@ namespace CrudDF3.Controllers
                         DescripcionPaquete = p.DescripcionPaquete,
                         PrecioPaquete = p.PrecioPaquete,
                         DestinoPaquete = p.DestinoPaquete,
-                        TipoViajePaquete = p.TipoViajePaquete
+                        TipoViajePaquete = p.TipoViajePaquete,
+                        CapacidadPaquete = p.CapacidadPaquete
                     }).ToList(),
                 FechaReserva = DateTime.Now
             };
@@ -138,7 +139,8 @@ namespace CrudDF3.Controllers
                         DescripcionPaquete = p.DescripcionPaquete,
                         PrecioPaquete = p.PrecioPaquete,
                         DestinoPaquete = p.DestinoPaquete,
-                        TipoViajePaquete = p.TipoViajePaquete
+                        TipoViajePaquete = p.TipoViajePaquete,
+                        CapacidadPaquete = p.CapacidadPaquete
                     }).ToList(),
                 FechaReserva = DateTime.Now
             };
@@ -179,133 +181,86 @@ namespace CrudDF3.Controllers
                 if (paquetesSinStock.Any())
                 {
                     ModelState.AddModelError("", $"Los siguientes paquetes no tienen stock disponible: {string.Join(", ", paquetesSinStock)}");
-                    return RepoblarViewModel(model, idRol, idUsuario);
                 }
-
-                // 2. Calcular capacidad máxima basada en habitaciones (VERSIÓN CORREGIDA)
-                var habitacionesUnicas = await _context.PaqueteHabitaciones
-                            .Include(ph => ph.IdHabitacionNavigation)
-                            .Where(ph => model.PaquetesSeleccionados.Contains(ph.IdPaquete))
-                            .Select(ph => new {
-                                ph.IdHabitacion,
-                                ph.IdHabitacionNavigation.CapacidadHuespedes
-                            })
-                            .Distinct()
-                            .ToListAsync();
-
-                var capacidadTotal = habitacionesUnicas.Sum(h => h.CapacidadHuespedes);
-
-                // 3. Validar que el número de personas no exceda la capacidad
-                if (model.NumeroPersonas > capacidadTotal)
+                else
                 {
-                    ModelState.AddModelError("NumeroPersonas",
-                        $"El número de personas ({model.NumeroPersonas}) excede la capacidad máxima de las habitaciones seleccionadas ({capacidadTotal})");
-                    return RepoblarViewModel(model, idRol, idUsuario);
-                }
+                    // 2. Calcular capacidad total basada en la propiedad CapacidadPaquete
+                    var paquetesCapacidad = await _context.PaquetesTuristicos
+                        .Where(p => model.PaquetesSeleccionados.Contains(p.IdPaquete))
+                        .Select(p => p.CapacidadPaquete)
+                        .ToListAsync();
 
-                // 4. Calcular totales
-                var valorTotal = paquetesSeleccionados.Sum(p => p.PrecioPaquete) ?? 0;
-                var anticipo = valorTotal * 0.3m;
+                    var capacidadTotal = paquetesCapacidad.Sum();
 
-                // 5. Crear la reserva
-                var reserva = new Reserva
-                {
-                    IdUsuario = model.IdUsuario,
-                    FechaInicial = model.FechaInicial,
-                    FechaFinal = model.FechaFinal,
-                    NumeroPersonas = model.NumeroPersonas,
-                    Valor = valorTotal,
-                    Anticipo = anticipo,
-                    FechaReserva = model.FechaReserva ?? DateTime.Now,
-                    EstadoReserva = model.EstadoReserva
-                };
-
-                using var transaction = await _context.Database.BeginTransactionAsync();
-
-                try
-                {
-                    _context.Reservas.Add(reserva);
-                    await _context.SaveChangesAsync();
-
-                    // 6. Procesar paquetes y disminuir stock
-                    foreach (var paquete in paquetesSeleccionados)
+                    // 3. Validar que el número de personas no exceda la capacidad
+                    if (model.NumeroPersonas > capacidadTotal)
                     {
-                        // Disminuir stock
-                        var paqueteEnDB = await _context.PaquetesTuristicos.FindAsync(paquete.IdPaquete);
-                        if (paqueteEnDB != null)
-                        {
-                            paqueteEnDB.StockPaquete -= 1;
-                            _context.Update(paqueteEnDB);
-                        }
-
-                        // Relacionar con la reserva
-                        _context.ReservasPaquetes.Add(new ReservasPaquete
-                        {
-                            IdReserva = reserva.IdReserva,
-                            IdPaquete = paquete.IdPaquete
-                        });
+                        ModelState.AddModelError("NumeroPersonas",
+                            $"El número de personas ({model.NumeroPersonas}) excede la capacidad total permitida de los paquetes seleccionados ({capacidadTotal})");
                     }
+                    else
+                    {
+                        // 4. Calcular totales
+                        var valorTotal = paquetesSeleccionados.Sum(p => p.PrecioPaquete) ?? 0;
+                        var anticipo = valorTotal * 0.3m;
 
-                    await _context.SaveChangesAsync();
-                    await transaction.CommitAsync();
+                        // 5. Crear la reserva
+                        var reserva = new Reserva
+                        {
+                            IdUsuario = model.IdUsuario,
+                            FechaInicial = model.FechaInicial,
+                            FechaFinal = model.FechaFinal,
+                            NumeroPersonas = model.NumeroPersonas,
+                            Valor = valorTotal,
+                            Anticipo = anticipo,
+                            FechaReserva = model.FechaReserva ?? DateTime.Now,
+                            EstadoReserva = model.EstadoReserva
+                        };
 
-                    return RedirectToAction("Details", new { id = reserva.IdReserva });
+                        using var transaction = await _context.Database.BeginTransactionAsync();
+
+                        try
+                        {
+                            _context.Reservas.Add(reserva);
+                            await _context.SaveChangesAsync();
+
+                            // 6. Procesar paquetes y disminuir stock
+                            foreach (var paquete in paquetesSeleccionados)
+                            {
+                                var paqueteEnDB = await _context.PaquetesTuristicos.FindAsync(paquete.IdPaquete);
+                                if (paqueteEnDB != null)
+                                {
+                                    paqueteEnDB.StockPaquete -= 1;
+                                    _context.Update(paqueteEnDB);
+                                }
+
+                                _context.ReservasPaquetes.Add(new ReservasPaquete
+                                {
+                                    IdReserva = reserva.IdReserva,
+                                    IdPaquete = paquete.IdPaquete
+                                });
+                            }
+
+                            await _context.SaveChangesAsync();
+                            await transaction.CommitAsync();
+
+                            return RedirectToAction("Details", new { id = reserva.IdReserva });
+                        }
+                        catch (Exception ex)
+                        {
+                            await transaction.RollbackAsync();
+                            ModelState.AddModelError("", "Ocurrió un error al crear la reserva. Por favor intente nuevamente.");
+                            // Log del error si se requiere
+                        }
+                    }
                 }
-                catch (Exception ex)
-                {
-                    await transaction.RollbackAsync();
-                    ModelState.AddModelError("", "Ocurrió un error al crear la reserva. Por favor intente nuevamente.");
-                    // Log the exception (ex)
-                    return RepoblarViewModel(model, idRol, idUsuario);
-                }
             }
 
-            // Repoblar datos si hay error de validación
-            return RepoblarViewModel(model, idRol, idUsuario);
-        }
+            // Si llega hasta acá, hubo errores de validación. Volver a construir el modelo:
 
-        // Nuevo método para el cálculo de capacidad via AJAX
-        [HttpPost]
-        public async Task<IActionResult> CalcularCapacidad([FromBody] PaquetesIdsRequest request)
-        {
-            if (request?.PaquetesIds == null || !request.PaquetesIds.Any())
-            {
-                return Json(new { capacidadTotal = 1 }); // Mínimo 1 persona
-            }
-
-            try
-            {
-                // Obtener todas las habitaciones de los paquetes seleccionados con sus capacidades
-                var habitaciones = await _context.PaqueteHabitaciones
-                    .Where(ph => request.PaquetesIds.Contains(ph.IdPaquete))
-                    .Include(ph => ph.IdHabitacionNavigation)
-                    .Select(ph => ph.IdHabitacionNavigation.CapacidadHuespedes)
-                    .ToListAsync();
-
-                // Sumar todas las capacidades (incluyendo duplicados si un paquete tiene varias habitaciones)
-                var capacidadTotal = habitaciones.Sum();
-
-                // Asegurar mínimo 1 persona
-                return Json(new { capacidadTotal = capacidadTotal > 0 ? capacidadTotal : 1 });
-            }
-            catch (Exception ex)
-            {
-                // Log error
-                return Json(new { capacidadTotal = 1, error = ex.Message });
-            }
-        }
-
-        public class PaquetesIdsRequest
-        {
-            public List<int> PaquetesIds { get; set; }
-        }
-
-        private IActionResult RepoblarViewModel(CreateReservaViewModel model, string idRol, string idUsuario)
-        {
-            // Lógica para repoblar los datos del ViewModel
             if (idRol == "2" && !string.IsNullOrEmpty(idUsuario))
             {
-                var usuario = _context.Usuarios.Find(int.Parse(idUsuario));
+                var usuario = await _context.Usuarios.FindAsync(int.Parse(idUsuario));
                 model.Usuarios = new SelectList(new List<Usuario> { usuario }, "IdUsuario", "NombreUsuario", model.IdUsuario);
             }
             else
@@ -313,8 +268,8 @@ namespace CrudDF3.Controllers
                 model.Usuarios = new SelectList(_context.Usuarios, "IdUsuario", "NombreUsuario", model.IdUsuario);
             }
 
-            model.PaquetesDisponibles = _context.PaquetesTuristicos
-                .Where(p => p.DisponibilidadPaquete && p.EstadoPaquete && p.StockPaquete > 0) // Solo mostrar paquetes con stock
+            model.PaquetesDisponibles = await _context.PaquetesTuristicos
+                .Where(p => p.DisponibilidadPaquete && p.EstadoPaquete && p.StockPaquete > 0)
                 .Select(p => new PaqueteSelectionViewModel
                 {
                     IdPaquete = p.IdPaquete,
@@ -322,11 +277,41 @@ namespace CrudDF3.Controllers
                     DescripcionPaquete = p.DescripcionPaquete,
                     PrecioPaquete = p.PrecioPaquete,
                     DestinoPaquete = p.DestinoPaquete,
-                    TipoViajePaquete = p.TipoViajePaquete
-                }).ToList();
+                    TipoViajePaquete = p.TipoViajePaquete,
+                    CapacidadPaquete = p.CapacidadPaquete
+                }).ToListAsync();
 
             return View(idRol == "2" ? "CreateForClient" : "Create", model);
         }
+
+
+        // Nuevo método para el cálculo de capacidad via AJAX
+        [HttpPost]
+        public async Task<IActionResult> CalcularCapacidad([FromBody] List<int> paquetesIds)
+        {
+            if (paquetesIds == null || !paquetesIds.Any())
+            {
+                return Json(new { capacidadTotal = 1 }); // Mínimo 1 persona
+            }
+
+            try
+            {
+                var capacidades = await _context.PaquetesTuristicos
+                    .Where(p => paquetesIds.Contains(p.IdPaquete))
+                    .Select(p => p.CapacidadPaquete)
+                    .ToListAsync();
+
+                var capacidadTotal = capacidades.Sum();
+
+                return Json(new { capacidadTotal = capacidadTotal > 0 ? capacidadTotal : 1 });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { capacidadTotal = 1, error = ex.Message });
+            }
+        }
+
+
 
         // POST: Reservas/Creat
 
@@ -341,6 +326,7 @@ namespace CrudDF3.Controllers
 
             var reserva = await _context.Reservas
                 .Include(r => r.ReservasPaquetes)
+                .ThenInclude(rp => rp.IdPaqueteNavigation)
                 .FirstOrDefaultAsync(r => r.IdReserva == id);
 
             if (reserva == null)
@@ -354,7 +340,7 @@ namespace CrudDF3.Controllers
                 IdUsuario = reserva.IdUsuario,
                 FechaInicial = reserva.FechaInicial,
                 FechaFinal = reserva.FechaFinal,
-                NumeroPersonas = reserva.NumeroPersonas,
+                NumeroPersonas = reserva.ReservasPaquetes.Sum(rp => rp.IdPaqueteNavigation?.CapacidadPaquete ?? 0),
                 Valor = reserva.Valor,
                 Anticipo = reserva.Anticipo,
                 FechaReserva = reserva.FechaReserva,
@@ -370,15 +356,14 @@ namespace CrudDF3.Controllers
                         DescripcionPaquete = p.DescripcionPaquete,
                         PrecioPaquete = p.PrecioPaquete,
                         DestinoPaquete = p.DestinoPaquete,
-                        TipoViajePaquete = p.TipoViajePaquete
+                        TipoViajePaquete = p.TipoViajePaquete,
+                        CapacidadPaquete = p.CapacidadPaquete
                     }).ToListAsync()
             };
 
             return View(viewModel);
         }
 
-
-        // POST: Reservas/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, EditReservaViewModel viewModel)
@@ -395,6 +380,7 @@ namespace CrudDF3.Controllers
                 {
                     var reserva = await _context.Reservas
                         .Include(r => r.ReservasPaquetes)
+                        .ThenInclude(rp => rp.IdPaqueteNavigation)
                         .FirstOrDefaultAsync(r => r.IdReserva == id);
 
                     if (reserva == null)
@@ -409,12 +395,19 @@ namespace CrudDF3.Controllers
                     reserva.IdUsuario = viewModel.IdUsuario;
                     reserva.FechaInicial = viewModel.FechaInicial;
                     reserva.FechaFinal = viewModel.FechaFinal;
-                    reserva.NumeroPersonas = viewModel.NumeroPersonas;
+
+                    // Calcular número de personas basado en los paquetes seleccionados
+                    var paquetesSeleccionados = viewModel.PaquetesSeleccionados ?? new List<int>();
+                    var capacidadTotal = await _context.PaquetesTuristicos
+                        .Where(p => paquetesSeleccionados.Contains(p.IdPaquete))
+                        .SumAsync(p => p.CapacidadPaquete);
+
+                    reserva.NumeroPersonas = capacidadTotal;
 
                     // Recalcular valor basado en paquetes seleccionados
-                    var valorTotal = viewModel.PaquetesDisponibles?
-                        .Where(p => viewModel.PaquetesSeleccionados.Contains(p.IdPaquete))
-                        .Sum(p => p.PrecioPaquete) ?? 0;
+                    var valorTotal = await _context.PaquetesTuristicos
+                        .Where(p => paquetesSeleccionados.Contains(p.IdPaquete))
+                        .SumAsync(p => p.PrecioPaquete);
 
                     reserva.Valor = valorTotal;
                     reserva.Anticipo = viewModel.Anticipo;
@@ -422,8 +415,7 @@ namespace CrudDF3.Controllers
                     reserva.EstadoReserva = viewModel.EstadoReserva;
 
                     // Validar stock antes de actualizar
-                    var paquetesNuevos = viewModel.PaquetesSeleccionados;
-                    var paquetesAgregados = paquetesNuevos.Except(paquetesOriginales).ToList();
+                    var paquetesAgregados = paquetesSeleccionados.Except(paquetesOriginales).ToList();
 
                     foreach (var paqueteId in paquetesAgregados)
                     {
@@ -437,10 +429,10 @@ namespace CrudDF3.Controllers
                     }
 
                     // Actualizar relaciones de paquetes
-                    await ActualizarPaquetesReserva(reserva.IdReserva, viewModel.PaquetesSeleccionados);
+                    await ActualizarPaquetesReserva(reserva.IdReserva, paquetesSeleccionados);
 
                     // Actualizar stock
-                    await ActualizarStockPaquetes(paquetesOriginales, viewModel.PaquetesSeleccionados);
+                    await ActualizarStockPaquetes(paquetesOriginales, paquetesSeleccionados);
 
                     _context.Update(reserva);
                     await _context.SaveChangesAsync();
@@ -457,8 +449,47 @@ namespace CrudDF3.Controllers
                 }
             }
 
-            // Si hay errores de validación
             return await RepoblarViewModelEdit(viewModel);
+        }
+
+        private async Task<IActionResult> RepoblarViewModelEdit(EditReservaViewModel viewModel)
+        {
+            viewModel.Usuarios = new SelectList(_context.Usuarios, "IdUsuario", "NombreUsuario", viewModel.IdUsuario);
+            viewModel.PaquetesDisponibles = await _context.PaquetesTuristicos
+                .Where(p => p.DisponibilidadPaquete && p.EstadoPaquete)
+                .Select(p => new PaqueteSelectionViewModel
+                {
+                    IdPaquete = p.IdPaquete,
+                    NombrePaquete = p.NombrePaquete,
+                    DescripcionPaquete = p.DescripcionPaquete,
+                    PrecioPaquete = p.PrecioPaquete,
+                    DestinoPaquete = p.DestinoPaquete,
+                    TipoViajePaquete = p.TipoViajePaquete,
+                    CapacidadPaquete = p.CapacidadPaquete
+                }).ToListAsync();
+
+            return View(viewModel);
+        }
+
+        private async Task ActualizarPaquetesReserva(int idReserva, List<int> selectedPaquetes)
+        {
+            var paquetesActuales = await _context.ReservasPaquetes
+                .Where(rp => rp.IdReserva == idReserva)
+                .ToListAsync();
+
+            // Eliminar relaciones removidas
+            foreach (var paquete in paquetesActuales)
+            {
+                if (!selectedPaquetes.Contains(paquete.IdPaquete))
+                    _context.ReservasPaquetes.Remove(paquete);
+            }
+
+            // Agregar nuevas relaciones
+            foreach (var paqueteId in selectedPaquetes)
+            {
+                if (!paquetesActuales.Any(p => p.IdPaquete == paqueteId))
+                    _context.ReservasPaquetes.Add(new ReservasPaquete { IdReserva = idReserva, IdPaquete = paqueteId });
+            }
         }
 
         private async Task ActualizarStockPaquetes(List<int> paquetesOriginales, List<int> paquetesNuevos)
@@ -492,45 +523,6 @@ namespace CrudDF3.Controllers
             }
 
             await _context.SaveChangesAsync();
-        }
-
-        private async Task<IActionResult> RepoblarViewModelEdit(EditReservaViewModel viewModel)
-        {
-            viewModel.Usuarios = new SelectList(_context.Usuarios, "IdUsuario", "NombreUsuario", viewModel.IdUsuario);
-            viewModel.PaquetesDisponibles = await _context.PaquetesTuristicos
-                .Where(p => p.DisponibilidadPaquete && p.EstadoPaquete)
-                .Select(p => new PaqueteSelectionViewModel
-                {
-                    IdPaquete = p.IdPaquete,
-                    NombrePaquete = p.NombrePaquete,
-                    DescripcionPaquete = p.DescripcionPaquete,
-                    PrecioPaquete = p.PrecioPaquete,
-                    DestinoPaquete = p.DestinoPaquete,
-                    TipoViajePaquete = p.TipoViajePaquete
-                }).ToListAsync();
-
-            return View(viewModel);
-        }
-
-        private async Task ActualizarPaquetesReserva(int idReserva, List<int> selectedPaquetes)
-        {
-            var paquetesActuales = await _context.ReservasPaquetes
-                .Where(rp => rp.IdReserva == idReserva)
-                .ToListAsync();
-
-            // Eliminar relaciones removidas
-            foreach (var paquete in paquetesActuales)
-            {
-                if (!selectedPaquetes.Contains(paquete.IdPaquete))
-                    _context.ReservasPaquetes.Remove(paquete);
-            }
-
-            // Agregar nuevas relaciones
-            foreach (var paqueteId in selectedPaquetes)
-            {
-                if (!paquetesActuales.Any(p => p.IdPaquete == paqueteId))
-                    _context.ReservasPaquetes.Add(new ReservasPaquete { IdReserva = idReserva, IdPaquete = paqueteId });
-            }
         }
 
         // GET: Reservas/Delete/5

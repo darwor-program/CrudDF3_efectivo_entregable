@@ -1,124 +1,88 @@
-﻿@using CrudDF3.Models.ViewModels
-@model EditReservaViewModel
+﻿@model CrudDF3.Models.ViewModels.EditReservaViewModel
+
 @{
-    ViewData["Title"] = $"Editar Reserva #{Model?.IdReserva}";
-
-    // Inicialización segura
-    Model.PaquetesDisponibles ??= new List<PaqueteSelectionViewModel>();
-    Model.PaquetesSeleccionados ??= new List<int>();
-
-    if (Model == null)
-    {
-        <div class="alert alert-danger">
-            No se encontró la reserva solicitada.
-        </div>
-        return;
-    }
+    ViewData["Title"] = "Editar Reserva";
 }
 
 <h1>@ViewData["Title"]</h1>
 <hr />
 
 <div class="row">
-    <div class="col-md-12">
-        <form asp-action="Edit" method="post" id="reservaForm">
+    <div class="col-md-8">
+        <form asp-action="Edit">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="IdReserva" />
 
-            <!-- Sección de Datos de Reserva -->
-            <div class="row">
+            <div class="row mb-4">
                 <div class="col-md-6">
                     <div class="form-group">
-                        <label asp-for="IdUsuario" class="control-label">Usuario</label>
-                        <select asp-for="IdUsuario" asp-items="Model.Usuarios" class="form-control">
-                            <option value="">-- Seleccione un usuario --</option>
-                        </select>
+                        <label asp-for="IdUsuario" class="control-label"></label>
+                        <select asp-for="IdUsuario" asp-items="Model.Usuarios" class="form-control"></select>
                         <span asp-validation-for="IdUsuario" class="text-danger"></span>
                     </div>
-
                     <div class="form-group">
-                        <label asp-for="FechaInicial" class="control-label">Fecha Inicial</label>
+                        <label asp-for="FechaInicial" class="control-label"></label>
                         <input asp-for="FechaInicial" class="form-control" type="date" />
                         <span asp-validation-for="FechaInicial" class="text-danger"></span>
                     </div>
-
                     <div class="form-group">
-                        <label asp-for="FechaFinal" class="control-label">Fecha Final</label>
+                        <label asp-for="FechaFinal" class="control-label"></label>
                         <input asp-for="FechaFinal" class="form-control" type="date" />
                         <span asp-validation-for="FechaFinal" class="text-danger"></span>
                     </div>
                 </div>
-
                 <div class="col-md-6">
                     <div class="form-group">
-                        <label asp-for="NumeroPersonas" class="control-label">Número de Personas</label>
-                        <input asp-for="NumeroPersonas" class="form-control" min="1" id="numeroPersonas" readonly />
-                        <small class="text-muted">Calculado según las habitaciones de los paquetes</small>
+                        <label asp-for="NumeroPersonas" class="control-label"></label>
+                        <input asp-for="NumeroPersonas" class="form-control" readonly />
                         <span asp-validation-for="NumeroPersonas" class="text-danger"></span>
+                        <small class="form-text text-muted">Calculado automáticamente según los paquetes seleccionados</small>
                     </div>
-
                     <div class="form-group">
-                        <label asp-for="Valor" class="control-label">Valor Total</label>
-                        <input asp-for="Valor" class="form-control" readonly id="valorTotal" />
+                        <label asp-for="Valor" class="control-label"></label>
+                        <input asp-for="Valor" class="form-control" readonly />
                         <span asp-validation-for="Valor" class="text-danger"></span>
                     </div>
-
                     <div class="form-group">
-                        <label asp-for="Anticipo" class="control-label">Anticipo</label>
-                        <input asp-for="Anticipo" class="form-control" readonly id="anticipoInput" />
+                        <label asp-for="Anticipo" class="control-label"></label>
+                        <input asp-for="Anticipo" class="form-control" />
                         <span asp-validation-for="Anticipo" class="text-danger"></span>
                     </div>
                 </div>
             </div>
 
-            <!-- Sección de Paquetes Turísticos -->
-            <div class="card mt-4">
-                <div class="card-header bg-primary text-white">
-                    <h5>Paquetes Turísticos Disponibles</h5>
+            <div class="card mb-4">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">Paquetes Turísticos</h5>
                 </div>
                 <div class="card-body">
-                    @if (Model.PaquetesDisponibles.Count > 0)
+                    @if (Model.PaquetesDisponibles != null && Model.PaquetesDisponibles.Any())
                     {
-                        <div class="alert alert-info">
-                            Seleccione los paquetes para esta reserva
-                        </div>
-
                         <div class="row">
-                            @for (int i = 0; i < Model.PaquetesDisponibles.Count; i++)
+                            @foreach (var paquete in Model.PaquetesDisponibles)
                             {
-                                var paquete = Model.PaquetesDisponibles[i];
-                                var estaSeleccionado = Model.PaquetesSeleccionados.Contains(paquete.IdPaquete);
-
-                                <div class="col-md-6 mb-3">
+                                <div class="col-md-4 mb-3">
                                     <div class="card h-100">
                                         <div class="card-body">
-                                            <input type="hidden" asp-for="@Model.PaquetesDisponibles[i].IdPaquete" />
-                                            <input type="hidden" asp-for="@Model.PaquetesDisponibles[i].PrecioPaquete" class="paquete-precio" />
-
                                             <div class="form-check">
                                                 <input class="form-check-input paquete-checkbox"
                                                        type="checkbox"
                                                        name="PaquetesSeleccionados"
                                                        value="@paquete.IdPaquete"
-                                                       data-precio="@paquete.PrecioPaquete"
                                                        id="paquete_@paquete.IdPaquete"
-                                                @(estaSeleccionado ? "checked" : "") />
+                                                       data-precio="@paquete.PrecioPaquete"
+                                                       data-capacidad="@paquete.CapacidadPaquete"
+                                                @(Model.PaquetesSeleccionados.Contains(paquete.IdPaquete) ? "checked" : "")>
                                                 <label class="form-check-label" for="paquete_@paquete.IdPaquete">
-                                                    <strong>@(paquete.NombrePaquete ?? "Paquete sin nombre")</strong>
+                                                    <strong>@paquete.NombrePaquete</strong>
                                                 </label>
                                             </div>
-
-                                            @if (!string.IsNullOrEmpty(paquete.DescripcionPaquete))
-                                            {
-                                                <p class="card-text small mt-2">@paquete.DescripcionPaquete</p>
-                                            }
-
-                                            <div class="d-flex justify-content-between align-items-center mt-2">
-                                                @if (!string.IsNullOrEmpty(paquete.DestinoPaquete))
-                                                {
-                                                    <span class="badge bg-info">@paquete.DestinoPaquete</span>
-                                                }
-                                                <span class="badge bg-success">@paquete.PrecioPaquete?.ToString("C")</span>
+                                            <p class="card-text small mt-2">@paquete.DescripcionPaquete</p>
+                                            <div class="d-flex justify-content-between mt-2">
+                                                <span class="badge bg-primary">Capacidad: @paquete.CapacidadPaquete personas</span>
+                                                <span class="badge bg-success">
+                                                    @(paquete.PrecioPaquete?.ToString("C") ?? "Gratis")
+                                                </span>
                                             </div>
                                         </div>
                                     </div>
@@ -128,20 +92,17 @@
                     }
                     else
                     {
-                        <div class="alert alert-warning">
-                            No hay paquetes turísticos disponibles para seleccionar
-                        </div>
+                        <p class="text-muted">No hay paquetes disponibles</p>
                     }
                 </div>
             </div>
 
-            <!-- Botones de Acción -->
-            <div class="form-group mt-4">
+            <div class="form-group mt-3">
                 <button type="submit" class="btn btn-primary">
                     <i class="fas fa-save"></i> Guardar Cambios
                 </button>
                 <a asp-action="Index" class="btn btn-secondary">
-                    <i class="fas fa-arrow-left"></i> Volver al Listado
+                    <i class="fas fa-arrow-left"></i> Cancelar
                 </a>
             </div>
         </form>
@@ -152,74 +113,47 @@
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
-
     <script>
         $(document).ready(function() {
-            // Función para calcular capacidad total
-            function calcularCapacidad() {
-                let paquetesSeleccionados = $('.paquete-checkbox:checked').map(function() {
-                    return parseInt($(this).val());
-                }).get();
-
-                if (paquetesSeleccionados.length > 0) {
-                    $.ajax({
-                        url: '/Reservas/CalcularCapacidad',
-                        type: 'POST',
-                        contentType: 'application/json',
-                        data: JSON.stringify({
-                            paquetesIds: paquetesSeleccionados
-                        }),
-                        success: function(data) {
-                            if(data.error) {
-                                console.error('Error:', data.error);
-                                return;
-                            }
-                            $('#numeroPersonas').val(data.capacidadTotal || 1);
-                            $('input[name="NumeroPersonas"]').val(data.capacidadTotal || 1);
-                        },
-                        error: function(xhr, status, error) {
-                            console.error('Error en la solicitud:', error);
-                            $('#numeroPersonas').val(1);
-                        }
-                    });
-                } else {
-                    $('#numeroPersonas').val(1); // Valor por defecto
-                }
-            }
-
-            // Función para calcular totales
+            // Función para calcular el total de personas, precio y anticipo
             function calcularTotales() {
-                let total = 0;
+                let totalPersonas = 0;
+                let totalPrecio = 0;
+
+                // Sumar capacidades y precios de paquetes seleccionados
                 $('.paquete-checkbox:checked').each(function() {
-                    total += parseFloat($(this).data('precio')) || 0;
+                    totalPersonas += parseInt($(this).data('capacidad')) || 0;
+                    totalPrecio += parseFloat($(this).data('precio')) || 0;
                 });
 
-                $('#valorTotal').val(total.toFixed(2));
-                $('#anticipoInput').val((total * 0.3).toFixed(2));
-                $('input[name="Valor"]').val(total.toFixed(2));
-                $('input[name="Anticipo"]').val((total * 0.3).toFixed(2));
+                // Calcular anticipo (30% del total como ejemplo)
+                const anticipo = totalPrecio * 0.3;
+
+                // Actualizar los campos
+                $('#NumeroPersonas').val(totalPersonas);
+                $('#Valor').val(totalPrecio.toFixed(2));
+                $('#Anticipo').val(anticipo.toFixed(2));
             }
 
-            // Evento de cambio en los checkboxes
-            $(document).on('change', '.paquete-checkbox', function() {
-                calcularCapacidad();
+            // Escuchar cambios en los checkboxes
+            $('.paquete-checkbox').change(function() {
                 calcularTotales();
             });
 
-            // Calcular valores iniciales al cargar la página
-            calcularCapacidad();
-            calcularTotales();
+            // También escuchar cambios en el anticipo por si se modifica manualmente
+            $('#Anticipo').on('input', function() {
+                // Validar que el anticipo no sea mayor que el valor total
+                const valorTotal = parseFloat($('#Valor').val()) || 0;
+                let anticipo = parseFloat($(this).val()) || 0;
 
-            // Validación de fechas
-            $('#FechaFinal').on('change', function() {
-                const fechaInicial = new Date($('#FechaInicial').val());
-                const fechaFinal = new Date($('#FechaFinal').val());
-
-                if (fechaInicial && fechaFinal && fechaFinal < fechaInicial) {
-                    alert('La fecha final no puede ser anterior a la fecha inicial');
-                    $('#FechaFinal').val('');
+                if (anticipo > valorTotal) {
+                    anticipo = valorTotal;
+                    $(this).val(anticipo.toFixed(2));
                 }
             });
+
+            // Calcular inicialmente
+            calcularTotales();
         });
     </script>
 }

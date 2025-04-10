@@ -45,6 +45,135 @@
         <link rel="stylesheet" href="@Url.Content("~/css/Bienvenido.css")" />
 
         <style>
+
+        /* Estilos actualizados para la sección de servicios */
+        .services-section {
+            background-color: white;
+            padding: 5rem 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+            .services-section::before {
+                content: "";
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 10px;
+                background: linear-gradient(90deg, var(--secondary-color), var(--primary-color));
+            }
+
+        .service-highlight-card {
+            border-radius: 12px;
+            overflow: hidden;
+            border: none;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+            height: 100%;
+            background-color: white;
+            margin-bottom: 2rem;
+        }
+
+            .service-highlight-card:hover {
+                transform: translateY(-8px);
+                box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+            }
+
+        .service-highlight-img {
+            height: 220px;
+            width: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .service-highlight-card:hover .service-highlight-img {
+            transform: scale(1.05);
+        }
+
+        .service-highlight-body {
+            padding: 1.5rem;
+        }
+
+        .service-highlight-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+            position: relative;
+        }
+
+            .service-highlight-title::after {
+                content: "";
+                position: absolute;
+                bottom: -8px;
+                left: 0;
+                width: 50px;
+                height: 2px;
+                background-color: var(--secondary-color);
+            }
+
+        .service-highlight-text {
+            color: #666;
+            margin-bottom: 1.5rem;
+            font-size: 0.95rem;
+            line-height: 1.7;
+        }
+
+        .service-highlight-features {
+            list-style: none;
+            padding-left: 0;
+            margin-bottom: 1.5rem;
+        }
+
+            .service-highlight-features li {
+                margin-bottom: 0.8rem;
+                position: relative;
+                padding-left: 2rem;
+                color: #555;
+                line-height: 1.5;
+            }
+
+                .service-highlight-features li::before {
+                    content: "\f00c";
+                    font-family: "Font Awesome 6 Free";
+                    font-weight: 900;
+                    position: absolute;
+                    left: 0;
+                    color: var(--secondary-color);
+                    font-size: 1rem;
+                }
+
+        .service-highlight-price {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .service-highlight-category {
+            background-color: var(--accent-color);
+            color: var(--primary-color);
+            padding: 0.3rem 1rem;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .view-all-btn {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 0.6rem 1.5rem;
+            border-radius: 30px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+            .view-all-btn:hover {
+                background-color: var(--secondary-color);
+                color: var(--primary-color);
+                transform: translateY(-3px);
+            }
+
             :root {
                 --primary-color: #1a3e3f; /* Verde oscuro elegante */
                 --secondary-color: #d4af37; /* Dorado */
@@ -292,6 +421,56 @@
         </section>
 
         <hr class="section-divider">
+
+    <hr class="section-divider">
+
+    <!-- Sección de Servicios Destacados -->
+    <section class="hero-section d-flex align-items-center">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6 mb-4 mb-lg-0 animated-section">
+                    <h1 class="display-4 fw-bold mb-4">Servicios <i class="fas fa-concierge-bell ms-2"></i></h1>
+                    <p class="lead fw-bold mb-4">¡Experiencias exclusivas en Traveler's Home! <i class="fas fa-heart"></i></p>
+                    <p class="welcome-text">
+                        Descubre nuestra selección de servicios premium diseñados para hacer de tu estancia una experiencia inolvidable.
+                        Desde relajantes tratamientos de spa hasta emocionantes tours locales, cada servicio está cuidadosamente
+                        diseñado para complementar tu viaje perfecto.
+                    </p>
+                    <a href="@Url.Action("IndexPublic", "Servicios")" class="btn btn-primary-custom delay-1">
+                        <i class="fas fa-list me-2"></i>Explorar Servicios
+                    </a>
+                </div>
+                <div class="col-lg-6 animated-section delay-1">
+                    <div id="servicesCarousel" class="carousel slide" data-bs-ride="carousel">
+                        <div class="carousel-inner rounded">
+                            <div class="carousel-item active">
+                                <img src="@Url.Content("~/Imagenes/Servicio1.jpg")" class="d-block w-100 carousel-img" alt="Spa de lujo">
+                            </div>
+                            <div class="carousel-item">
+                                <img src="@Url.Content("~/Imagenes/Servicio2.jpg")" class="d-block w-100 carousel-img" alt="Restaurante gourmet">
+                            </div>
+                            <div class="carousel-item">
+                                <img src="@Url.Content("~/Imagenes/Servicio3.jpg")" class="d-block w-100 carousel-img" alt="Tour guiado">
+                            </div>
+                        </div>
+                        <button class="carousel-control-prev" type="button" data-bs-target="#servicesCarousel" data-bs-slide="prev">
+                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                            <span class="visually-hidden">Anterior</span>
+                        </button>
+                        <button class="carousel-control-next" type="button" data-bs-target="#servicesCarousel" data-bs-slide="next">
+                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                            <span class="visually-hidden">Siguiente</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <hr class="section-divider">
+
+
+    <hr class="section-divider">
 
         <!-- Sección de Reservas -->
         <section class="feature-section">

@@ -17,6 +17,12 @@
             <div class="row mb-4">
                 <div class="col-md-6">
                     <div class="form-group">
+                        <label class="control-label">Capacidad Total</label>
+                        <input id="capacidad-total" class="form-control" value="@Model.CapacidadPaquete" readonly />
+                        <input type="hidden" id="capacidad-total-hidden" asp-for="CapacidadPaquete" value="@Model.CapacidadPaquete" />
+                        <small class="form-text text-muted">Capacidad total basada en las habitaciones seleccionadas.</small>
+                    </div>
+                    <div class="form-group">
                         <label asp-for="NombrePaquete" class="control-label"></label>
                         <input asp-for="NombrePaquete" class="form-control" />
                         <span asp-validation-for="NombrePaquete" class="text-danger"></span>
@@ -30,8 +36,9 @@
                 <div class="col-md-6">
                     <div class="form-group">
                         <label asp-for="PrecioPaquete" class="control-label"></label>
-                        <input asp-for="PrecioPaquete" class="form-control" type="number" step="0.01" />
+                        <input asp-for="PrecioPaquete" id="precio-paquete" class="form-control" readonly />
                         <span asp-validation-for="PrecioPaquete" class="text-danger"></span>
+                        <small class="form-text text-muted">Precio calculado automáticamente</small>
                     </div>
                     <div class="form-group">
                         <label asp-for="DestinoPaquete" class="control-label"></label>
@@ -49,11 +56,6 @@
                 <div class="card-body">
                     <div class="row">
                         <div class="col-md-6">
-                            <div class="form-group">
-                                <label class="control-label">Capacidad Total</label>
-                                <input class="form-control" value="@Model.CapacidadPaquete" readonly />
-                                <small class="form-text text-muted">Capacidad total basada en las habitaciones seleccionadas.</small>
-                            </div>
                             <div class="form-group form-check">
                                 <input type="checkbox" class="form-check-input" asp-for="DisponibilidadPaquete" />
                                 <label class="form-check-label" asp-for="DisponibilidadPaquete"></label>
@@ -115,10 +117,12 @@
                                     <div class="card h-100">
                                         <div class="card-body">
                                             <div class="form-check">
-                                                <input class="form-check-input" type="checkbox"
+                                                <input class="form-check-input servicio-checkbox"
+                                                       type="checkbox"
                                                        name="SelectedServicios"
                                                        value="@servicio.IdServicio"
                                                        id="servicio_@servicio.IdServicio"
+                                                       data-price="@servicio.Costo"
                                                 @(Model.SelectedServicios?.Contains(servicio.IdServicio) ?? false ? "checked" : "")>
                                                 <label class="form-check-label" for="servicio_@servicio.IdServicio">
                                                     <strong>@servicio.NombreServicio</strong>
@@ -157,10 +161,13 @@
                                     <div class="card h-100">
                                         <div class="card-body">
                                             <div class="form-check">
-                                                <input class="form-check-input" type="checkbox"
+                                                <input class="form-check-input habitacion-checkbox"
+                                                       type="checkbox"
                                                        name="SelectedHabitaciones"
                                                        value="@habitacion.IdHabitacion"
                                                        id="habitacion_@habitacion.IdHabitacion"
+                                                       data-price="@habitacion.TarifaHabitacion"
+                                                       data-capacity="@habitacion.CapacidadHuespedes"
                                                 @(Model.SelectedHabitaciones?.Contains(habitacion.IdHabitacion) ?? false ? "checked" : "")>
                                                 <label class="form-check-label" for="habitacion_@habitacion.IdHabitacion">
                                                     <strong>@habitacion.TipoHabitacion</strong>
@@ -201,4 +208,38 @@
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
+
+    <script>
+        $(document).ready(function() {
+            // Función para calcular el precio total
+            function calcularPrecioTotal() {
+                let precioTotal = 0;
+                let capacidadTotal = 0;
+
+                // Sumar precios de servicios seleccionados
+                $('.servicio-checkbox:checked').each(function() {
+                    precioTotal += parseFloat($(this).data('price')) || 0;
+                });
+
+                // Sumar precios y capacidades de habitaciones seleccionadas
+                $('.habitacion-checkbox:checked').each(function() {
+                    precioTotal += parseFloat($(this).data('price')) || 0;
+                    capacidadTotal += parseInt($(this).data('capacity')) || 0;
+                });
+
+                // Actualizar los campos
+                $('#precio-paquete').val(precioTotal.toFixed(2));
+                $('#capacidad-total').val(capacidadTotal);
+                $('#capacidad-total-hidden').val(capacidadTotal);
+            }
+
+            // Escuchar cambios en los checkboxes
+            $('.servicio-checkbox, .habitacion-checkbox').change(function() {
+                calcularPrecioTotal();
+            });
+
+            // Calcular inicialmente por si hay valores precargados
+            calcularPrecioTotal();
+        });
+    </script>
 }

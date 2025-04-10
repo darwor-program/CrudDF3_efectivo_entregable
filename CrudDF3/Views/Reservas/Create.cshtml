@@ -52,8 +52,8 @@
                     <div class="form-group">
                         <label asp-for="NumeroPersonas" class="control-label">Número de Personas</label>
                         <input asp-for="NumeroPersonas" class="form-control" min="1" id="numeroPersonas" readonly />
-                        <small class="text-muted">Calculado automáticamente según las habitaciones seleccionadas</small>
-                        <span asp-validation-for="NumeroPersonas" class="text-danger"></span>
+                        <small class="text-muted">Calculado automáticamente según la capacidad de los paquetes seleccionados</small>
+                        <span asp-validation-for="NumeroPersonas" class="text-danger" id="capacidadError"></span>
                     </div>
 
                     <div class="form-group">
@@ -88,6 +88,7 @@
                                         <div class="card-body">
                                             <input type="hidden" asp-for="@Model.PaquetesDisponibles[i].IdPaquete" />
                                             <input type="hidden" asp-for="@Model.PaquetesDisponibles[i].PrecioPaquete" class="paquete-precio" />
+                                            <input type="hidden" asp-for="@Model.PaquetesDisponibles[i].CapacidadPaquete" class="paquete-capacidad" />
 
                                             <div class="form-check">
                                                 <input class="form-check-input paquete-checkbox"
@@ -95,6 +96,7 @@
                                                        name="PaquetesSeleccionados"
                                                        value="@paquetes[i].IdPaquete"
                                                        data-precio="@paquetes[i].PrecioPaquete"
+                                                       data-capacidad="@paquetes[i].CapacidadPaquete"
                                                 @(Model.PaquetesSeleccionados.Contains(paquetes[i].IdPaquete) ? "checked" : "") />
                                                 <label class="form-check-label">
                                                     <strong>@paquetes[i].NombrePaquete</strong>
@@ -105,7 +107,7 @@
 
                                             <div class="d-flex justify-content-between align-items-center mt-2">
                                                 <span class="badge bg-success">@paquetes[i].PrecioPaquete?.ToString("C")</span>
-                                                <small class="text-muted">@paquetes[i].DestinoPaquete</small>
+                                                <small class="text-muted">Capacidad: @paquetes[i].CapacidadPaquete personas</small>
                                             </div>
                                         </div>
                                     </div>
@@ -167,39 +169,18 @@
     }
     <script>
         $(document).ready(function() {
-            // Función mejorada para calcular capacidad
+            // Función para calcular capacidad total basada en CapacidadPaquete
             function calcularCapacidad() {
-                let paquetesSeleccionados = $('.paquete-checkbox:checked').map(function() {
-                    return parseInt($(this).val());
-                }).get();
+                let capacidadTotal = 0;
+                $('.paquete-checkbox:checked').each(function() {
+                    capacidadTotal += parseInt($(this).data('capacidad')) || 0;
+                });
 
-                console.log("Paquetes seleccionados:", paquetesSeleccionados);
-
-                if (paquetesSeleccionados.length > 0) {
-                    $.ajax({
-                        url: '/Reservas/CalcularCapacidad',
-                        type: 'POST',
-                        contentType: 'application/json',
-                        data: JSON.stringify({
-                            paquetesIds: paquetesSeleccionados
-                        }),
-                        success: function(data) {
-                            console.log("Respuesta del servidor:", data);
-                            if(data.error) {
-                                console.error('Error:', data.error);
-                                return;
-                            }
-                            $('#numeroPersonas').val(data.capacidadTotal);
-                            $('input[name="NumeroPersonas"]').val(data.capacidadTotal);
-                        },
-                        error: function(xhr, status, error) {
-                            console.error('Error en la solicitud:', error);
-                            $('#numeroPersonas').val(1);
-                        }
-                    });
-                } else {
-                    $('#numeroPersonas').val(1); // Valor por defecto
-                }
+                // Asegurar mínimo 1 persona
+                capacidadTotal = capacidadTotal > 0 ? capacidadTotal : 1;
+                $('#numeroPersonas').val(capacidadTotal);
+                $('input[name="NumeroPersonas"]').val(capacidadTotal);
+                $('#capacidadError').text(''); // Limpiar mensaje de error
             }
 
             // Función para calcular totales
@@ -221,110 +202,39 @@
                 calcularTotales();
             });
 
-            // Calcular valores iniciales si hay checkboxes marcados
+            // Calcular valores iniciales al cargar la página
             if ($('.paquete-checkbox:checked').length > 0) {
                 calcularCapacidad();
                 calcularTotales();
-            }
-
-            // Función para calcular totales
-            function calcularTotales() {
-                let total = 0;
-                $('.paquete-checkbox:checked').each(function() {
-                    total += parseFloat($(this).data('precio')) || 0;
-                });
-
-                $('#valorTotal').val(total.toFixed(2));
-                $('#anticipoInput').val((total * 0.3).toFixed(2));
-                $('input[name="Valor"]').val(total.toFixed(2));
-                $('input[name="Anticipo"]').val((total * 0.3).toFixed(2));
-            }
-
-            // Evento de cambio en los checkboxes
-            $(document).on('change', '.paquete-checkbox', function() {
-                calcularCapacidad();
-                calcularTotales();
-            });
-
-            // Calcular valores iniciales si hay checkboxes marcados
-            if ($('.paquete-checkbox:checked').length > 0) {
-                calcularCapacidad();
-                calcularTotales();
-            }
-
-            // Función para calcular el total y anticipo
-            function calcularTotales() {
-                let total = 0;
-                $('.paquete-checkbox:checked').each(function() {
-                    const precio = parseFloat($(this).data('precio')) || 0;
-                    total += precio;
-                });
-
-                const formattedTotal = total.toFixed(2);
-                const formattedAnticipo = (total * 0.3).toFixed(2);
-
-                $('#valorTotal').val(formattedTotal);
-                $('#anticipoInput').val(formattedAnticipo);
-                $('input[name="Valor"]').val(formattedTotal);
-                $('input[name="Anticipo"]').val(formattedAnticipo);
-            }
-
-            // Evento cuando cambian los paquetes seleccionados
-            $(document).on('change', '.paquete-checkbox', function() {
-                calcularCapacidad();
-                calcularTotales();
-            });
-
-            // Calcular al cargar si hay selecciones
-            if ($('.paquete-checkbox:checked').length > 0) {
-                calcularCapacidad();
-                calcularTotales();
+            } else {
+                $('#numeroPersonas').val(1); // Valor por defecto
             }
 
             // Validación de fechas
-            $('input[type="date"]').change(function() {
+            $('#FechaFinal').on('change', function() {
                 const fechaInicial = new Date($('#FechaInicial').val());
                 const fechaFinal = new Date($('#FechaFinal').val());
 
-                if (fechaInicial && fechaFinal && fechaInicial > fechaFinal) {
-                    alert('La fecha final debe ser posterior a la fecha inicial');
+                if (fechaInicial && fechaFinal && fechaFinal < fechaInicial) {
+                    alert('La fecha final no puede ser anterior a la fecha inicial');
                     $('#FechaFinal').val('');
                 }
             });
 
-            // Validación de stock al enviar
+            // Validación al enviar el formulario
             $('#reservaForm').on('submit', function(e) {
-                let sinStock = false;
-                let paquetesSinStock = [];
-                let checkedBoxes = $('.paquete-checkbox:checked');
+                const numeroPersonas = parseInt($('#numeroPersonas').val()) || 0;
+                let capacidadTotal = 0;
 
-                if (checkedBoxes.length === 0) {
+                $('.paquete-checkbox:checked').each(function() {
+                    capacidadTotal += parseInt($(this).data('capacidad')) || 0;
+                });
+
+                if (numeroPersonas > capacidadTotal) {
                     e.preventDefault();
-                    alert('Debe seleccionar al menos un paquete turístico');
+                    $('#capacidadError').text(`El número de personas (${numeroPersonas}) excede la capacidad máxima de los paquetes seleccionados (${capacidadTotal})`);
                     return false;
                 }
-
-                const verificaciones = checkedBoxes.map(function() {
-                    const paqueteId = $(this).val();
-                    return $.ajax({
-                        url: '/PaquetesTuristicos/VerificarStock',
-                        type: 'GET',
-                        data: { id: paqueteId }
-                    }).then(function(data) {
-                        if (data.stock <= 0) {
-                            sinStock = true;
-                            paquetesSinStock.push(data.nombre);
-                        }
-                    });
-                });
-
-                $.when.apply($, verificaciones).done(function() {
-                    if (sinStock) {
-                        e.preventDefault();
-                        alert('Los siguientes paquetes no tienen stock disponible:\n' + paquetesSinStock.join('\n'));
-                    }
-                });
-
                 return true;
             });
         });
