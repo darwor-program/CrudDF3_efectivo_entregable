@@ -1,59 +1,138 @@
 ﻿@model CrudDF3.Models.Role
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Detalles del Rol";
+    Layout = "_Layout";
 }
 
-<h1>@ViewData["Title"]</h1>
+<div class="container mt-4">
+    <div class="card border-0 shadow-sm">
+        <div class="card-header bg-white border-bottom">
+            <div class="d-flex justify-content-between align-items-center py-2">
+                <h3 class="h5 mb-0">@ViewData["Title"]</h3>
+                <a asp-action="Index" class="btn btn-outline-secondary btn-sm">
+                    <i class="bi bi-arrow-left"></i> Volver al listado
+                </a>
+            </div>
+        </div>
 
-<div>
-    <h4>Role</h4>
-    <hr />
-    <dl class="row">
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.NombreRol)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.NombreRol)
-        </dd>
+        <div class="card-body">
+            <div class="row">
+                <!-- Columna izquierda - Información básica -->
+                <div class="col-md-6">
+                    <div class="mb-4">
+                        <h5 class="text-primary mb-3">
+                            <i class="bi bi-info-circle"></i> Información del Rol
+                        </h5>
+                        <dl class="row">
+                            <dt class="col-sm-4">@Html.DisplayNameFor(model => model.NombreRol)</dt>
+                            <dd class="col-sm-8">
+                                <span class="badge bg-light text-dark border">
+                                    @Html.DisplayFor(model => model.NombreRol)
+                                </span>
+                            </dd>
 
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.DescripcionRol)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.DescripcionRol)
-        </dd>
+                            <dt class="col-sm-4">@Html.DisplayNameFor(model => model.DescripcionRol)</dt>
+                            <dd class="col-sm-8">@Html.DisplayFor(model => model.DescripcionRol)</dd>
 
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.EstadoRol)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.EstadoRol)
-        </dd>
+                            <dt class="col-sm-4">@Html.DisplayNameFor(model => model.EstadoRol)</dt>
+                            <dd class="col-sm-8">
+                                @if (Model.EstadoRol)
+                                {
+                                    <span class="badge bg-light text-success border border-success">Activo</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-light text-danger border border-danger">Inactivo</span>
+                                }
+                            </dd>
+                        </dl>
+                    </div>
+                </div>
 
-        <!-- Mostrar los permisos asignados -->
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.RolPermisos)
-        </dt>
-        <dd class="col-sm-10">
-            @if (Model.RolPermisos.Any())
-            {
-                <ul>
-                    @foreach (var rolPermiso in Model.RolPermisos)
-                    {
-                        <li>@rolPermiso.IdPermisoNavigation?.NombrePermiso</li>
-                    }
-                </ul>
-            }
-            else
-            {
-                <p>No permissions assigned.</p>
-            }
-        </dd>
-    </dl>
+                <!-- Columna derecha - Permisos -->
+                <div class="col-md-6">
+                    <div class="mb-4">
+                        <h5 class="text-primary mb-3">
+                            <i class="bi bi-shield-lock"></i> Permisos Asignados
+                        </h5>
+                        @if (Model.RolPermisos.Any())
+                        {
+                            <div class="card">
+                                <div class="card-body p-0">
+                                    <div class="list-group list-group-flush">
+                                        @foreach (var rolPermiso in Model.RolPermisos)
+                                        {
+                                            <div class="list-group-item">
+                                                <div class="d-flex justify-content-between align-items-center">
+                                                    <span>@rolPermiso.IdPermisoNavigation?.NombrePermiso</span>
+                                                    <span class="badge bg-light text-dark border">
+                                                        @rolPermiso.IdPermisoNavigation?.DescripcionPermiso
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="alert alert-info mb-0">
+                                <i class="bi bi-info-circle"></i> No hay permisos asignados a este rol.
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                <a asp-action="Edit" asp-route-id="@Model.IdRol" class="btn btn-primary">
+                    <i class="bi bi-pencil"></i> Editar
+                </a>
+                <a asp-action="Index" class="btn btn-outline-secondary">
+                    Volver al listado
+                </a>
+            </div>
+        </div>
+    </div>
 </div>
 
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.IdRol">Edit</a> |
-    <a asp-action="Index">Back to List</a>
-</div>
+<style>
+    .card {
+        border-radius: 0.5rem;
+        overflow: hidden;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        border: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    .list-group-item {
+        border-left: none;
+        border-right: none;
+    }
+
+        .list-group-item:first-child {
+            border-top: none;
+        }
+
+        .list-group-item:last-child {
+            border-bottom: none;
+        }
+
+    dt {
+        font-weight: 500;
+        color: #6c757d;
+    }
+
+    .badge {
+        font-weight: 500;
+        padding: 0.35em 0.65em;
+        font-size: 0.75em;
+        letter-spacing: 0.05em;
+    }
+
+    h5.text-primary {
+        border-bottom: 1px solid #dee2e6;
+        padding-bottom: 0.5rem;
+    }
+</style>

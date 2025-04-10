@@ -7,19 +7,19 @@
 @section Styles {
     <style>
         :root {
-            --primary-color: #1a3e3f;
-            --secondary-color: #d4af37;
-            --accent-color: #e8c07d;
-            --light-bg: #f9f5f0;
-            --dark-text: #2d2d2d;
-            --light-text: #f8f9fa;
+            --primary-dark: #274c77;
+            --primary-light: #a3cef1;
+            --primary-accent: #6096ba;
+            --text-dark: #2b2d42;
+            --text-light: #edf2f4;
+            --light-bg: #f8f9fa;
             --card-bg: #ffffff;
             --transition-speed: 0.4s;
         }
 
         body {
             font-family: 'Montserrat', sans-serif;
-            color: var(--dark-text);
+            color: var(--text-dark);
             background-color: var(--light-bg);
             line-height: 1.6;
         }
@@ -29,11 +29,11 @@
             font-weight: 700;
         }
 
-        /* Hero Section con Animación */
+        /* Hero Section */
         .hero-section {
             min-height: 70vh;
             padding: 5rem 0;
-            background: linear-gradient(rgba(26, 62, 63, 0.85), rgba(26, 62, 63, 0.85)), url('@Url.Content("~/Imagenes/travel-banner.jpg")') no-repeat center center/cover;
+            background: linear-gradient(rgba(39, 76, 119, 0.85), rgba(39, 76, 119, 0.85)), url('@Url.Content("~/Imagenes/travel-banner.jpg")') no-repeat center center/cover;
             color: white;
             display: flex;
             align-items: center;
@@ -41,22 +41,6 @@
             text-align: center;
             position: relative;
             overflow: hidden;
-            animation: fadeIn 1.2s ease-out;
-        }
-
-        @@keyframes fadeIn {
-            from
-
-        {
-            opacity: 0;
-            transform: translateY(20px);
-        }
-
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
         }
 
         .hero-overlay {
@@ -72,12 +56,6 @@
         .hero-content {
             position: relative;
             z-index: 2;
-            transform: translateY(0);
-            transition: transform 0.6s ease;
-        }
-
-        .hero-section:hover .hero-content {
-            transform: translateY(-10px);
         }
 
         .section-title {
@@ -94,28 +72,25 @@
                 transform: translateX(-50%);
                 width: 100px;
                 height: 4px;
-                background: linear-gradient(90deg, transparent, var(--secondary-color), transparent);
+                background: var(--primary-accent);
                 animation: lineExpand 1.5s ease-out;
             }
 
         @@keyframes lineExpand {
-            from
+            from {
+                width: 0;
+                opacity: 0;
+            }
 
-        {
-            width: 0;
-            opacity: 0;
+            to {
+                width: 100px;
+                opacity: 1;
+            }
         }
 
-        to {
-            width: 100px;
-            opacity: 1;
-        }
-
-        }
-
-        /* Tarjetas de Paquetes Mejoradas */
+        /* Tarjetas de Paquetes */
         .package-card {
-            transition: all var(--transition-speed) cubic-bezier(0.25, 0.8, 0.25, 1);
+            transition: all var(--transition-speed);
             border-radius: 16px;
             overflow: hidden;
             border: none;
@@ -124,13 +99,11 @@
             height: 100%;
             background-color: var(--card-bg);
             position: relative;
-            transform-style: preserve-3d;
-            perspective: 1000px;
         }
 
             .package-card:hover {
-                transform: translateY(-15px) rotateX(5deg);
-                box-shadow: 0 25px 60px rgba(0, 0, 0, 0.15);
+                transform: translateY(-10px);
+                box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
             }
 
         .package-image-container {
@@ -138,108 +111,67 @@
             overflow: hidden;
             height: 280px;
             clip-path: polygon(0 0, 100% 0, 100% 85%, 0 100%);
-            transition: all var(--transition-speed) ease;
-        }
-
-        .package-card:hover .package-image-container {
-            clip-path: polygon(0 0, 100% 0, 100% 90%, 0 100%);
         }
 
         .package-image {
             width: 100%;
             height: 100%;
             object-fit: cover;
-            transition: transform 0.8s ease, filter 0.5s ease;
-            filter: brightness(0.95);
+            transition: transform 0.8s ease;
         }
 
         .package-card:hover .package-image {
-            transform: scale(1.1) rotate(1deg);
-            filter: brightness(1);
+            transform: scale(1.05);
         }
 
         .package-badge {
             position: absolute;
             top: 25px;
             right: 25px;
-            background-color: var(--secondary-color);
-            color: var(--primary-color);
+            background-color: var(--primary-accent);
+            color: white;
             padding: 0.6rem 1.5rem;
             border-radius: 30px;
             font-weight: 800;
             font-size: 1rem;
             box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
             z-index: 3;
-            transform: translateY(0) rotate(0);
-            transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-        }
-
-        .package-card:hover .package-badge {
-            transform: translateY(-5px) rotate(5deg);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
         }
 
         .package-card-body {
             padding: 2rem;
-            position: relative;
         }
 
         .package-title {
             font-family: 'Playfair Display', serif;
             font-size: 1.8rem;
             margin-bottom: 1.2rem;
-            color: var(--primary-color);
-            position: relative;
-            display: inline-block;
-        }
-
-            .package-title::after {
-                content: "";
-                position: absolute;
-                bottom: -10px;
-                left: 0;
-                width: 60px;
-                height: 3px;
-                background: linear-gradient(90deg, var(--secondary-color), transparent);
-                transition: width 0.5s ease;
-            }
-
-        .package-card:hover .package-title::after {
-            width: 100px;
+            color: var(--primary-dark);
         }
 
         .package-description {
-            color: #666;
+            color: var(--text-dark);
+            opacity: 0.8;
             margin-bottom: 1.8rem;
             font-size: 1rem;
             line-height: 1.8;
-            transition: all 0.3s ease;
-        }
-
-        .package-card:hover .package-description {
-            color: #555;
         }
 
         .destination-info {
             display: flex;
             align-items: center;
             margin-bottom: 1.5rem;
-            color: var(--primary-color);
+            color: var(--primary-dark);
             font-size: 1.1rem;
         }
 
             .destination-info i {
                 margin-right: 12px;
-                color: var(--secondary-color);
+                color: var(--primary-accent);
                 font-size: 1.4rem;
-                transition: transform 0.3s ease;
             }
 
-        .package-card:hover .destination-info i {
-            transform: scale(1.2);
-        }
-
-        /* Acordeones Modernos */
+        /* Acordeones */
         .accordion-section {
             margin: 1.8rem 0;
             border-radius: 10px;
@@ -248,7 +180,7 @@
         }
 
         .accordion-header {
-            background-color: var(--light-bg);
+            background-color: var(--primary-light);
             padding: 1rem 1.5rem;
             cursor: pointer;
             display: flex;
@@ -258,22 +190,31 @@
         }
 
             .accordion-header:hover {
-                background-color: #f0e9e1;
+                background-color: var(--primary-accent);
+                color: white;
             }
 
             .accordion-header h5 {
                 margin: 0;
                 font-weight: 600;
-                color: var(--primary-color);
+                color: var(--primary-dark);
                 display: flex;
                 align-items: center;
             }
 
-                .accordion-header h5 i {
-                    margin-right: 10px;
-                    color: var(--secondary-color);
-                    transition: transform 0.3s ease;
-                }
+            .accordion-header:hover h5 {
+                color: white;
+            }
+
+            .accordion-header h5 i {
+                margin-right: 10px;
+                color: var(--primary-dark);
+                transition: transform 0.3s ease;
+            }
+
+            .accordion-header:hover h5 i {
+                color: white;
+            }
 
             .accordion-header.active h5 i {
                 transform: rotate(90deg);
@@ -302,13 +243,7 @@
                 border-bottom: 1px dashed #eee;
                 display: flex;
                 align-items: center;
-                transition: all 0.3s ease;
             }
-
-                .feature-list li:hover {
-                    transform: translateX(5px);
-                    border-bottom-color: var(--accent-color);
-                }
 
                 .feature-list li:last-child {
                     border-bottom: none;
@@ -316,9 +251,8 @@
 
                 .feature-list li i {
                     margin-right: 10px;
-                    color: var(--secondary-color);
+                    color: var(--primary-accent);
                     font-size: 0.9rem;
-                    min-width: 20px;
                 }
 
         /* Footer de Tarjeta */
@@ -334,39 +268,16 @@
         .travel-info {
             display: flex;
             align-items: center;
-            color: #777;
+            color: var(--text-dark);
+            opacity: 0.7;
             font-size: 0.95rem;
-            transition: all 0.3s ease;
         }
 
-        .package-card:hover .travel-info {
-            color: #666;
-        }
-
-        .travel-info i {
-            margin-right: 8px;
-            color: var(--secondary-color);
-            font-size: 1.1rem;
-        }
-
-        /* Efectos Especiales */
-        .package-card::after {
-            content: "";
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, rgba(212, 175, 55, 0.05) 0%, transparent 70%);
-            opacity: 0;
-            transition: opacity 0.6s ease;
-            pointer-events: none;
-            z-index: 1;
-        }
-
-        .package-card:hover::after {
-            opacity: 1;
-        }
+            .travel-info i {
+                margin-right: 8px;
+                color: var(--primary-accent);
+                font-size: 1.1rem;
+            }
 
         /* Responsive */
         @@media (max-width: 1200px) {
@@ -421,17 +332,17 @@
     </style>
 }
 
-<!-- Hero Section Animada -->
+<!-- Hero Section -->
 <section class="hero-section">
     <div class="hero-overlay"></div>
     <div class="container hero-content">
-        <h1 class="display-4 fw-bold mb-4 animate__animated animate__fadeInDown">@ViewData["Title"]</h1>
-        <p class="lead mb-4 animate__animated animate__fadeIn animate__delay-1s">Descubre experiencias únicas diseñadas para crear memorias inolvidables</p>
-        <div class="section-title animate__animated animate__fadeIn animate__delay-2s"></div>
+        <h1 class="display-4 fw-bold mb-4">@ViewData["Title"]</h1>
+        <p class="lead mb-4">Descubre experiencias únicas diseñadas para crear memorias inolvidables</p>
+        <div class="section-title"></div>
     </div>
 </section>
 
-<!-- Paquetes Section con Efectos -->
+<!-- Paquetes Section -->
 <div class="container">
     <div class="row">
         @{
@@ -443,7 +354,6 @@
         "/Imagenes/Paquete5.jpg",
         "/Imagenes/Paquete6.jpg"
         };
-
             int imageIndex = 0;
         }
 

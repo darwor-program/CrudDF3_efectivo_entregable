@@ -1,5 +1,4 @@
-﻿@model CrudDF3.Models.PaquetesTuristico
-
+@model CrudDF3.Models.PaquetesTuristico
 
 @{
     // ✅ Versión más robusta del casting
@@ -7,200 +6,240 @@
     var habitaciones = ViewData["Habitaciones"] as List<Habitacione> ?? new List<Habitacione>();
 }
 
-<h1>@ViewData["Title"]</h1>
-<hr />
+<style>
+    .card-header-primary {
+        background: linear-gradient(135deg, #274c77, #6096ba) !important;
+        color: white !important;
+    }
 
-<div class="row">
-    <div class="col-md-8">
-        <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    .card-header-secondary {
+        background: linear-gradient(135deg, #6c757d, #495057) !important;
+        color: white !important;
+    }
 
-            <!-- Información básica del paquete -->
-            <div class="row mb-4">
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label class="control-label">Capacidad Total</label>
-                        <input id="capacidad-total" class="form-control" value="0" readonly />
-                        <input type="hidden" id="capacidad-total-hidden" name="CapacidadPaquete" value="0" />
-                        <small class="form-text text-muted">Capacidad total basada en las habitaciones seleccionadas.</small>
-                    </div>
-                    <div class="form-group">
-                        <label asp-for="NombrePaquete" class="control-label"></label>
-                        <input asp-for="NombrePaquete" class="form-control" />
-                        <span asp-validation-for="NombrePaquete" class="text-danger"></span>
-                    </div>
-                    <div class="form-group">
-                        <label asp-for="DescripcionPaquete" class="control-label"></label>
-                        <textarea asp-for="DescripcionPaquete" class="form-control" rows="3"></textarea>
-                        <span asp-validation-for="DescripcionPaquete" class="text-danger"></span>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label asp-for="PrecioPaquete" class="control-label"></label>
-                        <input asp-for="PrecioPaquete" id="precio-paquete" class="form-control" readonly />
-                        <span asp-validation-for="PrecioPaquete" class="text-danger"></span>
-                        <small class="form-text text-muted">Precio calculado automáticamente</small>
-                    </div>
-                    <div class="form-group">
-                        <label asp-for="DestinoPaquete" class="control-label"></label>
-                        <input asp-for="DestinoPaquete" class="form-control" />
-                        <span asp-validation-for="DestinoPaquete" class="text-danger"></span>
-                    </div>
-                </div>
-            </div>
+    .card-header-info {
+        background: linear-gradient(135deg, #17a2b8, #138496) !important;
+        color: white !important;
+    }
 
-            <!-- Configuración de estado y disponibilidad -->
-            <div class="card mb-4">
-                <div class="card-header bg-secondary text-white">
-                    <h5 class="mb-0">Configuración del Paquete</h5>
-                </div>
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="form-group form-check">
-                                <input type="checkbox" class="form-check-input" asp-for="DisponibilidadPaquete" />
-                                <label class="form-check-label" asp-for="DisponibilidadPaquete"></label>
-                                <small class="form-text text-muted">Indica si el paquete está disponible para reservas.</small>
-                            </div>
-                            <div class="form-group">
-                                <label asp-for="StockPaquete" class="control-label"></label>
-                                <input asp-for="StockPaquete" class="form-control" type="number" min="0" />
-                                <span asp-validation-for="StockPaquete" class="text-danger"></span>
-                                <small class="form-text text-muted">Cantidad disponible de este paquete.</small>
-                            </div>
+    .btn-primary {
+        background-color: #6096ba;
+        border-color: #6096ba;
+    }
+
+    .btn-primary:hover {
+        background-color: #274c77;
+        border-color: #274c77;
+    }
+
+    .form-label {
+        color: #2b2d42;
+        font-weight: 500;
+    }
+
+    .card {
+        border-radius: 0.5rem;
+        box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    }
+</style>
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 style="color: #2b2d42;"><i class="fas fa-suitcase me-2"></i>@ViewData["Title"]</h1>
+        <a asp-action="Index" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-1"></i> Volver
+        </a>
+    </div>
+
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-body" style="background-color: #f8f9fa;">
+            <form asp-action="Create">
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+                <!-- Información básica del paquete -->
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <div class="form-group mb-3">
+                            <label asp-for="NombrePaquete" class="form-label">Nombre del Paquete</label>
+                            <input asp-for="NombrePaquete" class="form-control" placeholder="Ej: Aventura en la Selva" />
+                            <span asp-validation-for="NombrePaquete" class="text-danger small"></span>
                         </div>
-                        <div class="col-md-6">
-                            <div class="form-group form-check">
-                                <input type="checkbox" class="form-check-input" asp-for="EstadoPaquete" />
-                                <label class="form-check-label" asp-for="EstadoPaquete"></label>
-                                <small class="form-text text-muted">Activa o desactiva el paquete en el sistema.</small>
-                            </div>
+                        <div class="form-group mb-3">
+                            <label asp-for="DescripcionPaquete" class="form-label">Descripción</label>
+                            <textarea asp-for="DescripcionPaquete" class="form-control" rows="3" placeholder="Describa los detalles del paquete"></textarea>
+                            <span asp-validation-for="DescripcionPaquete" class="text-danger small"></span>
+                        </div>
+                        <div class="form-group mb-3">
+                            <label class="form-label">Capacidad Total</label>
+                            <input id="capacidad-total" class="form-control" value="0" readonly />
+                            <input type="hidden" id="capacidad-total-hidden" name="CapacidadPaquete" value="0" />
+                            <small class="form-text text-muted">Capacidad total basada en las habitaciones seleccionadas.</small>
                         </div>
                     </div>
-                    <div class="row mt-3">
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label asp-for="FechaPaquete" class="control-label"></label>
-                                <input asp-for="FechaPaquete" class="form-control" type="date" />
-                                <span asp-validation-for="FechaPaquete" class="text-danger"></span>
-                            </div>
+                    <div class="col-md-6">
+                        <div class="form-group mb-3">
+                            <label asp-for="PrecioPaquete" class="form-label">Precio</label>
+                            <input asp-for="PrecioPaquete" id="precio-paquete" class="form-control" placeholder="0.00" readonly />
+                            <span asp-validation-for="PrecioPaquete" class="text-danger small"></span>
+                            <small class="form-text text-muted">Precio calculado automáticamente</small>
                         </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label asp-for="TipoViajePaquete" class="control-label"></label>
-                                <select asp-for="TipoViajePaquete" class="form-control">
-                                    <option value="">Seleccione un tipo</option>
-                                    <option value="Nacional">Nacional</option>
-                                    <option value="Internacional">Internacional</option>
-                                    <option value="Aventura">Aventura</option>
-                                    <option value="Romántico">Romántico</option>
-                                    <option value="Familiar">Familiar</option>
-                                </select>
-                                <span asp-validation-for="TipoViajePaquete" class="text-danger"></span>
-                            </div>
+                        <div class="form-group mb-3">
+                            <label asp-for="DestinoPaquete" class="form-label">Destino</label>
+                            <input asp-for="DestinoPaquete" class="form-control" placeholder="Ej: Machu Picchu, Perú" />
+                            <span asp-validation-for="DestinoPaquete" class="text-danger small"></span>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- Selección de Servicios -->
-            <div class="card mb-4">
-                <div class="card-header bg-primary text-white">
-                    <h5 class="mb-0">Servicios Disponibles</h5>
-                </div>
-                <div class="card-body">
-                    @if (ViewBag.Servicios != null && ViewBag.Servicios.Count > 0)
-                    {
+                <!-- Configuración del paquete -->
+                <div class="card mb-4">
+                    <div class="card-header card-header-secondary">
+                        <h5 class="mb-0"><i class="fas fa-cog me-2"></i>Configuración del Paquete</h5>
+                    </div>
+                    <div class="card-body">
                         <div class="row">
-                            @foreach (var servicio in ViewBag.Servicios)
-                            {
-                                <div class="col-md-4 mb-3">
-                                    <div class="card h-100">
-                                        <div class="card-body">
-                                            <div class="form-check">
-                                                <input class="form-check-input servicio-checkbox"
-                                                       type="checkbox"
-                                                       name="SelectedServicios"
-                                                       value="@servicio.IdServicio"
-                                                       id="servicio_@servicio.IdServicio"
-                                                       data-price="@servicio.Costo">
-                                                <label class="form-check-label" for="servicio_@servicio.IdServicio">
-                                                    <strong>@servicio.NombreServicio</strong>
-                                                </label>
-                                            </div>
-                                            <p class="card-text small mt-2">@servicio.Descripcion</p>
-                                            <div class="d-flex justify-content-between mt-2">
-                                                <span class="badge bg-info">@servicio.Categoria</span>
-                                                <span class="badge bg-success">@servicio.Costo?.ToString("C")</span>
+                            <div class="col-md-6">
+                                <div class="form-group form-check mb-3">
+                                    <input class="form-check-input" type="checkbox" asp-for="DisponibilidadPaquete" />
+                                    <label class="form-check-label" asp-for="DisponibilidadPaquete"></label>
+                                    <small class="form-text text-muted">Indica si el paquete está disponible para reservas.</small>
+                                </div>
+                                <div class="form-group mb-3">
+                                    <label asp-for="StockPaquete" class="form-label">Stock Disponible</label>
+                                    <input asp-for="StockPaquete" class="form-control" type="number" min="0" />
+                                    <span asp-validation-for="StockPaquete" class="text-danger small"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group form-check mb-3">
+                                    <input class="form-check-input" type="checkbox" asp-for="EstadoPaquete" />
+                                    <label class="form-check-label" asp-for="EstadoPaquete"></label>
+                                    <small class="form-text text-muted">Activa o desactiva el paquete en el sistema.</small>
+                                </div>
+                                <div class="form-group mb-3">
+                                    <label asp-for="FechaPaquete" class="form-label">Fecha del Viaje</label>
+                                    <input asp-for="FechaPaquete" class="form-control" type="date" />
+                                    <span asp-validation-for="FechaPaquete" class="text-danger small"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="TipoViajePaquete" class="form-label">Tipo de Viaje</label>
+                            <select asp-for="TipoViajePaquete" class="form-control">
+                                <option value="">Seleccione un tipo</option>
+                                <option value="Nacional">Nacional</option>
+                                <option value="Internacional">Internacional</option>
+                                <option value="Aventura">Aventura</option>
+                                <option value="Romántico">Romántico</option>
+                                <option value="Familiar">Familiar</option>
+                            </select>
+                            <span asp-validation-for="TipoViajePaquete" class="text-danger small"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Servicios disponibles -->
+                <div class="card mb-4">
+                    <div class="card-header card-header-primary">
+                        <h5 class="mb-0"><i class="fas fa-concierge-bell me-2"></i>Servicios Incluidos</h5>
+                    </div>
+                    <div class="card-body">
+                        @if (servicios.Any())
+                        {
+                            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+                                @foreach (var servicio in servicios)
+                                {
+                                    <div class="col">
+                                        <div class="card h-100 border-0 shadow-sm">
+                                            <div class="card-body">
+                                                <div class="form-check form-switch">
+                                                    <input class="form-check-input servicio-checkbox" 
+                                                           type="checkbox"
+                                                           name="SelectedServicios"
+                                                           value="@servicio.IdServicio"
+                                                           id="servicio_@servicio.IdServicio"
+                                                           data-price="@servicio.Costo">
+                                                    <label class="form-check-label" for="servicio_@servicio.IdServicio">
+                                                        <strong>@servicio.NombreServicio</strong>
+                                                    </label>
+                                                </div>
+                                                <p class="card-text text-muted mt-2">@servicio.Descripcion</p>
+                                                <div class="d-flex flex-wrap gap-2 mt-3">
+                                                    <span class="badge bg-info rounded-pill">@servicio.Categoria</span>
+                                                    <span class="badge bg-success rounded-pill">@servicio.Costo?.ToString("C")</span>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-                            }
-                        </div>
-                    }
-                    else
-                    {
-                        <p class="text-muted">No hay servicios disponibles.</p>
-                    }
+                                }
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="alert alert-warning">
+                                <i class="fas fa-exclamation-triangle me-2"></i>No hay servicios disponibles
+                            </div>
+                        }
+                    </div>
                 </div>
-            </div>
 
-            <!-- Selección de Habitaciones (modificado) -->
-            <div class="card mb-4">
-                <div class="card-header bg-info text-white">
-                    <h5 class="mb-0">Habitaciones Disponibles</h5>
-                </div>
-                <div class="card-body">
-                    @if (ViewBag.Habitaciones != null && ViewBag.Habitaciones.Count > 0)
-                    {
-                        <div class="row">
-                            @foreach (var habitacion in ViewBag.Habitaciones)
-                            {
-                                <div class="col-md-4 mb-3">
-                                    <div class="card h-100">
-                                        <div class="card-body">
-                                            <div class="form-check">
-                                                <input class="form-check-input habitacion-checkbox"
-                                                       type="checkbox"
-                                                       name="SelectedHabitaciones"
-                                                       value="@habitacion.IdHabitacion"
-                                                       id="habitacion_@habitacion.IdHabitacion"
-                                                       data-price="@habitacion.TarifaHabitacion"
-                                                       data-capacity="@habitacion.CapacidadHuespedes">
-                                                <label class="form-check-label" for="habitacion_@habitacion.IdHabitacion">
-                                                    <strong>@habitacion.TipoHabitacion</strong>
-                                                </label>
-                                            </div>
-                                            <p class="card-text small mt-2">@habitacion.DescripcionHabitacion</p>
-                                            <div class="d-flex justify-content-between mt-2">
-                                                <span class="badge bg-primary">Capacidad: @habitacion.CapacidadHuespedes</span>
-                                                <span class="badge bg-success">@habitacion.TarifaHabitacion?.ToString("C")</span>
+                <!-- Habitaciones disponibles -->
+                <div class="card mb-4">
+                    <div class="card-header card-header-info">
+                        <h5 class="mb-0"><i class="fas fa-hotel me-2"></i>Habitaciones Incluidas</h5>
+                    </div>
+                    <div class="card-body">
+                        @if (habitaciones.Any())
+                        {
+                            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+                                @foreach (var habitacion in habitaciones)
+                                {
+                                    <div class="col">
+                                        <div class="card h-100 border-0 shadow-sm">
+                                            <div class="card-body">
+                                                <div class="form-check form-switch">
+                                                    <input class="form-check-input habitacion-checkbox"
+                                                           type="checkbox"
+                                                           name="SelectedHabitaciones"
+                                                           value="@habitacion.IdHabitacion"
+                                                           id="habitacion_@habitacion.IdHabitacion"
+                                                           data-price="@habitacion.TarifaHabitacion"
+                                                           data-capacity="@habitacion.CapacidadHuespedes">
+                                                    <label class="form-check-label" for="habitacion_@habitacion.IdHabitacion">
+                                                        <strong>@habitacion.TipoHabitacion</strong>
+                                                    </label>
+                                                </div>
+                                                <p class="card-text text-muted mt-2">@habitacion.DescripcionHabitacion</p>
+                                                <div class="d-flex flex-wrap gap-2 mt-3">
+                                                    <span class="badge bg-primary rounded-pill">Capacidad: @habitacion.CapacidadHuespedes</span>
+                                                    <span class="badge bg-success rounded-pill">@habitacion.TarifaHabitacion?.ToString("C")</span>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-                            }
-                        </div>
-                    }
-                    else
-                    {
-                        <p class="text-muted">No hay habitaciones disponibles.</p>
-                    }
+                                }
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="alert alert-warning">
+                                <i class="fas fa-exclamation-triangle me-2"></i>No hay habitaciones disponibles
+                            </div>
+                        }
+                    </div>
                 </div>
-            </div>
 
-            <!-- Botones de acción -->
-            <div class="form-group mt-3">
-                <button type="submit" class="btn btn-primary">
-                    <i class="fas fa-save"></i> Crear Paquete
-                </button>
-                <a asp-action="Index" class="btn btn-secondary">
-                    <i class="fas fa-arrow-left"></i> Cancelar
-                </a>
-            </div>
-        </form>
+                <!-- Botones de acción -->
+                <div class="d-flex justify-content-end gap-3">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save me-1"></i> Guardar Paquete
+                    </button>
+                    <button type="reset" class="btn btn-outline-secondary">
+                        <i class="fas fa-undo me-1"></i> Limpiar
+                    </button>
+                </div>
+            </form>
+        </div>
     </div>
 </div>
 
