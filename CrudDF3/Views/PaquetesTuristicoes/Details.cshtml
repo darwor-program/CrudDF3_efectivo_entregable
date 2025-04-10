@@ -1,4 +1,4 @@
-﻿@model CrudDF3.Models.PaquetesTuristico
+@model CrudDF3.Models.PaquetesTuristico
 
 @{
     ViewData["Title"] = "Detalles del Paquete";
@@ -16,102 +16,135 @@
 
 <style>
     .bg-primary-dark {
-        background-color: #274c77 !important;
+        background: linear-gradient(135deg, #274c77, #1d3557);
+        color: white;
     }
 
     .bg-primary-light {
-        background-color: #a3cef1 !important;
+        background-color: #f8f9fa;
     }
 
     .bg-primary-accent {
-        background-color: #6096ba !important;
+        background: linear-gradient(135deg, #6096ba, #5085b0);
+        color: white;
     }
 
     .text-primary-dark {
-        color: #274c77 !important;
-    }
-
-    .text-primary-light {
-        color: #a3cef1 !important;
-    }
-
-    .text-primary-accent {
-        color: #6096ba !important;
-    }
-
-    .text-dark {
-        color: #2b2d42 !important;
-    }
-
-    .text-light {
-        color: #edf2f4 !important;
-    }
-
-    .btn-primary-dark {
-        background-color: #274c77;
-        color: white;
-        border: none;
-    }
-
-    .btn-primary-accent {
-        background-color: #6096ba;
-        color: white;
-        border: none;
-    }
-
-    .btn-outline-primary-dark {
-        border-color: #274c77;
         color: #274c77;
     }
 
-        .btn-outline-primary-dark:hover {
-            background-color: #274c77;
-            color: white;
-        }
+    .text-primary-light {
+        color: #a3cef1;
+    }
+
+    .text-primary-accent {
+        color: #6096ba;
+    }
+
+    .card-hover:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        transition: all 0.3s ease;
+    }
+
+    .icon-container {
+        width: 60px;
+        height: 60px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        background-color: rgba(39, 76, 119, 0.1);
+    }
+
+    .status-badge {
+        font-size: 0.9rem;
+        padding: 0.5rem 1rem;
+        border-radius: 50px;
+    }
+
+    .detail-card {
+        border-radius: 10px;
+        overflow: hidden;
+        border: none;
+    }
+
+    .detail-header {
+        padding: 1.2rem;
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .img-cover {
+        height: 100%;
+        object-fit: cover;
+        min-height: 300px;
+    }
 </style>
 
-<div class="container py-5">
-    <!-- Encabezado con imagen -->
-    <div class="card shadow-lg mb-4 border-0 overflow-hidden">
+<div class="container py-4">
+    <!-- Encabezado con imagen y detalles principales -->
+    <div class="card detail-card shadow-lg mb-4">
         <div class="row g-0">
             <div class="col-md-5">
-                <img src="@packageImage" class="img-fluid h-100" style="object-fit: cover;" alt="@Model.NombrePaquete">
+                <img src="@packageImage" class="img-fluid img-cover w-100" alt="@Model.NombrePaquete">
             </div>
-            <div class="col-md-7 bg-light">
+            <div class="col-md-7 bg-primary-light">
                 <div class="card-body p-4">
-                    <div class="d-flex justify-content-between align-items-start">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
                         <div>
-                            <span class="badge bg-primary-dark text-light mb-2">@Model.TipoViajePaquete</span>
-                            <h1 class="text-dark mb-3">@Model.NombrePaquete</h1>
+                            <span class="badge bg-primary-accent mb-2">@Model.TipoViajePaquete</span>
+                            <h1 class="text-primary-dark mb-2">@Model.NombrePaquete</h1>
+                            <div class="d-flex align-items-center mb-3">
+                                <i class="fas fa-map-marker-alt text-primary-accent me-2"></i>
+                                <span class="text-muted">@Model.DestinoPaquete</span>
+                            </div>
                         </div>
-                        <h3 class="text-primary-accent mb-0">@Model.PrecioPaquete?.ToString("C")</h3>
+                        <div class="text-end">
+                            <h3 class="text-primary-accent mb-0">@Model.PrecioPaquete?.ToString("C")</h3>
+                            <small class="text-muted">por persona</small>
+                        </div>
                     </div>
 
                     <p class="lead text-dark mb-4">@Model.DescripcionPaquete</p>
 
-                    <!-- Info destacada -->
-                    <div class="d-flex flex-wrap gap-3 mb-4">
-                        <div class="d-flex align-items-center bg-primary-light p-2 rounded">
-                            <i class="fas fa-map-marker-alt me-2 text-primary-dark"></i>
-                            <span class="text-dark">@Model.DestinoPaquete</span>
+                    <!-- Información destacada -->
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-4">
+                            <div class="bg-white p-3 rounded text-center shadow-sm">
+                                <div class="icon-container mx-auto mb-2">
+                                    <i class="fas fa-calendar-alt text-primary-accent"></i>
+                                </div>
+                                <h6 class="mb-1">Fecha</h6>
+                                <p class="mb-0 text-muted">@Model.FechaPaquete?.ToString("dd MMM yyyy")</p>
+                            </div>
                         </div>
-                        <div class="d-flex align-items-center bg-primary-light p-2 rounded">
-                            <i class="fas fa-calendar-alt me-2 text-primary-dark"></i>
-                            <span class="text-dark">@Model.FechaPaquete?.ToString("dd MMM yyyy")</span>
+                        <div class="col-md-4">
+                            <div class="bg-white p-3 rounded text-center shadow-sm">
+                                <div class="icon-container mx-auto mb-2">
+                                    <i class="fas fa-users text-primary-accent"></i>
+                                </div>
+                                <h6 class="mb-1">Capacidad</h6>
+                                <p class="mb-0 text-muted">@Model.CapacidadPaquete personas</p>
+                            </div>
                         </div>
-                        <div class="d-flex align-items-center bg-primary-light p-2 rounded">
-                            <i class="fas fa-boxes me-2 text-primary-dark"></i>
-                            <span class="text-dark">@Model.StockPaquete disponibles</span>
+                        <div class="col-md-4">
+                            <div class="bg-white p-3 rounded text-center shadow-sm">
+                                <div class="icon-container mx-auto mb-2">
+                                    <i class="fas fa-box-open text-primary-accent"></i>
+                                </div>
+                                <h6 class="mb-1">Disponibles</h6>
+                                <p class="mb-0 text-muted">@Model.StockPaquete unidades</p>
+                            </div>
                         </div>
                     </div>
 
                     <!-- Estado y disponibilidad -->
-                    <div class="d-flex gap-3">
-                        <span class="badge @(Model.DisponibilidadPaquete ? "bg-success" : "bg-danger") fs-6 py-2">
+                    <div class="d-flex flex-wrap gap-3">
+                        <span class="status-badge @(Model.DisponibilidadPaquete ? "bg-success" : "bg-danger")">
                             <i class="fas @(Model.DisponibilidadPaquete ? "fa-check" : "fa-times") me-1"></i>
                             @(Model.DisponibilidadPaquete ? "Disponible" : "Agotado")
                         </span>
-                        <span class="badge @(Model.EstadoPaquete ? "bg-primary-accent" : "bg-secondary") fs-6 py-2">
+                        <span class="status-badge @(Model.EstadoPaquete ? "bg-primary-accent" : "bg-secondary")">
                             @(Model.EstadoPaquete ? "Activo" : "Inactivo")
                         </span>
                     </div>
@@ -121,29 +154,34 @@
     </div>
 
     <!-- Servicios incluidos -->
-    <div class="card shadow-sm mb-4 border-0">
-        <div class="card-header bg-primary-dark text-light py-3">
-            <h3 class="mb-0">
-                <i class="fas fa-concierge-bell me-2"></i>Servicios Incluidos
-            </h3>
+    <div class="card detail-card shadow-sm mb-4">
+        <div class="detail-header bg-primary-dark">
+            <div class="d-flex justify-content-between align-items-center">
+                <h3 class="mb-0 text-white">
+                    <i class="fas fa-concierge-bell me-2"></i>Servicios Incluidos
+                </h3>
+                <span class="badge bg-white text-primary-dark">
+                    @Model.PaqueteServicios.Count servicios
+                </span>
+            </div>
         </div>
         <div class="card-body">
             @if (Model.PaqueteServicios != null && Model.PaqueteServicios.Any())
             {
-                <div class="row g-3">
+                <div class="row g-4">
                     @foreach (var servicio in Model.PaqueteServicios)
                     {
-                        <div class="col-md-6">
-                            <div class="card h-100 border-0 shadow-sm">
+                        <div class="col-lg-4 col-md-6">
+                            <div class="card h-100 border-0 shadow-sm card-hover">
                                 <div class="card-body">
-                                    <div class="d-flex">
-                                        <div class="flex-shrink-0 bg-primary-light rounded p-3 me-3">
-                                            <i class="fas @GetServiceIcon(servicio.IdServicioNavigation?.Categoria) text-primary-dark fa-2x"></i>
+                                    <div class="d-flex align-items-start">
+                                        <div class="icon-container me-3">
+                                            <i class="fas @GetServiceIcon(servicio.IdServicioNavigation?.Categoria) text-primary-accent"></i>
                                         </div>
                                         <div>
-                                            <h5 class="card-title text-dark">@servicio.IdServicioNavigation?.NombreServicio</h5>
-                                            <p class="card-text text-muted">@servicio.IdServicioNavigation?.Descripcion</p>
-                                            <div class="d-flex justify-content-between align-items-center mt-3">
+                                            <h5 class="card-title mb-1">@servicio.IdServicioNavigation?.NombreServicio</h5>
+                                            <p class="card-text text-muted small mb-2">@servicio.IdServicioNavigation?.Descripcion</p>
+                                            <div class="d-flex justify-content-between align-items-center">
                                                 <span class="badge bg-primary-light text-primary-dark">
                                                     @servicio.IdServicioNavigation?.Categoria
                                                 </span>
@@ -161,41 +199,47 @@
             }
             else
             {
-                <div class="text-center py-4 bg-primary-light rounded">
-                    <i class="fas fa-concierge-bell fa-3x text-primary-dark mb-3"></i>
-                    <p class="text-muted">No hay servicios asignados a este paquete.</p>
+                <div class="text-center py-5 bg-primary-light rounded">
+                    <i class="fas fa-concierge-bell fa-4x text-primary-dark mb-3 opacity-50"></i>
+                    <h5 class="text-primary-dark">No hay servicios incluidos</h5>
+                    <p class="text-muted">Este paquete no tiene servicios asignados</p>
                 </div>
             }
         </div>
     </div>
 
     <!-- Habitaciones incluidas -->
-    <div class="card shadow-sm mb-4 border-0">
-        <div class="card-header bg-primary-dark text-light py-3">
-            <h3 class="mb-0">
-                <i class="fas fa-hotel me-2"></i>Habitaciones Incluidas
-            </h3>
+    <div class="card detail-card shadow-sm mb-4">
+        <div class="detail-header bg-primary-dark">
+            <div class="d-flex justify-content-between align-items-center">
+                <h3 class="mb-0 text-white">
+                    <i class="fas fa-hotel me-2"></i>Habitaciones Incluidas
+                </h3>
+                <span class="badge bg-white text-primary-dark">
+                    @Model.PaqueteHabitaciones.Count habitaciones
+                </span>
+            </div>
         </div>
         <div class="card-body">
             @if (Model.PaqueteHabitaciones != null && Model.PaqueteHabitaciones.Any())
             {
-                <div class="row g-3">
+                <div class="row g-4">
                     @foreach (var habitacion in Model.PaqueteHabitaciones)
                     {
-                        <div class="col-md-6">
-                            <div class="card h-100 border-0 shadow-sm">
+                        <div class="col-lg-4 col-md-6">
+                            <div class="card h-100 border-0 shadow-sm card-hover">
                                 <div class="card-body">
-                                    <div class="d-flex">
-                                        <div class="flex-shrink-0 bg-primary-light rounded p-3 me-3">
-                                            <i class="fas @GetRoomIcon(habitacion.IdHabitacionNavigation?.TipoHabitacion) text-primary-dark fa-2x"></i>
+                                    <div class="d-flex align-items-start">
+                                        <div class="icon-container me-3">
+                                            <i class="fas @GetRoomIcon(habitacion.IdHabitacionNavigation?.TipoHabitacion) text-primary-accent"></i>
                                         </div>
                                         <div>
-                                            <h5 class="card-title text-dark">@habitacion.IdHabitacionNavigation?.TipoHabitacion</h5>
-                                            <p class="card-text text-muted">@habitacion.IdHabitacionNavigation?.DescripcionHabitacion</p>
-                                            <div class="d-flex justify-content-between align-items-center mt-3">
+                                            <h5 class="card-title mb-1">@habitacion.IdHabitacionNavigation?.TipoHabitacion</h5>
+                                            <p class="card-text text-muted small mb-2">@habitacion.IdHabitacionNavigation?.DescripcionHabitacion</p>
+                                            <div class="d-flex justify-content-between align-items-center">
                                                 <span class="badge bg-primary-light text-primary-dark">
                                                     <i class="fas fa-users me-1"></i>
-                                                    @habitacion.IdHabitacionNavigation?.CapacidadHuespedes personas
+                                                    @habitacion.IdHabitacionNavigation?.CapacidadHuespedes
                                                 </span>
                                                 <span class="text-primary-accent fw-bold">
                                                     @habitacion.IdHabitacionNavigation?.TarifaHabitacion?.ToString("C")
@@ -211,9 +255,10 @@
             }
             else
             {
-                <div class="text-center py-4 bg-primary-light rounded">
-                    <i class="fas fa-hotel fa-3x text-primary-dark mb-3"></i>
-                    <p class="text-muted">No hay habitaciones asignadas a este paquete.</p>
+                <div class="text-center py-5 bg-primary-light rounded">
+                    <i class="fas fa-hotel fa-4x text-primary-dark mb-3 opacity-50"></i>
+                    <h5 class="text-primary-dark">No hay habitaciones asignadas</h5>
+                    <p class="text-muted">Este paquete no tiene habitaciones incluidas</p>
                 </div>
             }
         </div>
@@ -221,12 +266,17 @@
 
     <!-- Botones de acción -->
     <div class="d-flex justify-content-between mt-4">
-        <a asp-action="Index" class="btn btn-outline-primary-dark">
+        <a asp-action="Index" class="btn btn-outline-primary">
             <i class="fas fa-arrow-left me-2"></i>Volver al listado
         </a>
-        <a asp-action="Edit" asp-route-id="@Model.IdPaquete" class="btn btn-primary-accent">
-            <i class="fas fa-edit me-2"></i>Editar Paquete
-        </a>
+        <div class="d-flex gap-3">
+            <a asp-action="Edit" asp-route-id="@Model.IdPaquete" class="btn btn-primary">
+                <i class="fas fa-edit me-2"></i>Editar Paquete
+            </a>
+            <a href="#" class="btn btn-success">
+                <i class="fas fa-shopping-cart me-2"></i>Reservar Ahora
+            </a>
+        </div>
     </div>
 </div>
 
@@ -236,10 +286,12 @@
     {
         return categoria?.ToLower() switch
         {
-            "transporte" => "fa-bus",
+            "transporte" => "fa-bus-alt",
             "alimentación" => "fa-utensils",
             "guía" => "fa-user-tie",
             "tour" => "fa-map-marked-alt",
+            "actividad" => "fa-hiking",
+            "seguro" => "fa-shield-alt",
             _ => "fa-star"
         };
     }
@@ -250,9 +302,11 @@
         return tipo?.ToLower() switch
         {
             "individual" => "fa-bed",
-            "doble" => "fa-king-bed",
+            "doble" => "fa-bed",
+            "matrimonial" => "fa-bed",
             "suite" => "fa-hotel",
             "familiar" => "fa-home",
+            "ejecutiva" => "fa-briefcase",
             _ => "fa-door-open"
         };
     }

@@ -22,6 +22,9 @@ namespace CrudDF3.Models.ViewModels
         [Display(Name = "Tipo de Viaje")]
         public string? TipoViajePaquete { get; set; }
 
+        [Display(Name = "capacidad del paquete")]
+        public int CapacidadPaquete { get; set; }
+
         [Display(Name = "Seleccionar")]
         public bool IsSelected { get; set; }
     }

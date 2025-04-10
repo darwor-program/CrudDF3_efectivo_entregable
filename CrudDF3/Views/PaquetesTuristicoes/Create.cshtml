@@ -1,7 +1,9 @@
-﻿@model CrudDF3.Models.PaquetesTuristico
+@model CrudDF3.Models.PaquetesTuristico
 
 @{
-    ViewData["Title"] = "Crear Paquete Turístico";
+    // ✅ Versión más robusta del casting
+    var servicios = ViewData["Servicios"] as List<Servicio> ?? new List<Servicio>();
+    var habitaciones = ViewData["Habitaciones"] as List<Habitacione> ?? new List<Habitacione>();
 }
 
 <style>
@@ -25,10 +27,10 @@
         border-color: #6096ba;
     }
 
-        .btn-primary:hover {
-            background-color: #274c77;
-            border-color: #274c77;
-        }
+    .btn-primary:hover {
+        background-color: #274c77;
+        border-color: #274c77;
+    }
 
     .form-label {
         color: #2b2d42;
@@ -67,12 +69,19 @@
                             <textarea asp-for="DescripcionPaquete" class="form-control" rows="3" placeholder="Describa los detalles del paquete"></textarea>
                             <span asp-validation-for="DescripcionPaquete" class="text-danger small"></span>
                         </div>
+                        <div class="form-group mb-3">
+                            <label class="form-label">Capacidad Total</label>
+                            <input id="capacidad-total" class="form-control" value="0" readonly />
+                            <input type="hidden" id="capacidad-total-hidden" name="CapacidadPaquete" value="0" />
+                            <small class="form-text text-muted">Capacidad total basada en las habitaciones seleccionadas.</small>
+                        </div>
                     </div>
                     <div class="col-md-6">
                         <div class="form-group mb-3">
                             <label asp-for="PrecioPaquete" class="form-label">Precio</label>
-                            <input asp-for="PrecioPaquete" class="form-control" placeholder="0.00" />
+                            <input asp-for="PrecioPaquete" id="precio-paquete" class="form-control" placeholder="0.00" readonly />
                             <span asp-validation-for="PrecioPaquete" class="text-danger small"></span>
+                            <small class="form-text text-muted">Precio calculado automáticamente</small>
                         </div>
                         <div class="form-group mb-3">
                             <label asp-for="DestinoPaquete" class="form-label">Destino</label>
@@ -135,7 +144,7 @@
                         <h5 class="mb-0"><i class="fas fa-concierge-bell me-2"></i>Servicios Incluidos</h5>
                     </div>
                     <div class="card-body">
-                        @if (ViewData["Servicios"] is IEnumerable<Servicio> servicios && servicios.Any())
+                        @if (servicios.Any())
                         {
                             <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
                                 @foreach (var servicio in servicios)
@@ -144,10 +153,12 @@
                                         <div class="card h-100 border-0 shadow-sm">
                                             <div class="card-body">
                                                 <div class="form-check form-switch">
-                                                    <input class="form-check-input" type="checkbox"
+                                                    <input class="form-check-input servicio-checkbox" 
+                                                           type="checkbox"
                                                            name="SelectedServicios"
                                                            value="@servicio.IdServicio"
-                                                           id="servicio_@servicio.IdServicio">
+                                                           id="servicio_@servicio.IdServicio"
+                                                           data-price="@servicio.Costo">
                                                     <label class="form-check-label" for="servicio_@servicio.IdServicio">
                                                         <strong>@servicio.NombreServicio</strong>
                                                     </label>
@@ -178,7 +189,7 @@
                         <h5 class="mb-0"><i class="fas fa-hotel me-2"></i>Habitaciones Incluidas</h5>
                     </div>
                     <div class="card-body">
-                        @if (ViewData["Habitaciones"] is IEnumerable<Habitacione> habitaciones && habitaciones.Any())
+                        @if (habitaciones.Any())
                         {
                             <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
                                 @foreach (var habitacion in habitaciones)
@@ -187,10 +198,13 @@
                                         <div class="card h-100 border-0 shadow-sm">
                                             <div class="card-body">
                                                 <div class="form-check form-switch">
-                                                    <input class="form-check-input" type="checkbox"
+                                                    <input class="form-check-input habitacion-checkbox"
+                                                           type="checkbox"
                                                            name="SelectedHabitaciones"
                                                            value="@habitacion.IdHabitacion"
-                                                           id="habitacion_@habitacion.IdHabitacion">
+                                                           id="habitacion_@habitacion.IdHabitacion"
+                                                           data-price="@habitacion.TarifaHabitacion"
+                                                           data-capacity="@habitacion.CapacidadHuespedes">
                                                     <label class="form-check-label" for="habitacion_@habitacion.IdHabitacion">
                                                         <strong>@habitacion.TipoHabitacion</strong>
                                                     </label>
@@ -233,4 +247,58 @@
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
+
+    <script>
+        $(document).ready(function() {
+            // Función para calcular el precio total
+            function calcularPrecioTotal() {
+                let precioTotal = 0;
+                let capacidadTotal = 0;
+
+                // Sumar precios de servicios seleccionados
+                $('.servicio-checkbox:checked').each(function() {
+                    let price = $(this).data('price').toString().replace(',', '.');
+                    precioTotal += parseFloat(price) || 0;
+                });
+
+                // Sumar precios y capacidades de habitaciones seleccionadas
+                $('.habitacion-checkbox:checked').each(function() {
+                    let price = $(this).data('price').toString().replace(',', '.');
+                    precioTotal += parseFloat(price) || 0;
+                    capacidadTotal += parseInt($(this).data('capacity')) || 0;
+                });
+
+                // Actualizar los campos con punto decimal
+                $('#precio-paquete').val(precioTotal.toFixed(2).replace('.', ','));
+                $('#capacidad-total').val(capacidadTotal);
+                $('#capacidad-total-hidden').val(capacidadTotal);
+
+                // Actualizar también el campo oculto con el valor numérico puro
+                $('input[name="PrecioPaquete"]').val(precioTotal.toFixed(2));
+            }
+
+            // Escuchar cambios en los checkboxes
+            $('.servicio-checkbox, .habitacion-checkbox').change(function() {
+                calcularPrecioTotal();
+            });
+
+            // Formatear el precio inicial al cargar la página
+            $('#precio-paquete').val(function() {
+                let currentValue = $(this).val().replace(',', '.');
+                let numValue = parseFloat(currentValue) || 0;
+                return numValue.toFixed(2).replace('.', ',');
+            });
+
+            // Calcular inicialmente por si hay valores precargados
+            calcularPrecioTotal();
+
+            // Manejar el evento blur para formatear correctamente el input
+            $('#precio-paquete').on('blur', function() {
+                let value = $(this).val().replace(',', '.');
+                let num = parseFloat(value) || 0;
+                $(this).val(num.toFixed(2).replace('.', ','));
+                $('input[name="PrecioPaquete"]').val(num.toFixed(2));
+            });
+        });
+    </script>
 }

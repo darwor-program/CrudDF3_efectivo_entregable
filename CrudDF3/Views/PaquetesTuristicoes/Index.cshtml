@@ -24,6 +24,7 @@
                             <th class="py-3">Nombre</th>
                             <th class="py-3">Descripción</th>
                             <th class="py-3">Precio</th>
+                            <th class="py-3">Capacidad</th>
                             <th class="py-3">Stock</th>
                             <th class="py-3">Disponible</th>
                             <th class="py-3">Servicios</th>
@@ -43,6 +44,11 @@
                                 </td>
                                 <td class="align-middle">
                                     @item.PrecioPaquete?.ToString("C")
+                                </td>
+                                <td class="align-middle">
+                                    <span class="badge bg-primary">
+                                        @item.CapacidadPaquete personas
+                                    </span>
                                 </td>
                                 <td class="align-middle">
                                     @if (item.StockPaquete > 0)
@@ -182,22 +188,22 @@
             margin-bottom: 0;
         }
 
-        .table th {
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            font-size: 0.75rem;
-            color: #6c757d;
-            background-color: #f8f9fa;
-            padding: 0.75rem 1rem;
-            border-bottom: 2px solid #dee2e6;
-        }
+            .table th {
+                font-weight: 600;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+                font-size: 0.75rem;
+                color: #6c757d;
+                background-color: #f8f9fa;
+                padding: 0.75rem 1rem;
+                border-bottom: 2px solid #dee2e6;
+            }
 
-        .table td {
-            padding: 0.75rem 1rem;
-            vertical-align: middle;
-            border-top: 1px solid #dee2e6;
-        }
+            .table td {
+                padding: 0.75rem 1rem;
+                vertical-align: middle;
+                border-top: 1px solid #dee2e6;
+            }
 
         .badge {
             font-weight: 500;

@@ -4,7 +4,7 @@
     {
         public int IdHabitacion { get; set; }
         public string? TipoHabitacion { get; set; }
-        public int? CapacidadHuespedes { get; set; }
+        public int CapacidadHuespedes { get; set; }
         public bool EstadoHabitacion { get; set; }
         public string? DescripcionHabitacion { get; set; }
         public decimal? TarifaHabitacion { get; set; }

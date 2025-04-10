@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using CrudDF3.Models;
+using System.Globalization;
 
 namespace CrudDF3.Controllers
 {
@@ -86,58 +87,99 @@ namespace CrudDF3.Controllers
         }
 
         // GET: PaquetesTuristicoes/Create
+        [HttpGet]
         public IActionResult Create()
         {
-            ViewData["Servicios"] = _context.Servicios.ToList();
-            ViewData["Habitaciones"] = _context.Habitaciones.ToList();
-            return View();
+            try
+            {
+                // ✅ Verificación explícita y manejo de posibles nulos
+                var servicios = _context.Servicios?.ToList() ?? new List<Servicio>();
+                var habitaciones = _context.Habitaciones?.ToList() ?? new List<Habitacione>();
+
+                ViewData["Servicios"] = servicios;
+                ViewData["Habitaciones"] = habitaciones;
+
+                return View(new PaquetesTuristico()); // ← Asegúrate de pasar un modelo nuevo
+            }
+            catch (Exception ex)
+            {
+                // Loggear el error (opcional)
+                Console.WriteLine($"Error al cargar datos: {ex.Message}");
+
+                // Retornar listas vacías para evitar errores en la vista
+                ViewData["Servicios"] = new List<Servicio>();
+                ViewData["Habitaciones"] = new List<Habitacione>();
+                return View(new PaquetesTuristico());
+            }
         }
 
         // POST: PaquetesTuristicoes/Create
-        [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("IdPaquete,NombrePaquete,DescripcionPaquete,PrecioPaquete,DisponibilidadPaquete,FechaPaquete,DestinoPaquete,EstadoPaquete,TipoViajePaquete,StockPaquete,SelectedServicios,SelectedHabitaciones")] PaquetesTuristico paquete)
+        [HttpPost]
+        public async Task<IActionResult> Create([Bind("IdPaquete,NombrePaquete,DescripcionPaquete,PrecioPaquete,DisponibilidadPaquete,FechaPaquete,DestinoPaquete,EstadoPaquete,TipoViajePaquete,StockPaquete,CapacidadPaquete,SelectedServicios,SelectedHabitaciones")] PaquetesTuristico paquete)
         {
             if (ModelState.IsValid)
             {
-                // Asegurar que la disponibilidad sea coherente con el stock
-                ActualizarDisponibilidadSegunStock(paquete);
-
+                // Primero guardamos el paquete para obtener su ID
                 _context.Add(paquete);
                 await _context.SaveChangesAsync();
 
-                // Agregar servicios seleccionados
+                // Calcular capacidad y precio basados en las selecciones
+                int capacidadTotal = 0;
+                decimal precioTotal = 0;
+
+                // Procesar servicios seleccionados
                 if (paquete.SelectedServicios != null)
                 {
                     foreach (var servicioId in paquete.SelectedServicios)
                     {
-                        _context.PaqueteServicios.Add(new PaqueteServicio
+                        var servicio = await _context.Servicios.FindAsync(servicioId);
+                        if (servicio != null)
                         {
-                            IdPaquete = paquete.IdPaquete,
-                            IdServicio = servicioId
-                        });
+                            precioTotal += servicio.Costo ?? 0;
+
+                            _context.PaqueteServicios.Add(new PaqueteServicio
+                            {
+                                IdPaquete = paquete.IdPaquete,
+                                IdServicio = servicioId
+                            });
+                        }
                     }
                 }
 
-                // Agregar habitaciones seleccionadas
+                // Procesar habitaciones seleccionadas
                 if (paquete.SelectedHabitaciones != null)
                 {
                     foreach (var habitacionId in paquete.SelectedHabitaciones)
                     {
-                        _context.PaqueteHabitaciones.Add(new PaqueteHabitacion
+                        var habitacion = await _context.Habitaciones.FindAsync(habitacionId);
+                        if (habitacion != null)
                         {
-                            IdPaquete = paquete.IdPaquete,
-                            IdHabitacion = habitacionId
-                        });
+                            capacidadTotal += (int)habitacion.CapacidadHuespedes;
+                            precioTotal += habitacion.TarifaHabitacion ?? 0;
+
+                            _context.PaqueteHabitaciones.Add(new PaqueteHabitacion
+                            {
+                                IdPaquete = paquete.IdPaquete,
+                                IdHabitacion = habitacionId
+                            });
+                        }
                     }
+                    paquete.CapacidadPaquete = capacidadTotal;
                 }
 
+                // Actualizar el precio total del paquete
+                paquete.PrecioPaquete = precioTotal;
+
+                // Guardar todos los cambios
                 await _context.SaveChangesAsync();
+
                 return RedirectToAction(nameof(Index));
             }
 
-            ViewData["Servicios"] = _context.Servicios.ToList();
-            ViewData["Habitaciones"] = _context.Habitaciones.ToList();
+            // Si hay errores, recargar los datos necesarios para la vista
+            ViewData["Servicios"] = await _context.Servicios.ToListAsync();
+            ViewData["Habitaciones"] = await _context.Habitaciones.ToListAsync();
             return View(paquete);
         }
 
@@ -148,6 +190,9 @@ namespace CrudDF3.Controllers
             {
                 return NotFound();
             }
+
+
+
 
             var paquete = await _context.PaquetesTuristicos
                 .Include(p => p.PaqueteServicios)
@@ -170,80 +215,66 @@ namespace CrudDF3.Controllers
         // POST: PaquetesTuristicoes/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("IdPaquete,NombrePaquete,DescripcionPaquete,PrecioPaquete,DisponibilidadPaquete,FechaPaquete,DestinoPaquete,EstadoPaquete,TipoViajePaquete,StockPaquete,SelectedServicios,SelectedHabitaciones")] PaquetesTuristico paquete)
+        public async Task<IActionResult> Edit(int id, [Bind("IdPaquete,NombrePaquete,DescripcionPaquete,PrecioPaquete,DisponibilidadPaquete,FechaPaquete,DestinoPaquete,EstadoPaquete,TipoViajePaquete,StockPaquete,CapacidadPaquete,SelectedServicios,SelectedHabitaciones")] PaquetesTuristico paquete)
         {
+
             if (id != paquete.IdPaquete)
             {
                 return NotFound();
+            }
+
+            var precioForm = Request.Form["PrecioPaquete"].ToString();
+            if (decimal.TryParse(precioForm.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out decimal precioConvertido))
+            {
+                paquete.PrecioPaquete = precioConvertido;
+            }
+            else
+            {
+                ModelState.AddModelError("PrecioPaquete", "Formato de precio inválido");
             }
 
             if (ModelState.IsValid)
             {
                 try
                 {
-                    // Asegurar que la disponibilidad sea coherente con el stock
+                    // 1. Convertir el precio al formato correcto
+                    if (paquete.PrecioPaquete.HasValue)
+                    {
+                        var precioString = paquete.PrecioPaquete.Value.ToString(CultureInfo.InvariantCulture);
+                        paquete.PrecioPaquete = decimal.Parse(precioString, CultureInfo.InvariantCulture);
+                    }
+
+                    // Resto de la lógica de actualización...
+                    if (paquete.SelectedHabitaciones != null && paquete.SelectedHabitaciones.Any())
+                    {
+                        int capacidadTotal = 0;
+                        var habitaciones = await _context.Habitaciones
+                            .Where(h => paquete.SelectedHabitaciones.Contains(h.IdHabitacion))
+                            .ToListAsync();
+
+                        foreach (var habitacion in habitaciones)
+                        {
+                            capacidadTotal += (int)habitacion.CapacidadHuespedes;
+                        }
+                        paquete.CapacidadPaquete = capacidadTotal;
+                    }
+                    else
+                    {
+                        paquete.CapacidadPaquete = 0;
+                    }
+
+                    // Resto del código de actualización...
                     ActualizarDisponibilidadSegunStock(paquete);
 
-                    // Actualizar el paquete
                     _context.Update(paquete);
 
-                    // Actualizar servicios
-                    var serviciosActuales = await _context.PaqueteServicios
-                        .Where(ps => ps.IdPaquete == id)
-                        .ToListAsync();
-
-                    // Eliminar servicios no seleccionados
-                    foreach (var servicio in serviciosActuales)
-                    {
-                        if (!paquete.SelectedServicios.Contains(servicio.IdServicio))
-                        {
-                            _context.PaqueteServicios.Remove(servicio);
-                        }
-                    }
-
-                    // Agregar nuevos servicios seleccionados
-                    foreach (var servicioId in paquete.SelectedServicios)
-                    {
-                        if (!serviciosActuales.Any(ps => ps.IdServicio == servicioId))
-                        {
-                            _context.PaqueteServicios.Add(new PaqueteServicio
-                            {
-                                IdPaquete = paquete.IdPaquete,
-                                IdServicio = servicioId
-                            });
-                        }
-                    }
-
-                    // Actualizar habitaciones
-                    var habitacionesActuales = await _context.PaqueteHabitaciones
-                        .Where(ph => ph.IdPaquete == id)
-                        .ToListAsync();
-
-                    // Eliminar habitaciones no seleccionadas
-                    foreach (var habitacion in habitacionesActuales)
-                    {
-                        if (!paquete.SelectedHabitaciones.Contains(habitacion.IdHabitacion))
-                        {
-                            _context.PaqueteHabitaciones.Remove(habitacion);
-                        }
-                    }
-
-                    // Agregar nuevas habitaciones seleccionadas
-                    foreach (var habitacionId in paquete.SelectedHabitaciones)
-                    {
-                        if (!habitacionesActuales.Any(ph => ph.IdHabitacion == habitacionId))
-                        {
-                            _context.PaqueteHabitaciones.Add(new PaqueteHabitacion
-                            {
-                                IdPaquete = paquete.IdPaquete,
-                                IdHabitacion = habitacionId
-                            });
-                        }
-                    }
+                    // Procesar servicios y habitaciones
+                    await ProcesarRelacionesPaquete(paquete, id);
 
                     await _context.SaveChangesAsync();
+                    return RedirectToAction(nameof(Index));
                 }
-                catch (DbUpdateConcurrencyException)
+                catch (DbUpdateConcurrencyException ex)
                 {
                     if (!PaqueteTuristicoExists(paquete.IdPaquete))
                     {
@@ -251,15 +282,85 @@ namespace CrudDF3.Controllers
                     }
                     else
                     {
-                        throw;
+                        ModelState.AddModelError("", "Error de concurrencia: " + ex.Message);
                     }
                 }
-                return RedirectToAction(nameof(Index));
+                catch (Exception ex)
+                {
+                    ModelState.AddModelError("", "Error al guardar: " + ex.Message);
+                }
             }
 
-            ViewData["Servicios"] = _context.Servicios.ToList();
-            ViewData["Habitaciones"] = _context.Habitaciones.ToList();
+            ViewData["Servicios"] = await _context.Servicios.ToListAsync();
+            ViewData["Habitaciones"] = await _context.Habitaciones.ToListAsync();
             return View(paquete);
+        }
+
+        private async Task ProcesarRelacionesPaquete(PaquetesTuristico paquete, int id)
+        {
+            // Procesar servicios
+            await ProcesarServicios(paquete, id);
+
+            // Procesar habitaciones
+            await ProcesarHabitaciones(paquete, id);
+        }
+
+        private async Task ProcesarServicios(PaquetesTuristico paquete, int id)
+        {
+            var serviciosActuales = await _context.PaqueteServicios
+                .Where(ps => ps.IdPaquete == id)
+                .ToListAsync();
+
+            // Eliminar servicios no seleccionados
+            foreach (var servicio in serviciosActuales)
+            {
+                if (!paquete.SelectedServicios.Contains(servicio.IdServicio))
+                {
+                    _context.PaqueteServicios.Remove(servicio);
+                }
+            }
+
+            // Agregar nuevos servicios seleccionados
+            foreach (var servicioId in paquete.SelectedServicios)
+            {
+                if (!serviciosActuales.Any(ps => ps.IdServicio == servicioId))
+                {
+                    _context.PaqueteServicios.Add(new PaqueteServicio
+                    {
+                        IdPaquete = paquete.IdPaquete,
+                        IdServicio = servicioId
+                    });
+                }
+            }
+        }
+
+        private async Task ProcesarHabitaciones(PaquetesTuristico paquete, int id)
+        {
+            var habitacionesActuales = await _context.PaqueteHabitaciones
+                .Where(ph => ph.IdPaquete == id)
+                .ToListAsync();
+
+            // Eliminar habitaciones no seleccionadas
+            foreach (var habitacion in habitacionesActuales)
+            {
+                if (!paquete.SelectedHabitaciones.Contains(habitacion.IdHabitacion))
+                {
+                    _context.PaqueteHabitaciones.Remove(habitacion);
+                }
+            }
+
+            // Agregar nuevas habitaciones seleccionadas
+            foreach (var habitacionId in paquete.SelectedHabitaciones)
+            {
+                if (!habitacionesActuales.Any(ph => ph.IdHabitacion == habitacionId))
+                {
+                    _context.PaqueteHabitaciones.Add(new PaqueteHabitacion
+                    {
+                        IdPaquete = paquete.IdPaquete,
+                        IdHabitacion = habitacionId
+                    });
+                }
+            }
         }
 
         // GET: PaquetesTuristicoes/Delete/5
