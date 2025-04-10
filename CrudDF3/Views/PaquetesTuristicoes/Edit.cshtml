@@ -31,7 +31,7 @@
                         <label asp-for="DescripcionPaquete" class="control-label"></label>
                         <textarea asp-for="DescripcionPaquete" class="form-control" rows="3"></textarea>
                         <span asp-validation-for="DescripcionPaquete" class="text-danger"></span>
-                    </div>
+                    </div>  
                 </div>
                 <div class="col-md-6">
                     <div class="form-group">
@@ -211,6 +211,21 @@
 
     <script>
         $(document).ready(function() {
+            // Función para normalizar el formato numérico (siempre punto decimal internamente)
+            function normalizarNumero(valor) {
+                if (typeof valor === 'number') return valor;
+                if (typeof valor !== 'string') return 0;
+
+                // Reemplazar comas por puntos y eliminar caracteres no numéricos
+                return parseFloat(valor.replace(',', '.').replace(/[^\d.-]/g, '')) || 0;
+            }
+
+            // Función para formatear para visualización (coma decimal)
+            function formatearParaVisualizacion(valor) {
+                const numero = normalizarNumero(valor);
+                return numero.toFixed(2).replace('.', ',');
+            }
+
             // Función para calcular el precio total
             function calcularPrecioTotal() {
                 let precioTotal = 0;
@@ -218,27 +233,46 @@
 
                 // Sumar precios de servicios seleccionados
                 $('.servicio-checkbox:checked').each(function() {
-                    precioTotal += parseFloat($(this).data('price')) || 0;
+                    const price = normalizarNumero($(this).data('price'));
+                    precioTotal += price;
                 });
 
                 // Sumar precios y capacidades de habitaciones seleccionadas
                 $('.habitacion-checkbox:checked').each(function() {
-                    precioTotal += parseFloat($(this).data('price')) || 0;
-                    capacidadTotal += parseInt($(this).data('capacity')) || 0;
+                    const price = normalizarNumero($(this).data('price'));
+                    const capacity = parseInt($(this).data('capacity')) || 0;
+
+                    precioTotal += price;
+                    capacidadTotal += capacity;
                 });
 
-                // Actualizar los campos
-                $('#precio-paquete').val(precioTotal.toFixed(2));
+                // Actualizar campos visibles con formato local
+                $('#precio-paquete').val(formatearParaVisualizacion(precioTotal));
                 $('#capacidad-total').val(capacidadTotal);
                 $('#capacidad-total-hidden').val(capacidadTotal);
+
+                // Actualizar campo del modelo con valor numérico puro (punto decimal)
+                $('input[name="PrecioPaquete"]').val(precioTotal.toFixed(2));
             }
 
-            // Escuchar cambios en los checkboxes
-            $('.servicio-checkbox, .habitacion-checkbox').change(function() {
-                calcularPrecioTotal();
+            // Inicialización al cargar la página
+            function inicializarPrecio() {
+                const precioInicial = normalizarNumero($('#precio-paquete').val());
+                $('#precio-paquete').val(formatearParaVisualizacion(precioInicial));
+                $('input[name="PrecioPaquete"]').val(precioInicial.toFixed(2));
+            }
+
+            // Manejo de eventos
+            $('.servicio-checkbox, .habitacion-checkbox').change(calcularPrecioTotal);
+
+            $('#precio-paquete').on('blur', function() {
+                const valorNormalizado = normalizarNumero($(this).val());
+                $(this).val(formatearParaVisualizacion(valorNormalizado));
+                $('input[name="PrecioPaquete"]').val(valorNormalizado.toFixed(2));
             });
 
-            // Calcular inicialmente por si hay valores precargados
+            // Inicializar
+            inicializarPrecio();
             calcularPrecioTotal();
         });
     </script>

@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using CrudDF3.Models;
+using System.Globalization;
 
 namespace CrudDF3.Controllers
 {
@@ -119,19 +120,43 @@ namespace CrudDF3.Controllers
         {
             if (ModelState.IsValid)
             {
+                // Primero guardamos el paquete para obtener su ID
                 _context.Add(paquete);
                 await _context.SaveChangesAsync();
 
-                // Calcular capacidad basada en las habitaciones seleccionadas
+                // Calcular capacidad y precio basados en las selecciones
+                int capacidadTotal = 0;
+                decimal precioTotal = 0;
+
+                // Procesar servicios seleccionados
+                if (paquete.SelectedServicios != null)
+                {
+                    foreach (var servicioId in paquete.SelectedServicios)
+                    {
+                        var servicio = await _context.Servicios.FindAsync(servicioId);
+                        if (servicio != null)
+                        {
+                            precioTotal += servicio.Costo ?? 0;
+
+                            _context.PaqueteServicios.Add(new PaqueteServicio
+                            {
+                                IdPaquete = paquete.IdPaquete,
+                                IdServicio = servicioId
+                            });
+                        }
+                    }
+                }
+
+                // Procesar habitaciones seleccionadas
                 if (paquete.SelectedHabitaciones != null)
                 {
-                    int capacidadTotal = 0;
                     foreach (var habitacionId in paquete.SelectedHabitaciones)
                     {
                         var habitacion = await _context.Habitaciones.FindAsync(habitacionId);
                         if (habitacion != null)
                         {
-                            capacidadTotal += habitacion.CapacidadHuespedes;
+                            capacidadTotal += (int)habitacion.CapacidadHuespedes;
+                            precioTotal += habitacion.TarifaHabitacion ?? 0;
 
                             _context.PaqueteHabitaciones.Add(new PaqueteHabitacion
                             {
@@ -143,12 +168,18 @@ namespace CrudDF3.Controllers
                     paquete.CapacidadPaquete = capacidadTotal;
                 }
 
+                // Actualizar el precio total del paquete
+                paquete.PrecioPaquete = precioTotal;
+
+                // Guardar todos los cambios
                 await _context.SaveChangesAsync();
+
                 return RedirectToAction(nameof(Index));
             }
 
-            ViewData["Servicios"] = _context.Servicios.ToList();
-            ViewData["Habitaciones"] = _context.Habitaciones.ToList();
+            // Si hay errores, recargar los datos necesarios para la vista
+            ViewData["Servicios"] = await _context.Servicios.ToListAsync();
+            ViewData["Habitaciones"] = await _context.Habitaciones.ToListAsync();
             return View(paquete);
         }
 
@@ -159,6 +190,9 @@ namespace CrudDF3.Controllers
             {
                 return NotFound();
             }
+
+
+
 
             var paquete = await _context.PaquetesTuristicos
                 .Include(p => p.PaqueteServicios)
@@ -183,15 +217,34 @@ namespace CrudDF3.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("IdPaquete,NombrePaquete,DescripcionPaquete,PrecioPaquete,DisponibilidadPaquete,FechaPaquete,DestinoPaquete,EstadoPaquete,TipoViajePaquete,StockPaquete,CapacidadPaquete,SelectedServicios,SelectedHabitaciones")] PaquetesTuristico paquete)
         {
+
             if (id != paquete.IdPaquete)
             {
                 return NotFound();
+            }
+
+            var precioForm = Request.Form["PrecioPaquete"].ToString();
+            if (decimal.TryParse(precioForm.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out decimal precioConvertido))
+            {
+                paquete.PrecioPaquete = precioConvertido;
+            }
+            else
+            {
+                ModelState.AddModelError("PrecioPaquete", "Formato de precio inválido");
             }
 
             if (ModelState.IsValid)
             {
                 try
                 {
+                    // 1. Convertir el precio al formato correcto
+                    if (paquete.PrecioPaquete.HasValue)
+                    {
+                        var precioString = paquete.PrecioPaquete.Value.ToString(CultureInfo.InvariantCulture);
+                        paquete.PrecioPaquete = decimal.Parse(precioString, CultureInfo.InvariantCulture);
+                    }
+
+                    // Resto de la lógica de actualización...
                     if (paquete.SelectedHabitaciones != null && paquete.SelectedHabitaciones.Any())
                     {
                         int capacidadTotal = 0;
@@ -201,7 +254,7 @@ namespace CrudDF3.Controllers
 
                         foreach (var habitacion in habitaciones)
                         {
-                            capacidadTotal += habitacion.CapacidadHuespedes;
+                            capacidadTotal += (int)habitacion.CapacidadHuespedes;
                         }
                         paquete.CapacidadPaquete = capacidadTotal;
                     }
@@ -209,69 +262,19 @@ namespace CrudDF3.Controllers
                     {
                         paquete.CapacidadPaquete = 0;
                     }
-                    // Asegurar que la disponibilidad sea coherente con el stock
+
+                    // Resto del código de actualización...
                     ActualizarDisponibilidadSegunStock(paquete);
 
-                    // Actualizar el paquete
                     _context.Update(paquete);
 
-                    // Actualizar servicios
-                    var serviciosActuales = await _context.PaqueteServicios
-                        .Where(ps => ps.IdPaquete == id)
-                        .ToListAsync();
-
-                    // Eliminar servicios no seleccionados
-                    foreach (var servicio in serviciosActuales)
-                    {
-                        if (!paquete.SelectedServicios.Contains(servicio.IdServicio))
-                        {
-                            _context.PaqueteServicios.Remove(servicio);
-                        }
-                    }
-
-                    // Agregar nuevos servicios seleccionados
-                    foreach (var servicioId in paquete.SelectedServicios)
-                    {
-                        if (!serviciosActuales.Any(ps => ps.IdServicio == servicioId))
-                        {
-                            _context.PaqueteServicios.Add(new PaqueteServicio
-                            {
-                                IdPaquete = paquete.IdPaquete,
-                                IdServicio = servicioId
-                            });
-                        }
-                    }
-
-                    // Actualizar habitaciones
-                    var habitacionesActuales = await _context.PaqueteHabitaciones
-                        .Where(ph => ph.IdPaquete == id)
-                        .ToListAsync();
-
-                    // Eliminar habitaciones no seleccionadas
-                    foreach (var habitacion in habitacionesActuales)
-                    {
-                        if (!paquete.SelectedHabitaciones.Contains(habitacion.IdHabitacion))
-                        {
-                            _context.PaqueteHabitaciones.Remove(habitacion);
-                        }
-                    }
-
-                    // Agregar nuevas habitaciones seleccionadas
-                    foreach (var habitacionId in paquete.SelectedHabitaciones)
-                    {
-                        if (!habitacionesActuales.Any(ph => ph.IdHabitacion == habitacionId))
-                        {
-                            _context.PaqueteHabitaciones.Add(new PaqueteHabitacion
-                            {
-                                IdPaquete = paquete.IdPaquete,
-                                IdHabitacion = habitacionId
-                            });
-                        }
-                    }
+                    // Procesar servicios y habitaciones
+                    await ProcesarRelacionesPaquete(paquete, id);
 
                     await _context.SaveChangesAsync();
+                    return RedirectToAction(nameof(Index));
                 }
-                catch (DbUpdateConcurrencyException)
+                catch (DbUpdateConcurrencyException ex)
                 {
                     if (!PaqueteTuristicoExists(paquete.IdPaquete))
                     {
@@ -279,15 +282,85 @@ namespace CrudDF3.Controllers
                     }
                     else
                     {
-                        throw;
+                        ModelState.AddModelError("", "Error de concurrencia: " + ex.Message);
                     }
                 }
-                return RedirectToAction(nameof(Index));
+                catch (Exception ex)
+                {
+                    ModelState.AddModelError("", "Error al guardar: " + ex.Message);
+                }
             }
 
-            ViewData["Servicios"] = _context.Servicios.ToList();
-            ViewData["Habitaciones"] = _context.Habitaciones.ToList();
+            ViewData["Servicios"] = await _context.Servicios.ToListAsync();
+            ViewData["Habitaciones"] = await _context.Habitaciones.ToListAsync();
             return View(paquete);
+        }
+
+        private async Task ProcesarRelacionesPaquete(PaquetesTuristico paquete, int id)
+        {
+            // Procesar servicios
+            await ProcesarServicios(paquete, id);
+
+            // Procesar habitaciones
+            await ProcesarHabitaciones(paquete, id);
+        }
+
+        private async Task ProcesarServicios(PaquetesTuristico paquete, int id)
+        {
+            var serviciosActuales = await _context.PaqueteServicios
+                .Where(ps => ps.IdPaquete == id)
+                .ToListAsync();
+
+            // Eliminar servicios no seleccionados
+            foreach (var servicio in serviciosActuales)
+            {
+                if (!paquete.SelectedServicios.Contains(servicio.IdServicio))
+                {
+                    _context.PaqueteServicios.Remove(servicio);
+                }
+            }
+
+            // Agregar nuevos servicios seleccionados
+            foreach (var servicioId in paquete.SelectedServicios)
+            {
+                if (!serviciosActuales.Any(ps => ps.IdServicio == servicioId))
+                {
+                    _context.PaqueteServicios.Add(new PaqueteServicio
+                    {
+                        IdPaquete = paquete.IdPaquete,
+                        IdServicio = servicioId
+                    });
+                }
+            }
+        }
+
+        private async Task ProcesarHabitaciones(PaquetesTuristico paquete, int id)
+        {
+            var habitacionesActuales = await _context.PaqueteHabitaciones
+                .Where(ph => ph.IdPaquete == id)
+                .ToListAsync();
+
+            // Eliminar habitaciones no seleccionadas
+            foreach (var habitacion in habitacionesActuales)
+            {
+                if (!paquete.SelectedHabitaciones.Contains(habitacion.IdHabitacion))
+                {
+                    _context.PaqueteHabitaciones.Remove(habitacion);
+                }
+            }
+
+            // Agregar nuevas habitaciones seleccionadas
+            foreach (var habitacionId in paquete.SelectedHabitaciones)
+            {
+                if (!habitacionesActuales.Any(ph => ph.IdHabitacion == habitacionId))
+                {
+                    _context.PaqueteHabitaciones.Add(new PaqueteHabitacion
+                    {
+                        IdPaquete = paquete.IdPaquete,
+                        IdHabitacion = habitacionId
+                    });
+                }
+            }
         }
 
         // GET: PaquetesTuristicoes/Delete/5

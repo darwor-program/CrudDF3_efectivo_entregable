@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CrudDF3.Migrations
 {
     [DbContext(typeof(CrudDf3Context))]
-    [Migration("20250409204723_SigoCansado")]
-    partial class SigoCansado
+    [Migration("20250410172140_ultima")]
+    partial class ultima
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

@@ -218,19 +218,24 @@
 
                 // Sumar precios de servicios seleccionados
                 $('.servicio-checkbox:checked').each(function() {
-                    precioTotal += parseFloat($(this).data('price')) || 0;
+                    let price = $(this).data('price').toString().replace(',', '.');
+                    precioTotal += parseFloat(price) || 0;
                 });
 
                 // Sumar precios y capacidades de habitaciones seleccionadas
                 $('.habitacion-checkbox:checked').each(function() {
-                    precioTotal += parseFloat($(this).data('price')) || 0;
+                    let price = $(this).data('price').toString().replace(',', '.');
+                    precioTotal += parseFloat(price) || 0;
                     capacidadTotal += parseInt($(this).data('capacity')) || 0;
                 });
 
-                // Actualizar los campos
-                $('#precio-paquete').val(precioTotal.toFixed(2));
+                // Actualizar los campos con punto decimal
+                $('#precio-paquete').val(precioTotal.toFixed(2).replace('.', ','));
                 $('#capacidad-total').val(capacidadTotal);
                 $('#capacidad-total-hidden').val(capacidadTotal);
+
+                // Actualizar también el campo oculto con el valor numérico puro
+                $('input[name="PrecioPaquete"]').val(precioTotal.toFixed(2));
             }
 
             // Escuchar cambios en los checkboxes
@@ -238,8 +243,23 @@
                 calcularPrecioTotal();
             });
 
+            // Formatear el precio inicial al cargar la página
+            $('#precio-paquete').val(function() {
+                let currentValue = $(this).val().replace(',', '.');
+                let numValue = parseFloat(currentValue) || 0;
+                return numValue.toFixed(2).replace('.', ',');
+            });
+
             // Calcular inicialmente por si hay valores precargados
             calcularPrecioTotal();
+
+            // Manejar el evento blur para formatear correctamente el input
+            $('#precio-paquete').on('blur', function() {
+                let value = $(this).val().replace(',', '.');
+                let num = parseFloat(value) || 0;
+                $(this).val(num.toFixed(2).replace('.', ','));
+                $('input[name="PrecioPaquete"]').val(num.toFixed(2));
+            });
         });
     </script>
 }
