@@ -1,25 +1,26 @@
 ﻿@model IEnumerable<CrudDF3.Models.Servicio>
 
 @{
-    ViewData["Title"] = "Nuestros Servicios Exclusivos";
+    ViewData["Title"] = "Nuestros Servicios";
 }
 
 @section Styles {
     <style>
         :root {
-            --primary-color: #1a3e3f; /* Verde oscuro elegante */
-            --secondary-color: #d4af37; /* Dorado */
-            --accent-color: #e8c07d; /* Dorado claro */
-            --light-bg: #f9f5f0; /* Beige claro */
-            --dark-text: #2d2d2d;
-            --light-text: #f8f9fa;
+            --primary-dark: #1a365d;
+            --primary-medium: #2c5282;
+            --primary-light: #4299e1;
+            --accent-gold: #d69e2e;
+            --light-bg: #f7fafc;
+            --card-bg: #ffffff;
+            --text-dark: #2d3748;
+            --text-light: #f8f9fa;
         }
 
         body {
             font-family: 'Montserrat', sans-serif;
-            color: var(--dark-text);
+            color: var(--text-dark);
             background-color: var(--light-bg);
-            line-height: 1.6;
         }
 
         h1, h2, h3, h4 {
@@ -28,10 +29,9 @@
         }
 
         .hero-section {
-            min-height: 60vh;
+            min-height: 50vh;
             padding: 4rem 0;
-            background: linear-gradient(rgba(26, 62, 63, 0.85), rgba(26, 62, 63, 0.85)), url('@Url.Content("~/Imagenes/services-bg.jpg")') no-repeat center center;
-            background-size: cover;
+            background: linear-gradient(rgba(26, 54, 93, 0.9), rgba(26, 54, 93, 0.9)), url('@Url.Content("~/Imagenes/services-banner.jpg")') no-repeat center center/cover;
             color: white;
             display: flex;
             align-items: center;
@@ -53,51 +53,67 @@
                 transform: translateX(-50%);
                 width: 80px;
                 height: 3px;
-                background-color: var(--secondary-color);
+                background-color: var(--accent-gold);
             }
 
-        /* Estilos para las tarjetas de servicios */
+        /* Estilos para tarjetas de servicios */
         .service-card {
-            transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
-            border-radius: 12px;
+            transition: all 0.3s ease;
+            border-radius: 8px;
             overflow: hidden;
-            border: none;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
             margin-bottom: 2rem;
             height: 100%;
-            background-color: white;
+            background-color: var(--card-bg);
         }
 
             .service-card:hover {
-                transform: translateY(-8px);
-                box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+                transform: translateY(-5px);
+                box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+                border-color: var(--primary-light);
             }
 
+        .service-image-container {
+            position: relative;
+            height: 200px;
+            overflow: hidden;
+        }
+
         .service-image {
-            height: 220px;
             width: 100%;
+            height: 100%;
             object-fit: cover;
             transition: transform 0.5s ease;
         }
 
         .service-card:hover .service-image {
-            transform: scale(1.05);
+            transform: scale(1.03);
         }
 
-        .service-card-header {
-            background-color: var(--primary-color);
+        .service-category-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background-color: var(--primary-medium);
             color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+        }
+
+        .service-card-body {
             padding: 1.5rem;
-            border-bottom: none;
         }
 
         .service-title {
             font-family: 'Playfair Display', serif;
             font-size: 1.5rem;
-            margin-bottom: 0.5rem;
-            color: white;
+            margin-bottom: 0.8rem;
+            color: var(--primary-dark);
             position: relative;
-            display: inline-block;
         }
 
             .service-title::after {
@@ -107,18 +123,14 @@
                 left: 0;
                 width: 50px;
                 height: 2px;
-                background-color: var(--secondary-color);
+                background-color: var(--primary-light);
             }
 
-        .service-card-body {
-            padding: 1.5rem;
-        }
-
         .service-description {
-            color: #666;
-            margin-bottom: 1.5rem;
+            color: #4a5568;
+            margin-bottom: 1.2rem;
             font-size: 0.95rem;
-            line-height: 1.7;
+            line-height: 1.6;
         }
 
         .service-features {
@@ -128,11 +140,11 @@
         }
 
             .service-features li {
-                margin-bottom: 0.8rem;
+                margin-bottom: 0.6rem;
                 position: relative;
-                padding-left: 2rem;
-                color: #555;
-                line-height: 1.5;
+                padding-left: 1.8rem;
+                color: #4a5568;
+                font-size: 0.9rem;
             }
 
                 .service-features li::before {
@@ -141,72 +153,49 @@
                     font-weight: 900;
                     position: absolute;
                     left: 0;
-                    color: var(--secondary-color);
-                    font-size: 1rem;
+                    color: var(--primary-light);
                 }
 
-        .price-info {
+        .service-footer {
             display: flex;
-            align-items: center;
             justify-content: space-between;
-            margin-top: 1.5rem;
+            align-items: center;
             padding-top: 1rem;
-            border-top: 1px dashed #ddd;
+            margin-top: 1rem;
+            border-top: 1px solid #e2e8f0;
         }
 
         .service-price {
-            font-size: 1.2rem;
-            font-weight: 700;
-            color: var(--primary-color);
+            font-weight: 600;
+            color: var(--primary-dark);
+            font-size: 1.1rem;
         }
 
-        .service-category {
-            background-color: var(--accent-color);
-            color: var(--primary-color);
-            padding: 0.3rem 1rem;
-            border-radius: 20px;
-            font-weight: 600;
+        .service-duration {
+            display: flex;
+            align-items: center;
+            color: var(--primary-medium);
+            font-weight: 500;
             font-size: 0.9rem;
         }
 
-        /* Responsive adjustments */
-        @@media (max-width: 992px) {
-            .service-card {
-                margin-bottom: 1.5rem;
+            .service-duration i {
+                margin-right: 6px;
+                color: var(--primary-light);
             }
-
-            .service-image {
-                height: 200px;
-            }
-        }
 
         @@media (max-width: 768px) {
-            .hero-section {
-                min-height: 50vh;
-                padding: 3rem 0;
-            }
+            .hero-section
 
-            .section-title {
-                font-size: 2rem;
-            }
-
-            .service-title {
-                font-size: 1.3rem;
-            }
+        {
+            min-height: 40vh;
+            padding: 3rem 0;
         }
 
-        @@media (max-width: 576px) {
-            .hero-section {
-                min-height: 40vh;
-            }
+        .service-image-container {
+            height: 180px;
+        }
 
-            .section-title {
-                font-size: 1.8rem;
-            }
-
-            .service-image {
-                height: 180px;
-            }
         }
     </style>
 }
@@ -214,8 +203,8 @@
 <!-- Hero Section -->
 <section class="hero-section">
     <div class="container">
-        <h1 class="display-4 fw-bold mb-4">Nuestros Servicios Exclusivos</h1>
-        <p class="lead mb-4">Experiencias diseñadas para hacer tu estancia memorable</p>
+        <h1 class="display-4 fw-bold mb-4">@ViewData["Title"]</h1>
+        <p class="lead mb-4">Descubre nuestros servicios exclusivos para hacer tu estancia memorable</p>
         <div class="section-title"></div>
     </div>
 </section>
@@ -224,16 +213,14 @@
 <div class="container">
     <div class="row">
         @{
-            // Array de imágenes de ejemplo para los servicios
             var serviceImages = new List<string> {
         "/Imagenes/Servicio1.jpg",
         "/Imagenes/Servicio2.jpg",
         "/Imagenes/Servicio3.jpg",
         "/Imagenes/Servicio4.jpg",
-        "/Imagenes/Servicio5.jpg",
-        "/Imagenes/Servicio6.jpg"
-        };
+        "/Imagenes/Servicio5.jpg"
 
+        };
             int imageIndex = 0;
         }
 
@@ -241,16 +228,13 @@
         {
             <div class="col-lg-4 col-md-6 mb-4">
                 <div class="service-card">
-                    <div class="image-container">
+                    <div class="service-image-container">
                         <img src="@serviceImages[imageIndex % serviceImages.Count]" class="service-image" alt="@item.NombreServicio">
-                    </div>
-
-                    <div class="service-card-header">
-                        <h3 class="service-title">@item.NombreServicio</h3>
-                        <span class="service-category">@item.Categoria</span>
+                        <span class="service-category-badge">@item.Categoria</span>
                     </div>
 
                     <div class="service-card-body">
+                        <h3 class="service-title">@item.NombreServicio</h3>
                         <p class="service-description">@item.Descripcion</p>
 
                         @if (!string.IsNullOrEmpty(item.Observacion))
@@ -264,8 +248,10 @@
                             </ul>
                         }
 
-                        <div class="price-info">
-                            <span class="service-price">@item.Costo?.ToString("C")</span>
+                        <div class="service-footer">
+                            <div class="service-price">
+                                @item.Costo?.ToString("C")
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -275,3 +261,23 @@
         }
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Animación de aparición de tarjetas
+            const serviceCards = document.querySelectorAll('.service-card');
+
+            serviceCards.forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                card.style.transition = `all 0.5s ease ${index * 0.1}s`;
+
+                setTimeout(() => {
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, 100);
+            });
+        });
+    </script>
+}

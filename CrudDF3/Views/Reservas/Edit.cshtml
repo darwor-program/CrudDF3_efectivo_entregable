@@ -1,4 +1,5 @@
 @model CrudDF3.Models.ViewModels.EditReservaViewModel
+@using CrudDF3.Models.ViewModels
 @{
     ViewData["Title"] = $"Editar Reserva #{Model?.IdReserva}";
     Model.PaquetesDisponibles ??= new List<PaqueteSelectionViewModel>();

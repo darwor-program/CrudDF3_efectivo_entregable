@@ -236,103 +236,109 @@
                 <div class="d-flex justify-content-between align-items-center">
                     <h4 class="mb-0 text-white"><i class="fas fa-concierge-bell me-2"></i>Servicios Incluidos</h4>
                     <span class="badge bg-white text-primary-dark">
-                        @(ViewData["Servicios"] is IEnumerable<Servicio> servicios ? servicios.Count() : 0) disponibles
+                        @(ViewData["Servicios"] as IEnumerable<Servicio> ?? new List<Servicio>()).Count() disponibles
                     </span>
                 </div>
             </div>
             <div class="card-body">
-                @if (ViewData["Servicios"] is IEnumerable<Servicio> servicios && servicios.Any())
-                {
-                    <div class="row g-3">
-                        @foreach (var servicio in servicios)
-                        {
-                            <div class="col-md-4">
-                                <div class="card h-100 service-card">
-                                    <div class="card-body">
-                                        <div class="form-check form-switch mb-2">
-                                            <input class="form-check-input servicio-checkbox" 
-                                                   type="checkbox"
-                                                   name="SelectedServicios"
-                                                   value="@servicio.IdServicio"
-                                                   id="servicio_@servicio.IdServicio"
-                                                   data-price="@servicio.Costo"
-                                                   @(Model.SelectedServicios?.Contains(servicio.IdServicio) ?? false ? "checked" : "")>
-                                            <label class="form-check-label text-secondary-dark" for="servicio_@servicio.IdServicio">
-                                                <strong>@servicio.NombreServicio</strong>
-                                            </label>
-                                        </div>
-                                        <p class="card-text small text-muted mb-3">@servicio.Descripcion</p>
-                                        <div class="d-flex justify-content-between">
-                                            <span class="badge badge-category">@servicio.Categoria</span>
-                                            <span class="badge badge-price">@servicio.Costo?.ToString("C")</span>
+                @{
+                    var listaServicios = ViewData["Servicios"] as IEnumerable<Servicio> ?? new List<Servicio>();
+                    if (listaServicios.Any())
+                    {
+                        <div class="row g-3">
+                            @foreach (var servicio in listaServicios)
+                            {
+                                <div class="col-md-4">
+                                    <div class="card h-100 service-card">
+                                        <div class="card-body">
+                                            <div class="form-check form-switch mb-2">
+                                                <input class="form-check-input servicio-checkbox"
+                                                       type="checkbox"
+                                                       name="SelectedServicios"
+                                                       value="@servicio.IdServicio"
+                                                       id="servicio_@servicio.IdServicio"
+                                                       data-price="@servicio.Costo"
+                                                @(Model.SelectedServicios?.Contains(servicio.IdServicio) ?? false ? "checked" : "")>
+                                                <label class="form-check-label text-secondary-dark" for="servicio_@servicio.IdServicio">
+                                                    <strong>@servicio.NombreServicio</strong>
+                                                </label>
+                                            </div>
+                                            <p class="card-text small text-muted mb-3">@servicio.Descripcion</p>
+                                            <div class="d-flex justify-content-between">
+                                                <span class="badge badge-category">@servicio.Categoria</span>
+                                                <span class="badge badge-price">@servicio.Costo?.ToString("C")</span>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                        }
-                    </div>
-                }
-                else
-                {
-                    <div class="text-center py-4">
-                        <i class="fas fa-concierge-bell fa-3x text-muted mb-3"></i>
-                        <p class="text-muted">No hay servicios disponibles</p>
-                    </div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center py-4">
+                            <i class="fas fa-concierge-bell fa-3x text-muted mb-3"></i>
+                            <p class="text-muted">No hay servicios disponibles</p>
+                        </div>
+                    }
                 }
             </div>
         </div>
 
-        <!-- Habitaciones disponibles -->
+        <!-- Habitaciones disponibles - Corregido el ámbito de la variable -->
         <div class="card mb-4">
             <div class="card-header bg-primary-dark">
                 <div class="d-flex justify-content-between align-items-center">
                     <h4 class="mb-0 text-white"><i class="fas fa-hotel me-2"></i>Habitaciones Incluidas</h4>
                     <span class="badge bg-white text-primary-dark">
-                        @(ViewData["Habitaciones"] is IEnumerable<Habitacione> habitaciones ? habitaciones.Count() : 0) disponibles
+                        @(ViewData["Habitaciones"] as IEnumerable<Habitacione> ?? new List<Habitacione>()).Count() disponibles
                     </span>
                 </div>
             </div>
             <div class="card-body">
-                @if (ViewData["Habitaciones"] is IEnumerable<Habitacione> habitaciones && habitaciones.Any())
-                {
-                    <div class="row g-3">
-                        @foreach (var habitacion in habitaciones)
-                        {
-                            <div class="col-md-4">
-                                <div class="card h-100 room-card">
-                                    <div class="card-body">
-                                        <div class="form-check form-switch mb-2">
-                                            <input class="form-check-input habitacion-checkbox"
-                                                   type="checkbox"
-                                                   name="SelectedHabitaciones"
-                                                   value="@habitacion.IdHabitacion"
-                                                   id="habitacion_@habitacion.IdHabitacion"
-                                                   data-price="@habitacion.TarifaHabitacion"
-                                                   data-capacity="@habitacion.CapacidadHuespedes"
-                                                   @(Model.SelectedHabitaciones?.Contains(habitacion.IdHabitacion) ?? false ? "checked" : "")>
-                                            <label class="form-check-label text-secondary-dark" for="habitacion_@habitacion.IdHabitacion">
-                                                <strong>@habitacion.TipoHabitacion</strong>
-                                            </label>
-                                        </div>
-                                        <p class="card-text small text-muted mb-3">@habitacion.DescripcionHabitacion</p>
-                                        <div class="d-flex justify-content-between">
-                                            <span class="badge badge-category">
-                                                <i class="fas fa-users me-1"></i> @habitacion.CapacidadHuespedes
-                                            </span>
-                                            <span class="badge badge-price">@habitacion.TarifaHabitacion?.ToString("C")</span>
+                @{
+                    var listaHabitaciones = ViewData["Habitaciones"] as IEnumerable<Habitacione> ?? new List<Habitacione>();
+                    if (listaHabitaciones.Any())
+                    {
+                        <div class="row g-3">
+                            @foreach (var habitacion in listaHabitaciones)
+                            {
+                                <div class="col-md-4">
+                                    <div class="card h-100 room-card">
+                                        <div class="card-body">
+                                            <div class="form-check form-switch mb-2">
+                                                <input class="form-check-input habitacion-checkbox"
+                                                       type="checkbox"
+                                                       name="SelectedHabitaciones"
+                                                       value="@habitacion.IdHabitacion"
+                                                       id="habitacion_@habitacion.IdHabitacion"
+                                                       data-price="@habitacion.TarifaHabitacion"
+                                                       data-capacity="@habitacion.CapacidadHuespedes"
+                                                @(Model.SelectedHabitaciones?.Contains(habitacion.IdHabitacion) ?? false ? "checked" : "")>
+                                                <label class="form-check-label text-secondary-dark" for="habitacion_@habitacion.IdHabitacion">
+                                                    <strong>@habitacion.TipoHabitacion</strong>
+                                                </label>
+                                            </div>
+                                            <p class="card-text small text-muted mb-3">@habitacion.DescripcionHabitacion</p>
+                                            <div class="d-flex justify-content-between">
+                                                <span class="badge badge-category">
+                                                    <i class="fas fa-users me-1"></i> @habitacion.CapacidadHuespedes
+                                                </span>
+                                                <span class="badge badge-price">@habitacion.TarifaHabitacion?.ToString("C")</span>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                        }
-                    </div>
-                }
-                else
-                {
-                    <div class="text-center py-4">
-                        <i class="fas fa-hotel fa-3x text-muted mb-3"></i>
-                        <p class="text-muted">No hay habitaciones disponibles</p>
-                    </div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center py-4">
+                            <i class="fas fa-hotel fa-3x text-muted mb-3"></i>
+                            <p class="text-muted">No hay habitaciones disponibles</p>
+                        </div>
+                    }
                 }
             </div>
         </div>
