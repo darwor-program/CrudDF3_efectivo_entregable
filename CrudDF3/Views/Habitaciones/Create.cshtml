@@ -1,58 +1,120 @@
 ﻿@model CrudDF3.Models.Habitacione
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Crear Habitación";
 }
 
-<h1>Create</h1>
+<div class="container py-4">
+    <div class="card border-0 shadow">
+        <div class="card-header py-3" style="background: linear-gradient(135deg, #274c77, #6096ba);">
+            <h2 class="h4 mb-0 text-white"><i class="fas fa-bed me-2"></i>@ViewData["Title"]</h2>
+        </div>
 
-<h4>Habitacione</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="TipoHabitacion" class="control-label"></label>
-                <input asp-for="TipoHabitacion" class="form-control" />
-                <span asp-validation-for="TipoHabitacion" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="CapacidadHuespedes" class="control-label"></label>
-                <input asp-for="CapacidadHuespedes" class="form-control" />
-                <span asp-validation-for="CapacidadHuespedes" class="text-danger"></span>
-            </div>
-            <div class="form-group form-check">
-                <label class="form-check-label">
-                    <input class="form-check-input" asp-for="EstadoHabitacion" /> @Html.DisplayNameFor(model => model.EstadoHabitacion)
-                </label>
-            </div>
-            <div class="form-group">
-                <label asp-for="DescripcionHabitacion" class="control-label"></label>
-                <input asp-for="DescripcionHabitacion" class="form-control" />
-                <span asp-validation-for="DescripcionHabitacion" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="TarifaHabitacion" class="control-label"></label>
-                <input asp-for="TarifaHabitacion" class="form-control" />
-                <span asp-validation-for="TarifaHabitacion" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="CaracteristicasHabitacion" class="control-label"></label>
-                <input asp-for="CaracteristicasHabitacion" class="form-control" />
-                <span asp-validation-for="CaracteristicasHabitacion" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
-        </form>
+        <div class="card-body" style="background-color: #edf2f4;">
+            <form asp-action="Create">
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+                <div class="row g-3">
+                    <!-- Columna Izquierda -->
+                    <div class="col-md-6">
+                        <!-- Tipo Habitación -->
+                        <div class="mb-3">
+                            <label asp-for="TipoHabitacion" class="form-label fw-bold" style="color: #2b2d42;"></label>
+                            <input asp-for="TipoHabitacion" class="form-control" style="border-left: 3px solid #6096ba;" />
+                            <span asp-validation-for="TipoHabitacion" class="text-danger small"></span>
+                        </div>
+
+                        <!-- Capacidad -->
+                        <div class="mb-3">
+                            <label asp-for="CapacidadHuespedes" class="form-label fw-bold" style="color: #2b2d42;"></label>
+                            <input asp-for="CapacidadHuespedes" class="form-control" style="border-left: 3px solid #6096ba;" />
+                            <span asp-validation-for="CapacidadHuespedes" class="text-danger small"></span>
+                        </div>
+
+                        <!-- Estado -->
+                        <div class="form-check form-switch mb-3">
+                            <input class="form-check-input" type="checkbox" role="switch"
+                                   asp-for="EstadoHabitacion" style="background-color: #274c77;">
+                            <label class="form-check-label fw-bold" style="color: #2b2d42;"
+                                   asp-for="EstadoHabitacion"></label>
+                        </div>
+                    </div>
+
+                    <!-- Columna Derecha -->
+                    <div class="col-md-6">
+                        <!-- Tarifa -->
+                        <div class="mb-3">
+                            <label asp-for="TarifaHabitacion" class="form-label fw-bold" style="color: #2b2d42;"></label>
+                            <div class="input-group">
+                                <span class="input-group-text" style="background-color: #a3cef1;">$</span>
+                                <input asp-for="TarifaHabitacion" class="form-control" style="border-left: 3px solid #6096ba;" />
+                            </div>
+                            <span asp-validation-for="TarifaHabitacion" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <!-- Campos de texto completos -->
+                    <div class="col-12">
+                        <!-- Descripción -->
+                        <div class="mb-3">
+                            <label asp-for="DescripcionHabitacion" class="form-label fw-bold" style="color: #2b2d42;"></label>
+                            <textarea asp-for="DescripcionHabitacion" class="form-control" rows="3"
+                                      style="border-left: 3px solid #6096ba;"></textarea>
+                            <span asp-validation-for="DescripcionHabitacion" class="text-danger small"></span>
+                        </div>
+
+                        <!-- Características -->
+                        <div class="mb-4">
+                            <label asp-for="CaracteristicasHabitacion" class="form-label fw-bold" style="color: #2b2d42;"></label>
+                            <textarea asp-for="CaracteristicasHabitacion" class="form-control" rows="3"
+                                      style="border-left: 3px solid #6096ba;"></textarea>
+                            <span asp-validation-for="CaracteristicasHabitacion" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <!-- Botones -->
+                    <div class="col-12">
+                        <div class="d-flex justify-content-between">
+                            <a asp-action="Index" class="btn" style="background-color: #a3cef1; color: #2b2d42;">
+                                <i class="fas fa-arrow-left me-2"></i>Volver
+                            </a>
+                            <button type="submit" class="btn" style="background-color: #6096ba; color: white;">
+                                <i class="fas fa-save me-2"></i>Guardar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
     </div>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
+@section Styles {
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+
+        .card {
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .form-control:focus {
+            border-color: #6096ba;
+            box-shadow: 0 0 0 0.25rem rgba(96, 150, 186, 0.25);
+        }
+
+        .alert-danger {
+            background-color: rgba(220, 53, 69, 0.1);
+            border-color: #dc3545;
+            color: #dc3545;
+        }
+    </style>
+}
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }

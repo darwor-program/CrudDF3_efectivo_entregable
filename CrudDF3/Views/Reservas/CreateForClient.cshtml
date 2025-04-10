@@ -14,11 +14,11 @@
         <form asp-action="Create" method="post" id="reservaForm">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
-            <!-- Información del Usuario (solo lectura para clientes) -->
+            <!-- Información del Usuario -->
             <div class="card mb-4">
                 <div class="card-header bg-info text-white">
                     <h5>Información del Cliente</h5>
-                </div>  
+                </div>
                 <div class="card-body">
                     <div class="form-group">
                         <label class="control-label">Usuario</label>
@@ -28,7 +28,7 @@
                 </div>
             </div>
 
-            <!-- Sección de Datos de Reserva -->
+            <!-- Datos de la Reserva -->
             <div class="row">
                 <div class="col-md-6">
                     <div class="form-group">
@@ -50,12 +50,12 @@
                         <input asp-for="NumeroPersonas" class="form-control" min="1" />
                         <span asp-validation-for="NumeroPersonas" class="text-danger"></span>
                     </div>
-                    
+
                     <div class="form-group">
                         <label asp-for="Valor" class="control-label">Valor Total</label>
                         <input asp-for="Valor" class="form-control" readonly id="valorTotal" />
                     </div>
-                    
+
                     <div class="form-group">
                         <label asp-for="Anticipo" class="control-label">Anticipo (30%)</label>
                         <input asp-for="Anticipo" class="form-control" readonly id="anticipoInput" />
@@ -63,7 +63,7 @@
                 </div>
             </div>
 
-            <!-- Sección de Paquetes Turísticos -->
+            <!-- Paquetes Turísticos Disponibles -->
             <div class="card mt-4">
                 <div class="card-header bg-primary text-white">
                     <h5>Paquetes Turísticos Disponibles</h5>
@@ -85,19 +85,19 @@
                                             <input type="hidden" asp-for="@Model.PaquetesDisponibles[i].PrecioPaquete" class="paquete-precio" />
 
                                             <div class="form-check">
-                                                <input class="form-check-input paquete-checkbox" 
+                                                <input class="form-check-input paquete-checkbox"
                                                        type="checkbox"
-                                                       name="PaquetesSeleccionados" 
+                                                       name="PaquetesSeleccionados"
                                                        value="@paquetes[i].IdPaquete"
                                                        data-precio="@paquetes[i].PrecioPaquete"
-                                                       @(Model.PaquetesSeleccionados.Contains(paquetes[i].IdPaquete) ? "checked" : "") />
+                                                @(Model.PaquetesSeleccionados.Contains(paquetes[i].IdPaquete) ? "checked" : "") />
                                                 <label class="form-check-label">
                                                     <strong>@paquetes[i].NombrePaquete</strong>
                                                 </label>
                                             </div>
 
                                             <p class="card-text small mt-2">@paquetes[i].DescripcionPaquete</p>
-                                            
+
                                             <div class="d-flex justify-content-between align-items-center mt-2">
                                                 <span class="badge bg-success">@paquetes[i].PrecioPaquete?.ToString("C")</span>
                                                 <small class="text-muted">@paquetes[i].DestinoPaquete</small>
@@ -117,11 +117,11 @@
                 </div>
             </div>
 
-            <!-- Fecha de Reserva (oculta, se establecerá automáticamente) -->
+            <!-- Campos ocultos -->
             <input type="hidden" asp-for="FechaReserva" value="@DateTime.Now" />
             <input type="hidden" asp-for="EstadoReserva" value="true" />
 
-            <!-- Botones de Acción -->
+            <!-- Botones -->
             <div class="form-group mt-4">
                 <button type="submit" class="btn btn-primary">
                     <i class="fas fa-calendar-plus"></i> Solicitar Reserva
@@ -141,15 +141,17 @@
 
     <script>
         $(document).ready(function() {
-            // Función para calcular el total
+            // Función para calcular el total y anticipo
             function calcularTotal() {
                 let total = 0;
 
+                // Sumar precios de paquetes seleccionados
                 $('.paquete-checkbox:checked').each(function() {
                     const precio = parseFloat($(this).data('precio')) || 0;
                     total += precio;
                 });
 
+                // Mostrar valores formateados
                 $('#valorTotal').val(total.toFixed(2));
                 $('#anticipoInput').val((total * 0.3).toFixed(2));
             }
@@ -157,14 +159,14 @@
             // Calcular al cargar la página
             calcularTotal();
 
-            // Recalcular cuando cambia cualquier checkbox
+            // Recalcular al cambiar selección de paquetes
             $('.paquete-checkbox').change(calcularTotal);
 
-            // Validar fechas
+            // Validación de fechas
             $('#FechaFinal').change(function() {
                 const fechaInicial = new Date($('#FechaInicial').val());
                 const fechaFinal = new Date($(this).val());
-                
+
                 if (fechaFinal < fechaInicial) {
                     alert('La fecha final no puede ser anterior a la fecha inicial');
                     $(this).val('');

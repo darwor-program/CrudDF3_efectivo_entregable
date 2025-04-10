@@ -1,54 +1,149 @@
 ﻿@model CrudDF3.Models.Huespede
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Detalles del Huésped";
+    Layout = "_Layout";
 }
 
-<h1>Details</h1>
+<div class="container mt-4">
+    <div class="card border-0 shadow-sm">
+        <div class="card-header bg-white border-bottom">
+            <div class="d-flex justify-content-between align-items-center py-2">
+                <h3 class="h5 mb-0">
+                    <i class="bi bi-person-badge me-2"></i>@ViewData["Title"]
+                </h3>
+                <a asp-action="Index" class="btn btn-outline-secondary btn-sm">
+                    <i class="bi bi-arrow-left"></i> Volver al listado
+                </a>
+            </div>
+        </div>
 
-<div>
-    <h4>Huespede</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.CedulaHuesped)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.CedulaHuesped)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.NombreHuesped)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.NombreHuesped)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.ApellidoHuesped)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.ApellidoHuesped)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.CorreoHuesped)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.CorreoHuesped)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.FechaEntradaHuesped)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.FechaEntradaHuesped)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.FechaSalidaHuesped)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.FechaSalidaHuesped)
-        </dd>
-    </dl>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="info-card mb-4">
+                        <h5 class="info-card-header">
+                            <i class="bi bi-person-lines-fill me-2"></i>Información Personal
+                        </h5>
+                        <div class="info-card-body">
+                            <div class="info-item">
+                                <span class="info-label">@Html.DisplayNameFor(model => model.CedulaHuesped)</span>
+                                <span class="info-value">@Html.DisplayFor(model => model.CedulaHuesped)</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">@Html.DisplayNameFor(model => model.NombreHuesped)</span>
+                                <span class="info-value">@Html.DisplayFor(model => model.NombreHuesped)</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">@Html.DisplayNameFor(model => model.ApellidoHuesped)</span>
+                                <span class="info-value">@Html.DisplayFor(model => model.ApellidoHuesped)</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">@Html.DisplayNameFor(model => model.CorreoHuesped)</span>
+                                <span class="info-value">@Html.DisplayFor(model => model.CorreoHuesped)</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="info-card mb-4">
+                        <h5 class="info-card-header">
+                            <i class="bi bi-calendar-event me-2"></i>Información de Estadía
+                        </h5>
+                        <div class="info-card-body">
+                            <div class="info-item">
+                                <span class="info-label">@Html.DisplayNameFor(model => model.FechaEntradaHuesped)</span>
+                                <span class="info-value">@Html.DisplayFor(model => model.FechaEntradaHuesped)</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">@Html.DisplayNameFor(model => model.FechaSalidaHuesped)</span>
+                                <span class="info-value">@Html.DisplayFor(model => model.FechaSalidaHuesped)</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Duración de la estadía</span>
+                                <span class="info-value">
+                                    @{
+                                        var duracion = (Model.FechaSalidaHuesped - Model.FechaEntradaHuesped)?.Days;
+                                        @(duracion.HasValue ? $"{duracion} días" : "No definida")
+                                    }
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-end mt-4">
+                <a asp-action="Edit" asp-route-id="@Model.IdHuesped" class="btn btn-primary me-2">
+                    <i class="bi bi-pencil-square me-1"></i> Editar
+                </a>
+                <a asp-action="Index" class="btn btn-outline-secondary">
+                    <i class="bi bi-list-ul me-1"></i> Ver todos los huéspedes
+                </a>
+            </div>
+        </div>
+    </div>
 </div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.IdHuesped">Edit</a> |
-    <a asp-action="Index">Back to List</a>
-</div>
+
+@section Styles {
+    <style>
+        .card {
+            border-radius: 0.5rem;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .info-card {
+            border: 1px solid #e9ecef;
+            border-radius: 0.5rem;
+            overflow: hidden;
+        }
+
+        .info-card-header {
+            background-color: #f8f9fa;
+            padding: 0.75rem 1rem;
+            margin: 0;
+            border-bottom: 1px solid #e9ecef;
+            font-size: 1rem;
+            color: #495057;
+        }
+
+        .info-card-body {
+            padding: 1rem;
+        }
+
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid #f1f1f1;
+        }
+
+            .info-item:last-child {
+                border-bottom: none;
+            }
+
+        .info-label {
+            font-weight: 500;
+            color: #6c757d;
+        }
+
+        .info-value {
+            font-weight: 400;
+            color: #212529;
+            text-align: right;
+        }
+
+        .btn-primary {
+            background-color: #0d6efd;
+            border-color: #0d6efd;
+        }
+
+        .btn-outline-secondary {
+            border-color: #6c757d;
+            color: #6c757d;
+        }
+    </style>
+}

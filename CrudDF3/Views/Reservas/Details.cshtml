@@ -5,50 +5,50 @@
 }
 
 <div class="d-flex justify-content-between align-items-center mb-4">
-    <h1>@ViewData["Title"]</h1>
+    <h1 class="text-dark">@ViewData["Title"]</h1>
     <div>
-        <a asp-action="Edit" asp-route-id="@Model.IdReserva" class="btn btn-warning">
-            <i class="fas fa-edit"></i> Editar
+        <a asp-action="Edit" asp-route-id="@Model.IdReserva" class="btn btn-primary">
+            <i class="fas fa-edit me-1"></i> Editar
         </a>
-        <a asp-action="Index" class="btn btn-secondary">
-            <i class="fas fa-arrow-left"></i> Volver
+        <a asp-action="Index" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-1"></i> Volver
         </a>
     </div>
 </div>
 
-<div class="card mb-4">
-    <div class="card-header bg-primary text-white">
-        <h5>Información General</h5>
+<div class="card public-card mb-4">
+    <div class="card-header public-card-header">
+        <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>Información General</h5>
     </div>
-    <div class="card-body">
+    <div class="card-body public-card-body">
         <div class="row">
             <div class="col-md-6">
                 <dl class="row">
-                    <dt class="col-sm-5">Usuario:</dt>
+                    <dt class="col-sm-5 text-muted">Usuario:</dt>
                     <dd class="col-sm-7">@Model.IdUsuarioNavigation?.NombreUsuario</dd>
 
-                    <dt class="col-sm-5">Fecha Inicial:</dt>
+                    <dt class="col-sm-5 text-muted">Fecha Inicial:</dt>
                     <dd class="col-sm-7">@Model.FechaInicial?.ToString("dd/MM/yyyy")</dd>
 
-                    <dt class="col-sm-5">Fecha Final:</dt>
+                    <dt class="col-sm-5 text-muted">Fecha Final:</dt>
                     <dd class="col-sm-7">@Model.FechaFinal?.ToString("dd/MM/yyyy")</dd>
 
-                    <dt class="col-sm-5">N° Personas:</dt>
+                    <dt class="col-sm-5 text-muted">N° Personas:</dt>
                     <dd class="col-sm-7">@Model.NumeroPersonas</dd>
                 </dl>
             </div>
             <div class="col-md-6">
                 <dl class="row">
-                    <dt class="col-sm-5">Valor Total:</dt>
-                    <dd class="col-sm-7">@Model.Valor?.ToString("C")</dd>
+                    <dt class="col-sm-5 text-muted">Valor Total:</dt>
+                    <dd class="col-sm-7 text-success fw-bold">@Model.Valor?.ToString("C")</dd>
 
-                    <dt class="col-sm-5">Anticipo:</dt>
-                    <dd class="col-sm-7">@Model.Anticipo?.ToString("C")</dd>
+                    <dt class="col-sm-5 text-muted">Anticipo:</dt>
+                    <dd class="col-sm-7 text-primary fw-bold">@Model.Anticipo?.ToString("C")</dd>
 
-                    <dt class="col-sm-5">Fecha Reserva:</dt>
+                    <dt class="col-sm-5 text-muted">Fecha Reserva:</dt>
                     <dd class="col-sm-7">@Model.FechaReserva?.ToString("dd/MM/yyyy HH:mm")</dd>
 
-                    <dt class="col-sm-5">Estado:</dt>
+                    <dt class="col-sm-5 text-muted">Estado:</dt>
                     <dd class="col-sm-7">
                         @if (Model.EstadoReserva)
                         {
@@ -66,21 +66,21 @@
 </div>
 
 <!-- Paquetes incluidos -->
-<div class="card">
-    <div class="card-header bg-primary text-white">
-        <h5>Paquetes Turísticos Incluidos</h5>
+<div class="card public-card">
+    <div class="card-header public-card-header">
+        <h5 class="mb-0"><i class="fas fa-suitcase-rolling me-2"></i>Paquetes Turísticos Incluidos</h5>
     </div>
-    <div class="card-body">
+    <div class="card-body public-card-body">
         @if (Model.ReservasPaquetes?.Count > 0)
         {
             <div class="row">
                 @foreach (var paquete in Model.ReservasPaquetes)
                 {
                     <div class="col-md-6 mb-3">
-                        <div class="card h-100">
+                        <div class="card h-100 border-0 shadow-sm">
                             <div class="card-body">
-                                <h5 class="card-title">@paquete.IdPaqueteNavigation?.NombrePaquete</h5>
-                                <p class="card-text">@paquete.IdPaqueteNavigation?.DescripcionPaquete</p>
+                                <h5 class="card-title text-dark">@paquete.IdPaqueteNavigation?.NombrePaquete</h5>
+                                <p class="card-text text-muted">@paquete.IdPaqueteNavigation?.DescripcionPaquete</p>
                                 <div class="d-flex justify-content-between align-items-center">
                                     <span class="badge bg-info">@paquete.IdPaqueteNavigation?.DestinoPaquete</span>
                                     <span class="badge bg-success">@paquete.IdPaqueteNavigation?.PrecioPaquete?.ToString("C")</span>
@@ -100,6 +100,7 @@
         else
         {
             <div class="alert alert-warning">
+                <i class="fas fa-exclamation-triangle me-2"></i>
                 No hay paquetes turísticos asignados a esta reserva.
             </div>
         }
