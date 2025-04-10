@@ -7,14 +7,14 @@
 @section Styles {
     <style>
         :root {
-            --primary-dark: #274c77;
-            --primary-light: #a3cef1;
-            --primary-accent: #6096ba;
-            --text-dark: #2b2d42;
-            --text-light: #edf2f4;
-            --light-bg: #f8f9fa;
-            --card-bg: #ffffff;
-            --transition-speed: 0.4s;
+            --primary-dark: #1a365d; /* Azul marino oscuro */
+            --primary-medium: #2c5282; /* Azul marino medio */
+            --primary-light: #4299e1; /* Azul cielo */
+            --accent-gold: #d69e2e; /* Dorado para acentos */
+            --light-bg: #f7fafc; /* Fondo claro */
+            --card-bg: #ffffff; /* Fondo de tarjetas */
+            --text-dark: #2d3748; /* Texto oscuro */
+            --text-light: #f8f9fa; /* Texto claro */
         }
 
         body {
@@ -33,24 +33,13 @@
         .hero-section {
             min-height: 70vh;
             padding: 5rem 0;
-            background: linear-gradient(rgba(39, 76, 119, 0.85), rgba(39, 76, 119, 0.85)), url('@Url.Content("~/Imagenes/travel-banner.jpg")') no-repeat center center/cover;
+            background: linear-gradient(rgba(26, 54, 93, 0.85), rgba(26, 54, 93, 0.85)), url('@Url.Content("~/Imagenes/hotel-lobby.jpg")') no-repeat center center/cover;
             color: white;
             display: flex;
             align-items: center;
             margin-bottom: 4rem;
             text-align: center;
             position: relative;
-            overflow: hidden;
-        }
-
-        .hero-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.4);
-            z-index: 1;
         }
 
         .hero-content {
@@ -72,116 +61,101 @@
                 transform: translateX(-50%);
                 width: 100px;
                 height: 4px;
-                background: var(--primary-accent);
-                animation: lineExpand 1.5s ease-out;
+                background: var(--accent-gold);
             }
-
-        @@keyframes lineExpand {
-            from {
-                width: 0;
-                opacity: 0;
-            }
-
-            to {
-                width: 100px;
-                opacity: 1;
-            }
-        }
 
         /* Tarjetas de Paquetes */
         .package-card {
-            transition: all var(--transition-speed);
-            border-radius: 16px;
+            transition: all 0.3s ease;
+            border-radius: 8px;
             overflow: hidden;
             border: none;
-            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             margin-bottom: 2.5rem;
             height: 100%;
             background-color: var(--card-bg);
-            position: relative;
+            border: 1px solid #e2e8f0;
         }
 
             .package-card:hover {
-                transform: translateY(-10px);
-                box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+                transform: translateY(-5px);
+                box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+                border-color: var(--primary-light);
             }
 
         .package-image-container {
             position: relative;
             overflow: hidden;
-            height: 280px;
-            clip-path: polygon(0 0, 100% 0, 100% 85%, 0 100%);
+            height: 250px;
         }
 
         .package-image {
             width: 100%;
             height: 100%;
             object-fit: cover;
-            transition: transform 0.8s ease;
+            transition: transform 0.5s ease;
         }
 
         .package-card:hover .package-image {
-            transform: scale(1.05);
+            transform: scale(1.03);
         }
 
         .package-badge {
             position: absolute;
-            top: 25px;
-            right: 25px;
-            background-color: var(--primary-accent);
+            top: 20px;
+            right: 20px;
+            background-color: var(--accent-gold);
             color: white;
-            padding: 0.6rem 1.5rem;
-            border-radius: 30px;
-            font-weight: 800;
-            font-size: 1rem;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
-            z-index: 3;
+            padding: 0.5rem 1.2rem;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
         .package-card-body {
-            padding: 2rem;
+            padding: 1.5rem;
         }
 
         .package-title {
             font-family: 'Playfair Display', serif;
-            font-size: 1.8rem;
-            margin-bottom: 1.2rem;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
             color: var(--primary-dark);
         }
 
         .package-description {
             color: var(--text-dark);
             opacity: 0.8;
-            margin-bottom: 1.8rem;
-            font-size: 1rem;
-            line-height: 1.8;
+            margin-bottom: 1.5rem;
+            font-size: 0.95rem;
+            line-height: 1.6;
         }
 
         .destination-info {
             display: flex;
             align-items: center;
-            margin-bottom: 1.5rem;
-            color: var(--primary-dark);
-            font-size: 1.1rem;
+            margin-bottom: 1.2rem;
+            color: var(--primary-medium);
+            font-weight: 500;
         }
 
             .destination-info i {
-                margin-right: 12px;
-                color: var(--primary-accent);
-                font-size: 1.4rem;
+                margin-right: 10px;
+                color: var(--primary-light);
             }
 
         /* Acordeones */
         .accordion-section {
-            margin: 1.8rem 0;
-            border-radius: 10px;
+            margin: 1.2rem 0;
+            border-radius: 6px;
             overflow: hidden;
-            box-shadow: 0 3px 15px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e2e8f0;
         }
 
         .accordion-header {
-            background-color: var(--primary-light);
-            padding: 1rem 1.5rem;
+            background-color: #ebf8ff;
+            padding: 0.8rem 1.2rem;
             cursor: pointer;
             display: flex;
             justify-content: space-between;
@@ -190,46 +164,36 @@
         }
 
             .accordion-header:hover {
-                background-color: var(--primary-accent);
-                color: white;
+                background-color: #bee3f8;
             }
 
             .accordion-header h5 {
                 margin: 0;
                 font-weight: 600;
                 color: var(--primary-dark);
-                display: flex;
-                align-items: center;
+                font-size: 0.95rem;
             }
 
-            .accordion-header:hover h5 {
-                color: white;
-            }
-
-            .accordion-header h5 i {
-                margin-right: 10px;
-                color: var(--primary-dark);
-                transition: transform 0.3s ease;
-            }
-
-            .accordion-header:hover h5 i {
-                color: white;
-            }
-
-            .accordion-header.active h5 i {
-                transform: rotate(90deg);
-            }
+                .accordion-header h5 i {
+                    margin-right: 8px;
+                    color: var(--primary-medium);
+                }
 
         .accordion-content {
             max-height: 0;
             overflow: hidden;
-            transition: max-height 0.5s ease, padding 0.3s ease;
+            transition: max-height 0.3s ease-out;
+            padding: 0 1.2rem;
             background-color: white;
         }
 
-        .accordion-header.active + .accordion-content {
+        .accordion-header .fa-chevron-down {
+            transition: transform 0.3s ease;
+        }
+
+        .accordion-content.active {
             max-height: 500px;
-            padding: 1rem 1.5rem;
+            padding: 0.8rem 1.2rem;
         }
 
         .feature-list {
@@ -239,10 +203,11 @@
         }
 
             .feature-list li {
-                padding: 0.7rem 0;
-                border-bottom: 1px dashed #eee;
+                padding: 0.5rem 0;
+                border-bottom: 1px solid #edf2f7;
                 display: flex;
                 align-items: center;
+                font-size: 0.9rem;
             }
 
                 .feature-list li:last-child {
@@ -250,9 +215,9 @@
                 }
 
                 .feature-list li i {
-                    margin-right: 10px;
-                    color: var(--primary-accent);
-                    font-size: 0.9rem;
+                    margin-right: 8px;
+                    color: var(--primary-light);
+                    font-size: 0.8rem;
                 }
 
         /* Footer de Tarjeta */
@@ -260,73 +225,34 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding-top: 1.5rem;
-            margin-top: 1.5rem;
-            border-top: 1px solid #f0f0f0;
+            padding-top: 1rem;
+            margin-top: 1rem;
+            border-top: 1px solid #e2e8f0;
+            font-size: 0.9rem;
         }
 
         .travel-info {
             display: flex;
             align-items: center;
             color: var(--text-dark);
-            opacity: 0.7;
-            font-size: 0.95rem;
+            opacity: 0.8;
         }
 
             .travel-info i {
-                margin-right: 8px;
-                color: var(--primary-accent);
-                font-size: 1.1rem;
+                margin-right: 6px;
+                color: var(--primary-light);
+                font-size: 0.9rem;
             }
 
         /* Responsive */
-        @@media (max-width: 1200px) {
-            .package-image-container {
-                height: 240px;
-            }
-        }
-
-        @@media (max-width: 992px) {
-            .package-card {
-                margin-bottom: 2rem;
-            }
-
-            .package-image-container {
-                height: 220px;
-            }
-
-            .package-title {
-                font-size: 1.6rem;
-            }
-        }
-
         @@media (max-width: 768px) {
             .hero-section {
-                min-height: 60vh;
-                padding: 4rem 0;
-            }
-
-            .section-title {
-                font-size: 2.2rem;
-            }
-        }
-
-        @@media (max-width: 576px) {
-            .hero-section {
                 min-height: 50vh;
-            }
-
-            .section-title {
-                font-size: 1.9rem;
+                padding: 3rem 0;
             }
 
             .package-image-container {
                 height: 200px;
-                clip-path: polygon(0 0, 100% 0, 100% 90%, 0 100%);
-            }
-
-            .package-card-body {
-                padding: 1.5rem;
             }
         }
     </style>
@@ -334,7 +260,6 @@
 
 <!-- Hero Section -->
 <section class="hero-section">
-    <div class="hero-overlay"></div>
     <div class="container hero-content">
         <h1 class="display-4 fw-bold mb-4">@ViewData["Title"]</h1>
         <p class="lead mb-4">Descubre experiencias únicas diseñadas para crear memorias inolvidables</p>
@@ -351,15 +276,14 @@
         "/Imagenes/Paquete2.jpg",
         "/Imagenes/Paquete3.jpg",
         "/Imagenes/Paquete4.jpg",
-        "/Imagenes/Paquete5.jpg",
-        "/Imagenes/Paquete6.jpg"
+        "/Imagenes/Paquete5.jpg"
         };
             int imageIndex = 0;
         }
 
         @foreach (var item in Model)
         {
-            <div class="col-lg-4 col-md-6 mb-5">
+            <div class="col-lg-4 col-md-6 mb-4">
                 <div class="package-card">
                     <div class="package-image-container">
                         <img src="@packageImages[imageIndex % packageImages.Count]" class="package-image" alt="@item.NombrePaquete">
@@ -381,7 +305,7 @@
                         <div class="accordion-section">
                             <div class="accordion-header">
                                 <h5><i class="fas fa-bed"></i> Habitaciones Incluidas</h5>
-                                <i class="fas fa-chevron-right"></i>
+                                <i class="fas fa-chevron-down"></i>
                             </div>
                             <div class="accordion-content">
                                 <ul class="feature-list">
@@ -400,7 +324,7 @@
                         <div class="accordion-section">
                             <div class="accordion-header">
                                 <h5><i class="fas fa-concierge-bell"></i> Servicios Incluidos</h5>
-                                <i class="fas fa-chevron-right"></i>
+                                <i class="fas fa-chevron-down"></i>
                             </div>
                             <div class="accordion-content">
                                 <ul class="feature-list">
@@ -440,30 +364,42 @@
             // Acordeones interactivos
             const accordionHeaders = document.querySelectorAll('.accordion-header');
 
+            // Configuración inicial: cerrar todos los acordeones
+            document.querySelectorAll('.accordion-content').forEach(content => {
+                content.style.maxHeight = '0';
+            });
+
             accordionHeaders.forEach(header => {
                 header.addEventListener('click', function() {
-                    this.classList.toggle('active');
                     const content = this.nextElementSibling;
+                    const icon = this.querySelector('.fa-chevron-down');
 
-                    if (this.classList.contains('active')) {
+                    // Cerrar todos los demás acordeones
+                    document.querySelectorAll('.accordion-content').forEach(item => {
+                        if (item !== content) {
+                            item.style.maxHeight = '0';
+                            item.previousElementSibling.querySelector('.fa-chevron-down').style.transform = 'rotate(0deg)';
+                        }
+                    });
+
+                    // Alternar el acordeón actual
+                    if (content.style.maxHeight === '0px') {
                         content.style.maxHeight = content.scrollHeight + 'px';
+                        icon.style.transform = 'rotate(180deg)';
                     } else {
                         content.style.maxHeight = '0';
+                        icon.style.transform = 'rotate(0deg)';
                     }
-
-                    // Rotar ícono
-                    const icon = this.querySelector('.fa-chevron-right');
-                    icon.style.transform = this.classList.contains('active') ? 'rotate(90deg)' : 'rotate(0)';
                 });
             });
 
-            // Efecto de aparición gradual para las tarjetas
+            // Animación de aparición de tarjetas
             const packageCards = document.querySelectorAll('.package-card');
 
             packageCards.forEach((card, index) => {
                 card.style.opacity = '0';
-                card.style.transform = 'translateY(30px)';
-                card.style.transition = `all 0.6s ease ${index * 0.1}s`;
+                card.style.transform = 'translateY(20px)';
+                card.style.transition = `all 0.5s ease ${index * 0.1}s`;
 
                 setTimeout(() => {
                     card.style.opacity = '1';

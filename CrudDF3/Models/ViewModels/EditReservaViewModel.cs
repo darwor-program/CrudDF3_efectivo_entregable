@@ -44,7 +44,7 @@ namespace CrudDF3.Models.ViewModels
         public bool EstadoReserva { get; set; }
 
         // Lista de paquetes disponibles para selección
-        public List<PaqueteSelectionViewModel> PaquetesDisponibles { get; set; } = new List<PaqueteSelectionViewModel>();
+        public List<PaqueteSelectionViewModel>? PaquetesDisponibles { get; set; } = new List<PaqueteSelectionViewModel>();
 
         // Lista de IDs de paquetes seleccionados
         public List<int> PaquetesSeleccionados { get; set; } = new List<int>();
