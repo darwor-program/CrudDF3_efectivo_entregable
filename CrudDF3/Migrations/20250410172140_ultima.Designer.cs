@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CrudDF3.Migrations
 {
     [DbContext(typeof(CrudDf3Context))]
-    [Migration("20250407182233_loles")]
-    partial class loles
+    [Migration("20250410172140_ultima")]
+    partial class ultima
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -33,7 +33,7 @@ namespace CrudDF3.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdHabitacion"));
 
-                    b.Property<int?>("CapacidadHuespedes")
+                    b.Property<int>("CapacidadHuespedes")
                         .HasColumnType("int");
 
                     b.Property<string>("CaracteristicasHabitacion")
@@ -139,6 +139,9 @@ namespace CrudDF3.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdPaquete"));
 
+                    b.Property<int>("CapacidadPaquete")
+                        .HasColumnType("int");
+
                     b.Property<string>("DescripcionPaquete")
                         .HasMaxLength(255)
                         .IsUnicode(false)
@@ -165,6 +168,9 @@ namespace CrudDF3.Migrations
 
                     b.Property<decimal?>("PrecioPaquete")
                         .HasColumnType("decimal(10, 2)");
+
+                    b.Property<int>("StockPaquete")
+                        .HasColumnType("int");
 
                     b.Property<string>("TipoViajePaquete")
                         .HasMaxLength(50)

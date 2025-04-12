@@ -1,77 +1,191 @@
 ﻿@model IEnumerable<CrudDF3.Models.Servicio>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Gestión de Servicios";
+    Layout = "_Layout";
 }
 
-<h1>Index</h1>
+<div class="container mt-4">
+    <div class="card border-0 shadow-sm">
+        <div class="card-header bg-white border-bottom">
+            <div class="d-flex justify-content-between align-items-center py-2">
+                <h3 class="h5 mb-0">Gestión de Servicios</h3>
+                <a asp-action="Create" class="btn btn-outline-dark btn-sm">
+                    <span class="me-1">+</span> Nuevo Servicio
+                </a>
+            </div>
+        </div>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.NombreServicio)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Descripcion)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Categoria)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Costo)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Disponibilidad)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Observacion)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.EstadoServicio)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.TipoServicio)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.NombreServicio)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Descripcion)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Categoria)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Costo)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Disponibilidad)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Observacion)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.EstadoServicio)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.TipoServicio)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.IdServicio">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.IdServicio">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.IdServicio">Delete</a>
-            </td>
-        </tr>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0" id="serviciosTable">
+                    <thead class="bg-light">
+                        <tr>
+                            <th class="py-3">Nombre</th>
+                            <th class="py-3">Descripción</th>
+                            <th class="py-3">Categoría</th>
+                            <th class="py-3">Costo</th>
+                            <th class="py-3">Disponibilidad</th>
+                            <th class="py-3">Estado</th>
+                            <th class="py-3">Tipo</th>
+                            <th class="py-3 text-end">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr class="border-top">
+                                <td class="align-middle">
+                                    @Html.DisplayFor(modelItem => item.NombreServicio)
+                                </td>
+                                <td class="align-middle text-truncate" style="max-width: 150px;" title="@item.Descripcion">
+                                    @Html.DisplayFor(modelItem => item.Descripcion)
+                                </td>
+                                <td class="align-middle">
+                                    <span class="badge bg-light text-dark border">
+                                        @Html.DisplayFor(modelItem => item.Categoria)
+                                    </span>
+                                </td>
+                                <td class="align-middle">
+                                    @Html.DisplayFor(modelItem => item.Costo)
+                                </td>
+                                <td class="align-middle">
+                                    @if (item.Disponibilidad)
+                                    {
+                                        <span class="badge bg-light text-success border border-success">Disponible</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-light text-danger border border-danger">No disponible</span>
+                                    }
+                                </td>
+                                <td class="align-middle">
+                                    @if (item.EstadoServicio)
+                                    {
+                                        <span class="badge bg-light text-success border border-success">Activo</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-light text-secondary border border-secondary">Inactivo</span>
+                                    }
+                                </td>
+                                <td class="align-middle">
+                                    <span class="badge bg-light text-dark border">
+                                        @Html.DisplayFor(modelItem => item.TipoServicio)
+                                    </span>
+                                </td>
+                                <td class="align-middle text-end">
+                                    <div class="btn-group btn-group-sm" role="group">
+                                        <a asp-action="Edit" asp-route-id="@item.IdServicio" class="btn btn-outline-secondary border-0">
+                                            Editar
+                                        </a>
+                                        <a asp-action="Details" asp-route-id="@item.IdServicio" class="btn btn-outline-secondary border-0">
+                                            Detalles
+                                        </a>
+                                        <a asp-action="Delete" asp-route-id="@item.IdServicio" class="btn btn-outline-danger border-0">
+                                            Eliminar
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Pie de tabla con funcionalidades -->
+        <div class="card-footer bg-light">
+            <div class="d-flex justify-content-between align-items-center">
+                <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" id="toggleInactive">
+                    <label class="form-check-label" for="toggleInactive">Mostrar inactivos</label>
+                </div>
+                <div class="input-group input-group-sm" style="width: 250px;">
+                    <input type="text" id="searchInput" class="form-control" placeholder="Buscar servicios...">
+                    <button class="btn btn-outline-secondary" type="button" id="searchButton">
+                        <i class="bi bi-search"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Función para filtrar por estado
+        $('#toggleInactive').change(function() {
+            const showInactive = $(this).is(':checked');
+            $('#serviciosTable tbody tr').each(function() {
+                const isActive = $(this).find('td').eq(5).text().includes('Activo');
+                $(this).toggle(showInactive || isActive);
+            });
+        });
+
+        // Función de búsqueda
+        $('#searchButton').click(function() {
+            const searchText = $('#searchInput').val().toLowerCase();
+            $('#serviciosTable tbody tr').each(function() {
+                const rowText = $(this).text().toLowerCase();
+                $(this).toggle(rowText.indexOf(searchText) > -1);
+            });
+        });
+
+        // Búsqueda al presionar Enter
+        $('#searchInput').keypress(function(e) {
+            if (e.which === 13) {
+                $('#searchButton').click();
+            }
+        });
+    </script>
 }
-    </tbody>
-</table>
+
+<style>
+    .card {
+        border-radius: 0.5rem;
+        overflow: hidden;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        border: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    .table {
+        font-size: 0.875rem;
+        margin-bottom: 0;
+    }
+
+        .table th {
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-size: 0.75rem;
+            color: #6c757d;
+            background-color: #f8f9fa;
+            padding: 0.75rem 1rem;
+            border-bottom: 2px solid #dee2e6;
+        }
+
+        .table td {
+            padding: 0.75rem 1rem;
+            vertical-align: middle;
+            border-top: 1px solid #dee2e6;
+        }
+
+    .badge {
+        font-weight: 500;
+        padding: 0.35em 0.65em;
+        font-size: 0.75em;
+        letter-spacing: 0.05em;
+    }
+
+    .text-truncate {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .btn-outline-secondary {
+        border-color: #dee2e6;
+        color: #495057;
+    }
+</style>

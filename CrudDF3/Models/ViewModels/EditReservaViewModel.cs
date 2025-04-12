@@ -1,10 +1,9 @@
-﻿using CrudDF3.Models.ViewModels;
-using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using Microsoft.AspNetCore.Mvc.Rendering;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
-namespace CrudDF3.Models
+namespace CrudDF3.Models.ViewModels
 {
     public class EditReservaViewModel
     {
@@ -45,7 +44,7 @@ namespace CrudDF3.Models
         public bool EstadoReserva { get; set; }
 
         // Lista de paquetes disponibles para selección
-        public List<PaqueteSelectionViewModel> PaquetesDisponibles { get; set; } = new List<PaqueteSelectionViewModel>();
+        public List<PaqueteSelectionViewModel>? PaquetesDisponibles { get; set; } = new List<PaqueteSelectionViewModel>();
 
         // Lista de IDs de paquetes seleccionados
         public List<int> PaquetesSeleccionados { get; set; } = new List<int>();

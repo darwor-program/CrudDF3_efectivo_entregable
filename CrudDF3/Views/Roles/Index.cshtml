@@ -1,47 +1,139 @@
 ﻿@model IEnumerable<CrudDF3.Models.Role>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Gestión de Roles";
+    Layout = "_Layout";
 }
 
-<h1>Index</h1>
+<div class="container mt-4">
+    <div class="card border-0 shadow-sm">
+        <div class="card-header bg-white border-bottom">
+            <div class="d-flex justify-content-between align-items-center py-2">
+                <h3 class="h5 mb-0">Gestión de Roles</h3>
+                <a asp-action="Create" class="btn btn-outline-dark btn-sm">
+                    <span class="me-1">+</span> Nuevo Rol
+                </a>
+            </div>
+        </div>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.NombreRol)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.DescripcionRol)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.EstadoRol)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.NombreRol)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.DescripcionRol)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.EstadoRol)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.IdRol">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.IdRol">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.IdRol">Delete</a>
-            </td>
-        </tr>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0" id="rolesTable">
+                    <thead class="bg-light">
+                        <tr>
+                            <th class="py-3">Nombre</th>
+                            <th class="py-3">Descripción</th>
+                            <th class="py-3">Estado</th>
+                            <th class="py-3">Permisos</th>
+                            <th class="py-3 text-end">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr class="border-top">
+                                <td class="align-middle">
+                                    <strong>@Html.DisplayFor(modelItem => item.NombreRol)</strong>
+                                </td>
+                                <td class="align-middle text-truncate" style="max-width: 200px;" title="@item.DescripcionRol">
+                                    @Html.DisplayFor(modelItem => item.DescripcionRol)
+                                </td>
+                                <td class="align-middle">
+                                    @if (item.EstadoRol)
+                                    {
+                                        <span class="badge bg-light text-success border border-success">Activo</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-light text-danger border border-danger">Inactivo</span>
+                                    }
+                                </td>
+                                <td class="align-middle">
+                                    @if (item.RolPermisos != null && item.RolPermisos.Any())
+                                    {
+                                        <div class="d-flex flex-wrap gap-1">
+                                            @foreach (var permiso in item.RolPermisos.Take(3).Select(rp => rp.IdPermisoNavigation))
+                                            {
+                                                <span class="badge bg-light text-dark border">
+                                                    @permiso.NombrePermiso
+                                                </span>
+                                            }
+                                            @if (item.RolPermisos.Count > 3)
+                                            {
+                                                <span class="badge bg-light text-dark border">
+                                                    +@(item.RolPermisos.Count - 3) más
+                                                </span>
+                                            }
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-light text-muted border">Sin permisos</span>
+                                    }
+                                </td>
+                                <td class="align-middle text-end">
+                                    <div class="btn-group btn-group-sm" role="group">
+                                        <a asp-action="Edit" asp-route-id="@item.IdRol" class="btn btn-outline-secondary border-0">
+                                            Editar
+                                        </a>
+                                        <a asp-action="Details" asp-route-id="@item.IdRol" class="btn btn-outline-secondary border-0">
+                                            Detalles
+                                        </a>
+                                        <a asp-action="Delete" asp-route-id="@item.IdRol" class="btn btn-outline-danger border-0">
+                                            Eliminar
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Pie de tabla -->
+        <div class="card-footer bg-light">
+            <div class="d-flex justify-content-between align-items-center">
+                <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" id="toggleInactive">
+                    <label class="form-check-label" for="toggleInactive">Mostrar inactivos</label>
+                </div>
+                <div class="input-group input-group-sm" style="width: 250px;">
+                    <input type="text" id="searchInput" class="form-control" placeholder="Buscar roles...">
+                    <button class="btn btn-outline-secondary" type="button" id="searchButton">
+                        <i class="bi bi-search"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Función para filtrar por estado
+        $('#toggleInactive').change(function() {
+            const showInactive = $(this).is(':checked');
+            $('#rolesTable tbody tr').each(function() {
+                const isInactive = $(this).find('td').eq(2).text().includes('Inactivo');
+                $(this).toggle(showInactive || !isInactive);
+            });
+        });
+
+        // Función de búsqueda
+        $('#searchButton').click(function() {
+            const searchText = $('#searchInput').val().toLowerCase();
+            $('#rolesTable tbody tr').each(function() {
+                const rowText = $(this).text().toLowerCase();
+                $(this).toggle(rowText.indexOf(searchText) > -1);
+            });
+        });
+
+        // Búsqueda al presionar Enter
+        $('#searchInput').keypress(function(e) {
+            if (e.which === 13) {
+                $('#searchButton').click();
+            }
+        });
+    </script>
 }
-    </tbody>
-</table>

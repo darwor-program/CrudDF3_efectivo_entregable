@@ -2,69 +2,134 @@
 @model CreateRoleViewModel
 
 @{
-    ViewData["Title"] = "Create Role";
+    ViewData["Title"] = "Crear Nuevo Rol";
+    Layout = "_Layout";
 }
 
-<h1>@ViewData["Title"]</h1>
-
-<h4>Create Role</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-
-            <!-- Campo NombreRol -->
-            <div class="form-group">
-                <label asp-for="NombreRol" class="control-label"></label>
-                <input asp-for="NombreRol" class="form-control" />
-                <span asp-validation-for="NombreRol" class="text-danger"></span>
+<div class="container mt-4">
+    <div class="card border-0 shadow-sm">
+        <div class="card-header bg-white border-bottom">
+            <div class="d-flex justify-content-between align-items-center py-2">
+                <h3 class="h5 mb-0">@ViewData["Title"]</h3>
+                <a asp-action="Index" class="btn btn-outline-secondary btn-sm">
+                    <i class="bi bi-arrow-left"></i> Volver
+                </a>
             </div>
+        </div>
 
-            <!-- Campo DescripcionRol -->
-            <div class="form-group">
-                <label asp-for="DescripcionRol" class="control-label"></label>
-                <input asp-for="DescripcionRol" class="form-control" />
-                <span asp-validation-for="DescripcionRol" class="text-danger"></span>
-            </div>
+        <div class="card-body">
+            <form asp-action="Create" class="row g-3">
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
 
-            <!-- Campo EstadoRol -->
-            <div class="form-group form-check">
-                <label class="form-check-label">
-                    <input class="form-check-input" asp-for="EstadoRol" /> @Html.DisplayNameFor(model => model.EstadoRol)
-                </label>
-            </div>
-
-            <!-- Selección de permisos con checkboxes -->
-            <div class="form-group">
-                <label>Assign Permissions</label>
-                <div>
-                    @foreach (var permission in Model.Permissions)
-                    {
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" name="SelectedPermissions" value="@permission.Value" />
-                            <label class="form-check-label">
-                                @permission.Text
-                            </label>
-                        </div>
-                    }
+                <!-- Campo NombreRol -->
+                <div class="col-md-6">
+                    <label asp-for="NombreRol" class="form-label"></label>
+                    <input asp-for="NombreRol" class="form-control" placeholder="Ej: Administrador" />
+                    <span asp-validation-for="NombreRol" class="text-danger small"></span>
                 </div>
-                <span asp-validation-for="SelectedPermissions" class="text-danger"></span>
-            </div>
 
-            <div class="form-group">
-                <input type="submit" value="Create Role" class="btn btn-primary" />
-            </div>
-        </form>
+                <!-- Campo DescripcionRol -->
+                <div class="col-md-6">
+                    <label asp-for="DescripcionRol" class="form-label"></label>
+                    <input asp-for="DescripcionRol" class="form-control" placeholder="Descripción breve del rol" />
+                    <span asp-validation-for="DescripcionRol" class="text-danger small"></span>
+                </div>
+
+                <!-- Campo EstadoRol -->
+                <div class="col-12">
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" asp-for="EstadoRol" checked>
+                        <label class="form-check-label" asp-for="EstadoRol"></label>
+                    </div>
+                </div>
+
+                <!-- Selección de permisos -->
+                <div class="col-12">
+                    <div class="card mb-3">
+                        <div class="card-header bg-light">
+                            <h5 class="mb-0">Asignar Permisos</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                @foreach (var permission in Model.Permissions)
+                                {
+                                    <div class="col-md-4 mb-2">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox"
+                                                   name="SelectedPermissions"
+                                                   value="@permission.Value"
+                                                   id="perm_@permission.Value" />
+                                            <label class="form-check-label" for="perm_@permission.Value">
+                                                @permission.Text
+                                            </label>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                            <span asp-validation-for="SelectedPermissions" class="text-danger small"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12">
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-save"></i> Crear Rol
+                        </button>
+                        <a asp-action="Index" class="btn btn-outline-secondary">
+                            Cancelar
+                        </a>
+                    </div>
+                </div>
+            </form>
+        </div>
     </div>
-</div>
-
-<div>
-    <a asp-action="Index">Back to List</a>
 </div>
 
 @section Scripts {
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
+
+    <script>
+        // Seleccionar/deseleccionar todos los permisos
+        document.getElementById('selectAll').addEventListener('change', function() {
+            const checkboxes = document.querySelectorAll('input[name="SelectedPermissions"]');
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = this.checked;
+            });
+        });
+    </script>
 }
+
+<style>
+    .card {
+        border-radius: 0.5rem;
+        overflow: hidden;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        border: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    .form-label {
+        font-weight: 500;
+        margin-bottom: 0.25rem;
+    }
+
+    .form-control {
+        border-radius: 0.25rem;
+    }
+
+    .text-danger.small {
+        font-size: 0.8rem;
+    }
+
+    .form-check-input:checked {
+        background-color: #0d6efd;
+        border-color: #0d6efd;
+    }
+
+    .form-switch .form-check-input {
+        width: 2.5em;
+        height: 1.5em;
+    }
+</style>

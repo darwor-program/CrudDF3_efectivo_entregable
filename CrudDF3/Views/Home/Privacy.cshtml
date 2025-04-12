@@ -1,6 +1,178 @@
 ﻿@{
-    ViewData["Title"] = "Privacy Policy";
+    ViewData["Title"] = "Política de Privacidad";
 }
-<h1>@ViewData["Title"]</h1>
 
-<p>Use this page to detail your site's privacy policy.</p>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewData["Title"] - Traveler's Home</title>
+    <style>
+        :root {
+            --primary-color: #1a3e3f; /* Verde oscuro elegante */
+            --secondary-color: #d4af37; /* Dorado */
+            --accent-color: #e8c07d; /* Dorado claro */
+            --light-bg: #f9f5f0; /* Beige claro */
+            --dark-text: #2d2d2d;
+            --light-text: #f8f9fa;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            color: var(--dark-text);
+            background-color: var(--light-bg);
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        h1, h2, h3 {
+            font-family: 'Playfair Display', serif;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            position: relative;
+            padding-bottom: 10px;
+        }
+
+            h1::after {
+                content: "";
+                position: absolute;
+                bottom: 0;
+                left: 0;
+                width: 80px;
+                height: 4px;
+                background-color: var(--secondary-color);
+            }
+
+        .privacy-container {
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 30px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        .section {
+            margin-bottom: 30px;
+        }
+
+            .section h2 {
+                color: var(--primary-color);
+                margin-bottom: 15px;
+                font-size: 1.8rem;
+            }
+
+            .section p {
+                margin-bottom: 15px;
+            }
+
+        .highlight {
+            background-color: rgba(212, 175, 55, 0.1);
+            padding: 15px;
+            border-left: 4px solid var(--secondary-color);
+            margin: 20px 0;
+        }
+
+        .back-btn {
+            background-color: var(--secondary-color);
+            color: var(--primary-color);
+            padding: 10px 20px;
+            border: none;
+            border-radius: 30px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 20px;
+        }
+
+            .back-btn:hover {
+                background-color: var(--accent-color);
+                transform: translateY(-2px);
+                box-shadow: 0 4px 12px rgba(212, 175, 55, 0.25);
+                color: var(--primary-color);
+            }
+
+        @@media (max-width: 768px) {
+            .privacy-container {
+                padding: 20px;
+                margin: 20px;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="privacy-container">
+        <h1>@ViewData["Title"]</h1>
+
+        <div class="section">
+            <h2>Nuestro Compromiso con Tu Privacidad</h2>
+            <p>En Traveler's Home, valoramos y respetamos tu privacidad. Esta política describe cómo recopilamos, usamos y protegemos tu información personal cuando utilizas nuestros servicios.</p>
+        </div>
+
+        <div class="section">
+            <h2>Información que Recopilamos</h2>
+            <p>Podemos recopilar los siguientes tipos de información:</p>
+            <ul>
+                <li>Información de contacto (nombre, correo electrónico, teléfono)</li>
+                <li>Datos de reservas y preferencias de viaje</li>
+                <li>Información de pago (procesada de forma segura)</li>
+                <li>Datos de navegación y cookies</li>
+            </ul>
+        </div>
+
+        <div class="highlight">
+            <p><strong>Nota importante:</strong> Nunca compartiremos tu información personal con terceros sin tu consentimiento explícito, excepto cuando sea necesario para proporcionar nuestros servicios o por requerimiento legal.</p>
+        </div>
+
+        <div class="section">
+            <h2>Uso de Cookies</h2>
+            <p>Utilizamos cookies para mejorar tu experiencia en nuestro sitio web. Las cookies nos ayudan a:</p>
+            <ul>
+                <li>Recordar tus preferencias</li>
+                <li>Analizar el tráfico del sitio</li>
+                <li>Personalizar tu experiencia</li>
+            </ul>
+            <p>Puedes gestionar tus preferencias de cookies en cualquier momento a través de la configuración de tu navegador.</p>
+        </div>
+
+        <div class="section">
+            <h2>Tus Derechos</h2>
+            <p>Tienes derecho a:</p>
+            <ul>
+                <li>Acceder a tu información personal</li>
+                <li>Solicitar correcciones</li>
+                <li>Pedir la eliminación de tus datos</li>
+                <li>Oponerte al procesamiento de tu información</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2>Contacto</h2>
+            <p>Si tienes preguntas sobre esta política de privacidad, contáctanos en:</p>
+            <p><i class="fas fa-envelope"></i> privacidad@travelershome.com</p>
+            <p><i class="fas fa-phone"></i> +1 (555) 123-4567</p>
+        </div>
+
+        <a href="@Url.Action("Index", "Home")" class="back-btn">
+            <i class="fas fa-arrow-left me-2"></i>Volver al Inicio
+        </a>
+    </div>
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
+</body>
+</html>

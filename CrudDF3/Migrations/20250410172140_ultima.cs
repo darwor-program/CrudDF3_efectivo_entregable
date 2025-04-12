@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace CrudDF3.Migrations
 {
     /// <inheritdoc />
-    public partial class PrimerCambio : Migration
+    public partial class ultima : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -18,7 +18,7 @@ namespace CrudDF3.Migrations
                     IdHabitacion = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     TipoHabitacion = table.Column<string>(type: "varchar(100)", unicode: false, maxLength: 100, nullable: true),
-                    CapacidadHuespedes = table.Column<int>(type: "int", nullable: true),
+                    CapacidadHuespedes = table.Column<int>(type: "int", nullable: false),
                     EstadoHabitacion = table.Column<bool>(type: "bit", nullable: false),
                     DescripcionHabitacion = table.Column<string>(type: "varchar(255)", unicode: false, maxLength: 255, nullable: true),
                     TarifaHabitacion = table.Column<decimal>(type: "decimal(10,2)", nullable: true),
@@ -60,7 +60,9 @@ namespace CrudDF3.Migrations
                     FechaPaquete = table.Column<DateTime>(type: "datetime", nullable: true),
                     DestinoPaquete = table.Column<string>(type: "varchar(50)", unicode: false, maxLength: 50, nullable: true),
                     EstadoPaquete = table.Column<bool>(type: "bit", nullable: false),
-                    TipoViajePaquete = table.Column<string>(type: "varchar(50)", unicode: false, maxLength: 50, nullable: true)
+                    TipoViajePaquete = table.Column<string>(type: "varchar(50)", unicode: false, maxLength: 50, nullable: true),
+                    StockPaquete = table.Column<int>(type: "int", nullable: false),
+                    CapacidadPaquete = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {

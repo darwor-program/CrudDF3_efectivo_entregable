@@ -1,0 +1,282 @@
+﻿@model IEnumerable<CrudDF3.Models.Habitacione>
+
+@{
+    ViewData["Title"] = "Nuestras Habitaciones";
+}
+
+@section Styles {
+    <style>
+        :root {
+            --primary-dark: #1a365d;
+            --primary-medium: #2c5282;
+            --primary-light: #4299e1;
+            --accent-gold: #d69e2e;
+            --light-bg: #f7fafc;
+            --card-bg: #ffffff;
+            --text-dark: #2d3748;
+            --text-light: #f8f9fa;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            color: var(--text-dark);
+            background-color: var(--light-bg);
+        }
+
+        h1, h2, h3, h4 {
+            font-family: 'Playfair Display', serif;
+            font-weight: 700;
+        }
+
+        .hero-section {
+            min-height: 50vh;
+            padding: 4rem 0;
+            background: linear-gradient(rgba(26, 54, 93, 0.9), rgba(26, 54, 93, 0.9)), url('@Url.Content("~/Imagenes/room-banner.jpg")') no-repeat center center/cover;
+            color: white;
+            display: flex;
+            align-items: center;
+            margin-bottom: 3rem;
+            text-align: center;
+        }
+
+        .section-title {
+            position: relative;
+            display: inline-block;
+            margin-bottom: 2rem;
+        }
+
+            .section-title::after {
+                content: "";
+                position: absolute;
+                bottom: -10px;
+                left: 50%;
+                transform: translateX(-50%);
+                width: 80px;
+                height: 3px;
+                background-color: var(--accent-gold);
+            }
+
+        /* Estilos para tarjetas de habitaciones */
+        .room-card {
+            transition: all 0.3s ease;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            margin-bottom: 2rem;
+            height: 100%;
+            background-color: var(--card-bg);
+        }
+
+            .room-card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+                border-color: var(--primary-light);
+            }
+
+        .room-image-container {
+            position: relative;
+            height: 220px;
+            overflow: hidden;
+        }
+
+        .room-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .room-card:hover .room-image {
+            transform: scale(1.03);
+        }
+
+        .room-type-badge {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            background-color: var(--accent-gold);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .room-card-body {
+            padding: 1.5rem;
+        }
+
+        .room-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            margin-bottom: 0.8rem;
+            color: var(--primary-dark);
+            position: relative;
+        }
+
+            .room-title::after {
+                content: "";
+                position: absolute;
+                bottom: -8px;
+                left: 0;
+                width: 50px;
+                height: 2px;
+                background-color: var(--primary-light);
+            }
+
+        .room-description {
+            color: #4a5568;
+            margin-bottom: 1.2rem;
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        .room-features {
+            list-style: none;
+            padding-left: 0;
+            margin-bottom: 1.5rem;
+        }
+
+            .room-features li {
+                margin-bottom: 0.6rem;
+                position: relative;
+                padding-left: 1.8rem;
+                color: #4a5568;
+                font-size: 0.9rem;
+            }
+
+                .room-features li::before {
+                    content: "\f00c";
+                    font-family: "Font Awesome 6 Free";
+                    font-weight: 900;
+                    position: absolute;
+                    left: 0;
+                    color: var(--primary-light);
+                }
+
+        .room-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 1rem;
+            margin-top: 1rem;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .capacity-info {
+            display: flex;
+            align-items: center;
+            color: var(--primary-medium);
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+            .capacity-info i {
+                margin-right: 8px;
+                color: var(--primary-light);
+            }
+
+        .room-price {
+            font-weight: 600;
+            color: var(--primary-dark);
+            font-size: 1.1rem;
+        }
+
+        @@media (max-width: 768px) {
+            .hero-section
+
+        {
+            min-height: 40vh;
+            padding: 3rem 0;
+        }
+
+        .room-image-container {
+            height: 180px;
+        }
+
+        }
+    </style>
+}
+
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="container">
+        <h1 class="display-4 fw-bold mb-4">@ViewData["Title"]</h1>
+        <p class="lead mb-4">Descubre espacios diseñados para tu comodidad y relax</p>
+        <div class="section-title"></div>
+    </div>
+</section>
+
+<!-- Habitaciones Section -->
+<div class="container">
+    <div class="row">
+        @{
+            var roomImages = new List<string> {
+        "/Imagenes/Habitacion1.jpg",
+        "/Imagenes/Habitacion2.jpg",
+        "/Imagenes/Habitacion3.jpg",
+        "/Imagenes/Habitacion4.jpg",
+        "/Imagenes/Habitacion5.jpg"
+        };
+            int imageIndex = 0;
+        }
+
+        @foreach (var item in Model)
+        {
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="room-card">
+                    <div class="room-image-container">
+                        <img src="@roomImages[imageIndex % roomImages.Count]" class="room-image" alt="@item.TipoHabitacion">
+                        <span class="room-type-badge">@item.TipoHabitacion</span>
+                    </div>
+
+                    <div class="room-card-body">
+                        <h3 class="room-title">@item.TipoHabitacion</h3>
+                        <p class="room-description">@item.DescripcionHabitacion</p>
+
+                        <h5>Características:</h5>
+                        <ul class="room-features">
+                            @foreach (var caracteristica in item.CaracteristicasHabitacion?.Split(',') ?? new string[0])
+                            {
+                                <li>@caracteristica.Trim()</li>
+                            }
+                        </ul>
+
+                        <div class="room-footer">
+                            <div class="capacity-info">
+                                <i class="fas fa-users"></i>
+                                <span>@item.CapacidadHuespedes personas</span>
+                            </div>
+                            <div class="room-price">
+                                @item.TarifaHabitacion?.ToString("C")
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            imageIndex++;
+        }
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Animación de aparición de tarjetas
+            const roomCards = document.querySelectorAll('.room-card');
+
+            roomCards.forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                card.style.transition = `all 0.5s ease ${index * 0.1}s`;
+
+                setTimeout(() => {
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, 100);
+            });
+        });
+    </script>
+}

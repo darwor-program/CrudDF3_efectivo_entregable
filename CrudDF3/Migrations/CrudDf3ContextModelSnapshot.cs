@@ -30,7 +30,7 @@ namespace CrudDF3.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdHabitacion"));
 
-                    b.Property<int?>("CapacidadHuespedes")
+                    b.Property<int>("CapacidadHuespedes")
                         .HasColumnType("int");
 
                     b.Property<string>("CaracteristicasHabitacion")
@@ -136,6 +136,9 @@ namespace CrudDF3.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdPaquete"));
 
+                    b.Property<int>("CapacidadPaquete")
+                        .HasColumnType("int");
+
                     b.Property<string>("DescripcionPaquete")
                         .HasMaxLength(255)
                         .IsUnicode(false)
@@ -162,6 +165,9 @@ namespace CrudDF3.Migrations
 
                     b.Property<decimal?>("PrecioPaquete")
                         .HasColumnType("decimal(10, 2)");
+
+                    b.Property<int>("StockPaquete")
+                        .HasColumnType("int");
 
                     b.Property<string>("TipoViajePaquete")
                         .HasMaxLength(50)

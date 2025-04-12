@@ -1,0 +1,411 @@
+﻿@model IEnumerable<CrudDF3.Models.PaquetesTuristico>
+
+@{
+    ViewData["Title"] = "Experiencias Exclusivas";
+}
+
+@section Styles {
+    <style>
+        :root {
+            --primary-dark: #1a365d; /* Azul marino oscuro */
+            --primary-medium: #2c5282; /* Azul marino medio */
+            --primary-light: #4299e1; /* Azul cielo */
+            --accent-gold: #d69e2e; /* Dorado para acentos */
+            --light-bg: #f7fafc; /* Fondo claro */
+            --card-bg: #ffffff; /* Fondo de tarjetas */
+            --text-dark: #2d3748; /* Texto oscuro */
+            --text-light: #f8f9fa; /* Texto claro */
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            color: var(--text-dark);
+            background-color: var(--light-bg);
+            line-height: 1.6;
+        }
+
+        h1, h2, h3, h4 {
+            font-family: 'Playfair Display', serif;
+            font-weight: 700;
+        }
+
+        /* Hero Section */
+        .hero-section {
+            min-height: 70vh;
+            padding: 5rem 0;
+            background: linear-gradient(rgba(26, 54, 93, 0.85), rgba(26, 54, 93, 0.85)), url('@Url.Content("~/Imagenes/hotel-lobby.jpg")') no-repeat center center/cover;
+            color: white;
+            display: flex;
+            align-items: center;
+            margin-bottom: 4rem;
+            text-align: center;
+            position: relative;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .section-title {
+            position: relative;
+            display: inline-block;
+            margin-bottom: 2.5rem;
+        }
+
+            .section-title::after {
+                content: "";
+                position: absolute;
+                bottom: -12px;
+                left: 50%;
+                transform: translateX(-50%);
+                width: 100px;
+                height: 4px;
+                background: var(--accent-gold);
+            }
+
+        /* Tarjetas de Paquetes */
+        .package-card {
+            transition: all 0.3s ease;
+            border-radius: 8px;
+            overflow: hidden;
+            border: none;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2.5rem;
+            height: 100%;
+            background-color: var(--card-bg);
+            border: 1px solid #e2e8f0;
+        }
+
+            .package-card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+                border-color: var(--primary-light);
+            }
+
+        .package-image-container {
+            position: relative;
+            overflow: hidden;
+            height: 250px;
+        }
+
+        .package-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .package-card:hover .package-image {
+            transform: scale(1.03);
+        }
+
+        .package-badge {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background-color: var(--accent-gold);
+            color: white;
+            padding: 0.5rem 1.2rem;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .package-card-body {
+            padding: 1.5rem;
+        }
+
+        .package-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: var(--primary-dark);
+        }
+
+        .package-description {
+            color: var(--text-dark);
+            opacity: 0.8;
+            margin-bottom: 1.5rem;
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        .destination-info {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1.2rem;
+            color: var(--primary-medium);
+            font-weight: 500;
+        }
+
+            .destination-info i {
+                margin-right: 10px;
+                color: var(--primary-light);
+            }
+
+        /* Acordeones */
+        .accordion-section {
+            margin: 1.2rem 0;
+            border-radius: 6px;
+            overflow: hidden;
+            border: 1px solid #e2e8f0;
+        }
+
+        .accordion-header {
+            background-color: #ebf8ff;
+            padding: 0.8rem 1.2rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+
+            .accordion-header:hover {
+                background-color: #bee3f8;
+            }
+
+            .accordion-header h5 {
+                margin: 0;
+                font-weight: 600;
+                color: var(--primary-dark);
+                font-size: 0.95rem;
+            }
+
+                .accordion-header h5 i {
+                    margin-right: 8px;
+                    color: var(--primary-medium);
+                }
+
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+            padding: 0 1.2rem;
+            background-color: white;
+        }
+
+        .accordion-header .fa-chevron-down {
+            transition: transform 0.3s ease;
+        }
+
+        .accordion-content.active {
+            max-height: 500px;
+            padding: 0.8rem 1.2rem;
+        }
+
+        .feature-list {
+            list-style: none;
+            padding-left: 0;
+            margin: 0;
+        }
+
+            .feature-list li {
+                padding: 0.5rem 0;
+                border-bottom: 1px solid #edf2f7;
+                display: flex;
+                align-items: center;
+                font-size: 0.9rem;
+            }
+
+                .feature-list li:last-child {
+                    border-bottom: none;
+                }
+
+                .feature-list li i {
+                    margin-right: 8px;
+                    color: var(--primary-light);
+                    font-size: 0.8rem;
+                }
+
+        /* Footer de Tarjeta */
+        .package-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 1rem;
+            margin-top: 1rem;
+            border-top: 1px solid #e2e8f0;
+            font-size: 0.9rem;
+        }
+
+        .travel-info {
+            display: flex;
+            align-items: center;
+            color: var(--text-dark);
+            opacity: 0.8;
+        }
+
+            .travel-info i {
+                margin-right: 6px;
+                color: var(--primary-light);
+                font-size: 0.9rem;
+            }
+
+        /* Responsive */
+        @@media (max-width: 768px) {
+            .hero-section {
+                min-height: 50vh;
+                padding: 3rem 0;
+            }
+
+            .package-image-container {
+                height: 200px;
+            }
+        }
+    </style>
+}
+
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="container hero-content">
+        <h1 class="display-4 fw-bold mb-4">@ViewData["Title"]</h1>
+        <p class="lead mb-4">Descubre experiencias únicas diseñadas para crear memorias inolvidables</p>
+        <div class="section-title"></div>
+    </div>
+</section>
+
+<!-- Paquetes Section -->
+<div class="container">
+    <div class="row">
+        @{
+            var packageImages = new List<string> {
+        "/Imagenes/Paquete1.jpg",
+        "/Imagenes/Paquete2.jpg",
+        "/Imagenes/Paquete3.jpg",
+        "/Imagenes/Paquete4.jpg",
+        "/Imagenes/Paquete5.jpg"
+        };
+            int imageIndex = 0;
+        }
+
+        @foreach (var item in Model)
+        {
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="package-card">
+                    <div class="package-image-container">
+                        <img src="@packageImages[imageIndex % packageImages.Count]" class="package-image" alt="@item.NombrePaquete">
+                        <div class="package-badge">
+                            @item.PrecioPaquete?.ToString("C")
+                        </div>
+                    </div>
+
+                    <div class="package-card-body">
+                        <h3 class="package-title">@item.NombrePaquete</h3>
+                        <p class="package-description">@item.DescripcionPaquete</p>
+
+                        <div class="destination-info">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span>@item.DestinoPaquete</span>
+                        </div>
+
+                        <!-- Acordeón para Habitaciones -->
+                        <div class="accordion-section">
+                            <div class="accordion-header">
+                                <h5><i class="fas fa-bed"></i> Habitaciones Incluidas</h5>
+                                <i class="fas fa-chevron-down"></i>
+                            </div>
+                            <div class="accordion-content">
+                                <ul class="feature-list">
+                                    @foreach (var habitacion in item.PaqueteHabitaciones)
+                                    {
+                                        <li>
+                                            <i class="fas fa-door-open"></i>
+                                            @habitacion.IdHabitacionNavigation?.TipoHabitacion
+                                        </li>
+                                    }
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- Acordeón para Servicios -->
+                        <div class="accordion-section">
+                            <div class="accordion-header">
+                                <h5><i class="fas fa-concierge-bell"></i> Servicios Incluidos</h5>
+                                <i class="fas fa-chevron-down"></i>
+                            </div>
+                            <div class="accordion-content">
+                                <ul class="feature-list">
+                                    @foreach (var servicio in item.PaqueteServicios)
+                                    {
+                                        <li>
+                                            <i class="fas fa-check-circle"></i>
+                                            @servicio.IdServicioNavigation?.NombreServicio
+                                        </li>
+                                    }
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="package-footer">
+                            <div class="travel-info">
+                                <i class="fas fa-calendar-alt"></i>
+                                <span>@item.FechaPaquete?.ToString("d")</span>
+                            </div>
+                            <div class="travel-info">
+                                <i class="fas fa-clock"></i>
+                                <span>@item.TipoViajePaquete</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            imageIndex++;
+        }
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Acordeones interactivos
+            const accordionHeaders = document.querySelectorAll('.accordion-header');
+
+            // Configuración inicial: cerrar todos los acordeones
+            document.querySelectorAll('.accordion-content').forEach(content => {
+                content.style.maxHeight = '0';
+            });
+
+            accordionHeaders.forEach(header => {
+                header.addEventListener('click', function() {
+                    const content = this.nextElementSibling;
+                    const icon = this.querySelector('.fa-chevron-down');
+
+                    // Cerrar todos los demás acordeones
+                    document.querySelectorAll('.accordion-content').forEach(item => {
+                        if (item !== content) {
+                            item.style.maxHeight = '0';
+                            item.previousElementSibling.querySelector('.fa-chevron-down').style.transform = 'rotate(0deg)';
+                        }
+                    });
+
+                    // Alternar el acordeón actual
+                    if (content.style.maxHeight === '0px') {
+                        content.style.maxHeight = content.scrollHeight + 'px';
+                        icon.style.transform = 'rotate(180deg)';
+                    } else {
+                        content.style.maxHeight = '0';
+                        icon.style.transform = 'rotate(0deg)';
+                    }
+                });
+            });
+
+            // Animación de aparición de tarjetas
+            const packageCards = document.querySelectorAll('.package-card');
+
+            packageCards.forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                card.style.transition = `all 0.5s ease ${index * 0.1}s`;
+
+                setTimeout(() => {
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, 100);
+            });
+        });
+    </script>
+}
