@@ -10,6 +10,9 @@ namespace CrudDF3.Models.ViewModels
         [Display(Name = "Usuario")]
         public string NombreUsuario { get; set; }
 
+        [Display(Name = "Cedula")]
+        public int? CedulaUsuario { get; set; }
+
         [Display(Name = "Fecha Inicial")]
         [DataType(DataType.Date)]
         public DateTime? FechaInicial { get; set; }

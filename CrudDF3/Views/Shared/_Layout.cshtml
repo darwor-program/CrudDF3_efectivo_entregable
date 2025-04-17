@@ -1,6 +1,7 @@
 @{
     var nombreRol = Context.Session.GetString("nombreRol");
     var usuarioAutenticado = Context.Session.GetString("idUsuario") != null;
+    var permisos = Context.Session.GetString("permisosUsuario")?.Split(',') ?? new string[0];
 }
 <!DOCTYPE html>
 <html lang="es">
@@ -267,51 +268,79 @@
                 <div class="collapse navbar-collapse" id="navbarNav">
                     @if (usuarioAutenticado)
                     {
-                        <ul class="navbar-nav me-auto @(nombreRol == "Administrador" ? "admin-menu" : "")">
-                            @if (nombreRol == "Administrador")
+                        <ul class="navbar-nav me-auto">
+                            @if (permisos.Contains("Ver_Habitaciones"))
                             {
                                 <li class="nav-item">
                                     <a class="nav-link" asp-controller="Habitaciones" asp-action="Index" data-title="Habitaciones">
                                         <i class="fas fa-bed"></i><span> Habitaciones</span>
                                     </a>
                                 </li>
+                            }
+
+                            @if (permisos.Contains("Ver_Huespedes"))
+                            {
                                 <li class="nav-item">
                                     <a class="nav-link" asp-controller="Huespedes" asp-action="Index" data-title="Huéspedes">
                                         <i class="fas fa-users"></i><span> Huéspedes</span>
                                     </a>
                                 </li>
+                            }
+
+                            @if (permisos.Contains("Ver_PaquetesTuristicos"))
+                            {
                                 <li class="nav-item">
                                     <a class="nav-link" asp-controller="PaquetesTuristicoes" asp-action="Index" data-title="Paquetes">
                                         <i class="fas fa-suitcase"></i><span> Paquetes</span>
                                     </a>
                                 </li>
+                            }
+
+                            @if (permisos.Contains("Ver_Reservas"))
+                            {
                                 <li class="nav-item">
                                     <a class="nav-link" asp-controller="Reservas" asp-action="Index" data-title="Reservas">
                                         <i class="fas fa-calendar-check"></i><span> Reservas</span>
                                     </a>
                                 </li>
+                            }
+
+                            @if (permisos.Contains("Ver_Usuarios"))
+                            {
                                 <li class="nav-item">
                                     <a class="nav-link" asp-controller="Usuarios" asp-action="Index" data-title="Usuarios">
                                         <i class="fas fa-user-cog"></i><span> Usuarios</span>
                                     </a>
                                 </li>
+                            }
+
+                            @if (permisos.Contains("Ver_Roles"))
+                            {
                                 <li class="nav-item">
                                     <a class="nav-link" asp-controller="Roles" asp-action="Index" data-title="Roles">
                                         <i class="fas fa-user-tag"></i><span> Roles</span>
                                     </a>
                                 </li>
+                            }
+
+                            @if (permisos.Contains("Ver_Servicios"))
+                            {
                                 <li class="nav-item">
                                     <a class="nav-link" asp-controller="Servicios" asp-action="Index" data-title="Servicios">
                                         <i class="fas fa-concierge-bell"></i><span> Servicios</span>
                                     </a>
                                 </li>
+                            }
+
+                            @if (permisos.Contains("Ver_Permisos"))
+                            {
                                 <li class="nav-item">
                                     <a class="nav-link" asp-controller="Permisoes" asp-action="Index" data-title="Permisos">
-                                        <i class="fas fa-concierge-bell"></i><span> Permisos</span>
+                                        <i class="fas fa-key"></i><span> Permisos</span>
                                     </a>
                                 </li>
                             }
-                            else if (nombreRol == "Cliente")
+                            @if (nombreRol == "Cliente")
                             {
                                 <li class="nav-item"><a class="nav-link" asp-controller="Habitaciones" asp-action="IndexPublic"><i class="fas fa-bed"></i> Habitaciones</a></li>
                                 <li class="nav-item"><a class="nav-link" asp-controller="Servicios" asp-action="IndexPublic"><i class="fas fa-concierge-bell"></i> Servicios</a></li>

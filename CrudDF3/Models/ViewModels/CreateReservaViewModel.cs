@@ -33,6 +33,9 @@ namespace CrudDF3.Models.ViewModels
         [DataType(DataType.Currency)]
         public decimal? Valor { get; set; }
 
+        public string? NombreUsuario { get; set; }
+        public int? CedulaUsuario { get; set; }
+
         [Display(Name = "Anticipo")]
         [DataType(DataType.Currency)]
         public decimal? Anticipo { get; set; }

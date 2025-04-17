@@ -3,6 +3,7 @@
 @{
     ViewData["Title"] = "Detalles del Huésped";
     Layout = "_Layout";
+    var permisos = Context.Session.GetString("permisosUsuario")?.Split(',') ?? new string[0];
 }
 
 <div class="container mt-4">
@@ -75,9 +76,12 @@
             </div>
 
             <div class="d-flex justify-content-end mt-4">
-                <a asp-action="Edit" asp-route-id="@Model.IdHuesped" class="btn btn-primary me-2">
-                    <i class="bi bi-pencil-square me-1"></i> Editar
-                </a>
+                @if (permisos.Contains("Editar_Huespedes"))
+                {
+                    <a asp-action="Edit" asp-route-id="@Model?.IdHuesped" class="btn" style="background-color: #6096ba; color: white;">
+                        <i class="fas fa-edit me-2"></i>Editar
+                    </a>
+                }
                 <a asp-action="Index" class="btn btn-outline-secondary">
                     <i class="bi bi-list-ul me-1"></i> Ver todos los huéspedes
                 </a>

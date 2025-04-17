@@ -3,6 +3,7 @@
 @{
     ViewData["Title"] = "Detalles del Usuario";
     Layout = "_Layout";
+    var permisos = Context.Session.GetString("permisosUsuario")?.Split(',') ?? new string[0];
 }
 
 <div class="container mt-4">
@@ -80,9 +81,12 @@
             </div>
 
             <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
-                <a asp-action="Edit" asp-route-id="@Model.IdUsuario" class="btn btn-primary">
-                    <i class="bi bi-pencil"></i> Editar
-                </a>
+                @if (permisos.Contains("Editar_Usuarios"))
+                {
+                    <a asp-action="Edit" asp-route-id="@Model?.IdUsuario" class="btn" style="background-color: #6096ba; color: white;">
+                        <i class="fas fa-edit me-2"></i>Editar
+                    </a>
+                }
                 <a asp-action="Index" class="btn btn-outline-secondary">
                     Volver al listado
                 </a>

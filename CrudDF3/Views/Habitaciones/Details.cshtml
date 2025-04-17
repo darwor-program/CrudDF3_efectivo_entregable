@@ -1,54 +1,108 @@
 ﻿@model CrudDF3.Models.Habitacione
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Detalles de Habitación";
+    var permisos = Context.Session.GetString("permisosUsuario")?.Split(',') ?? new string[0];
 }
 
-<h1>Details</h1>
+<div class="container py-4">
+    <div class="card border-0 shadow">
+        <div class="card-header py-3" style="background: linear-gradient(135deg, #274c77, #6096ba);">
+            <h2 class="h4 mb-0 text-white"><i class="fas fa-info-circle me-2"></i>@ViewData["Title"]</h2>
+        </div>
 
-<div>
-    <h4>Habitacione</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.TipoHabitacion)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.TipoHabitacion)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.CapacidadHuespedes)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.CapacidadHuespedes)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.EstadoHabitacion)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.EstadoHabitacion)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.DescripcionHabitacion)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.DescripcionHabitacion)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.TarifaHabitacion)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.TarifaHabitacion)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.CaracteristicasHabitacion)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.CaracteristicasHabitacion)
-        </dd>
-    </dl>
+        <div class="card-body" style="background-color: #edf2f4;">
+            <div class="row g-3">
+                <!-- Columna Izquierda -->
+                <div class="col-md-6">
+                    <!-- Tipo Habitación -->
+                    <div class="mb-3">
+                        <label class="form-label fw-bold" style="color: #2b2d42;">Tipo de Habitación</label>
+                        <div class="form-control" style="border-left: 3px solid #6096ba; background-color: white; min-height: 38px;">
+                            @Html.DisplayFor(model => model.TipoHabitacion)
+                        </div>
+                    </div>
+
+                    <!-- Capacidad -->
+                    <div class="mb-3">
+                        <label class="form-label fw-bold" style="color: #2b2d42;">Capacidad de Huéspedes</label>
+                        <div class="form-control" style="border-left: 3px solid #6096ba; background-color: white; min-height: 38px;">
+                            @Html.DisplayFor(model => model.CapacidadHuespedes)
+                        </div>
+                    </div>
+
+                    <!-- Estado -->
+                    <div class="mb-3">
+                        <label class="form-label fw-bold" style="color: #2b2d42;">Estado</label>
+                        <div class="form-control" style="border-left: 3px solid #6096ba; background-color: white; min-height: 38px;">
+                            @(Model.EstadoHabitacion ? "Disponible" : "No Disponible")
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Columna Derecha -->
+                <div class="col-md-6">
+                    <!-- Tarifa -->
+                    <div class="mb-3">
+                        <label class="form-label fw-bold" style="color: #2b2d42;">Tarifa</label>
+                        <div class="input-group">
+                            <span class="input-group-text" style="background-color: #a3cef1;">$</span>
+                            <div class="form-control" style="border-left: 3px solid #6096ba; background-color: white;">
+                                @Html.DisplayFor(model => model.TarifaHabitacion)
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Campos de texto completos -->
+                <div class="col-12">
+                    <!-- Descripción -->
+                    <div class="mb-3">
+                        <label class="form-label fw-bold" style="color: #2b2d42;">Descripción</label>
+                        <div class="form-control" style="border-left: 3px solid #6096ba; background-color: white; min-height: 100px;">
+                            @Html.DisplayFor(model => model.DescripcionHabitacion)
+                        </div>
+                    </div>
+
+                    <!-- Características -->
+                    <div class="mb-4">
+                        <label class="form-label fw-bold" style="color: #2b2d42;">Características</label>
+                        <div class="form-control" style="border-left: 3px solid #6096ba; background-color: white; min-height: 100px;">
+                            @Html.DisplayFor(model => model.CaracteristicasHabitacion)
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Botones -->
+                <div class="col-12">
+                    <div class="d-flex justify-content-between">
+                        <a asp-action="Index" class="btn" style="background-color: #a3cef1; color: #2b2d42;">
+                            <i class="fas fa-arrow-left me-2"></i>Volver
+                        </a>
+                        <div>
+                            @if (permisos.Contains("Editar_Habitaciones"))
+                            {
+                                <a asp-action="Edit" asp-route-id="@Model?.IdHabitacion" class="btn" style="background-color: #6096ba; color: white;">
+                                    <i class="fas fa-edit me-2"></i>Editar
+                                </a>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.IdHabitacion">Edit</a> |
-    <a asp-action="Index">Back to List</a>
-</div>
+
+@section Styles {
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+
+        .card {
+            border-radius: 8px;
+            overflow: hidden;
+        }
+    </style>
+}

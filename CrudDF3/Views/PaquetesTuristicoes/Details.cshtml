@@ -12,6 +12,7 @@
     };
     var imageIndex = Model.IdPaquete % packageImages.Count;
     var packageImage = packageImages[imageIndex];
+    var permisos = Context.Session.GetString("permisosUsuario")?.Split(',') ?? new string[0];
 }
 
 <style>
@@ -94,14 +95,9 @@
                         <div>
                             <span class="badge bg-primary-accent mb-2">@Model.TipoViajePaquete</span>
                             <h1 class="text-primary-dark mb-2">@Model.NombrePaquete</h1>
-                            <div class="d-flex align-items-center mb-3">
-                                <i class="fas fa-map-marker-alt text-primary-accent me-2"></i>
-                                <span class="text-muted">@Model.DestinoPaquete</span>
-                            </div>
                         </div>
                         <div class="text-end">
-                            <h3 class="text-primary-accent mb-0">@Model.PrecioPaquete?.ToString("C")</h3>
-                            <small class="text-muted">por persona</small>
+                            <h3 class="text-primary-accent mb-0">@Model.PrecioPaquete?.ToString("C")</h3>                        
                         </div>
                     </div>
 
@@ -109,15 +105,6 @@
 
                     <!-- Información destacada -->
                     <div class="row g-3 mb-4">
-                        <div class="col-md-4">
-                            <div class="bg-white p-3 rounded text-center shadow-sm">
-                                <div class="icon-container mx-auto mb-2">
-                                    <i class="fas fa-calendar-alt text-primary-accent"></i>
-                                </div>
-                                <h6 class="mb-1">Fecha</h6>
-                                <p class="mb-0 text-muted">@Model.FechaPaquete?.ToString("dd MMM yyyy")</p>
-                            </div>
-                        </div>
                         <div class="col-md-4">
                             <div class="bg-white p-3 rounded text-center shadow-sm">
                                 <div class="icon-container mx-auto mb-2">
@@ -270,12 +257,12 @@
             <i class="fas fa-arrow-left me-2"></i>Volver al listado
         </a>
         <div class="d-flex gap-3">
-            <a asp-action="Edit" asp-route-id="@Model.IdPaquete" class="btn btn-primary">
-                <i class="fas fa-edit me-2"></i>Editar Paquete
-            </a>
-            <a href="#" class="btn btn-success">
-                <i class="fas fa-shopping-cart me-2"></i>Reservar Ahora
-            </a>
+            @if (permisos.Contains("Editar_PaquetesTuristicos"))
+            {
+                <a asp-action="Edit" asp-route-id="@Model?.IdPaquete" class="btn" style="background-color: #6096ba; color: white;">
+                    <i class="fas fa-edit me-2"></i>Editar
+                </a>
+            }
         </div>
     </div>
 </div>
