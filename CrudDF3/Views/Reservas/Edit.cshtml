@@ -256,96 +256,82 @@
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
-    <script>
-        $(document).ready(function() {
-            // Función para calcular totales (personas, valor y anticipo)
-            function calcularTotales() {
-                let totalPersonas = 0;
-                let totalPrecio = 0;
+<script>
+    $(document).ready(function() {
 
-                // Sumar capacidades y precios de paquetes seleccionados
-                $('.paquete-checkbox:checked').each(function() {
-                    totalPersonas += parseInt($(this).data('capacidad')) || 0;
-                    totalPrecio += parseFloat($(this).data('precio')) || 0;
-                });
+        // Función para formatear números con puntos para miles
+        function formatearNumero(num) {
+            return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+        }
 
-                // Formatear valores para visualización
-                const formattedPrecio = totalPrecio.toLocaleString('es-CO', {
-                    style: 'currency',
-                    currency: 'COP',
-                    minimumFractionDigits: 0
-                });
-                
-                const formattedAnticipo = (totalPrecio * 0.3).toLocaleString('es-CO', {
-                    style: 'currency',
-                    currency: 'COP',
-                    minimumFractionDigits: 0
-                });
+        // Función para calcular totales (personas, valor y anticipo)
+        function calcularTotales() {
+            let totalPersonas = 0;
+            let totalPrecio = 0;
 
-                // Actualizar campos
-                $('#numeroPersonas').val(totalPersonas);
-                $('#valorTotal').val(formattedPrecio);
-                $('#anticipoInput').val(formattedAnticipo);
-                
-                // Actualizar campos ocultos del modelo
-                $('input[name="NumeroPersonas"]').val(totalPersonas);
-                $('input[name="Valor"]').val(totalPrecio.toFixed(2));
-                $('input[name="Anticipo"]').val((totalPrecio * 0.3).toFixed(2));
-            }
-
-            // Evento de cambio en los checkboxes de paquetes
-            $(document).on('change', '.paquete-checkbox', function() {
-                calcularTotales();
+            // Sumar capacidades y precios de paquetes seleccionados
+            $('.paquete-checkbox:checked').each(function() {
+                totalPersonas += parseInt($(this).data('capacidad')) || 0;
+                totalPrecio += parseFloat($(this).data('precio')) || 0;
             });
 
-            // Validación de fechas
-            $('input[type="date"]').change(function() {
-                const fechaInicial = new Date($('#FechaInicial').val());
-                const fechaFinal = new Date($('#FechaFinal').val());
+            // Calcular anticipo
+            const anticipo = totalPrecio * 0.3;
 
-                if (fechaInicial && fechaFinal && fechaFinal < fechaInicial) {
-                    alert('La fecha final debe ser posterior a la fecha inicial');
-                    $('#FechaFinal').val('');
-                }
-            });
+            // Formatear todos los valores con puntos para miles
+            const formattedPersonas = formatearNumero(totalPersonas);
+            const formattedPrecio = formatearNumero(Math.round(totalPrecio));
+            const formattedAnticipo = formatearNumero(Math.round(anticipo));
 
-            // Validación del anticipo
-            $('#anticipoInput').on('input', function() {
-                const valorTotal = parseFloat($('input[name="Valor"]').val()) || 0;
-                let anticipo = parseFloat($(this).val().replace(/[^\d.]/g, '')) || 0;
+            // Actualizar campos visibles
+            $('#numeroPersonas').val(formattedPersonas);
+            $('#valorTotal').val('$' + formattedPrecio);
+            $('#anticipoInput').val('$' + formattedAnticipo);
+            
+            // Actualizar campos ocultos del modelo (también con formato)
+            $('input[name="NumeroPersonas"]').val(formattedPersonas);
+            $('input[name="Valor"]').val(formattedPrecio);
+            $('input[name="Anticipo"]').val(formattedAnticipo);
+        }
 
-                if (anticipo > valorTotal) {
-                    anticipo = valorTotal;
-                    $(this).val(anticipo.toLocaleString('es-CO', {
-                        style: 'currency',
-                        currency: 'COP',
-                        minimumFractionDigits: 0
-                    }));
-                }
-            });
-
-            // Validación del formulario antes de enviar
-            $('#reservaForm').on('submit', function(e) {
-                // Validación básica del formulario
-                if (this.checkValidity() === false) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    $(this).addClass('was-validated');
-                    return false;
-                }
-
-                // Verificar que se haya seleccionado al menos un paquete
-                if ($('.paquete-checkbox:checked').length === 0) {
-                    e.preventDefault();
-                    alert('Debe seleccionar al menos un paquete turístico');
-                    return false;
-                }
-
-                return true;
-            });
-
-            // Calcular valores iniciales
+        // Evento de cambio en los checkboxes de paquetes
+        $(document).on('change', '.paquete-checkbox', function() {
             calcularTotales();
         });
-    </script>
+
+        // Validación de fechas
+        $('input[type="date"]').change(function() {
+            const fechaInicial = new Date($('#FechaInicial').val());
+            const fechaFinal = new Date($('#FechaFinal').val());
+
+            if (fechaInicial && fechaFinal && fechaFinal < fechaInicial) {
+                alert('La fecha final debe ser posterior a la fecha inicial');
+                $('#FechaFinal').val('');
+            }
+        });
+
+        // Validación del formulario antes de enviar
+        $('#reservaForm').on('submit', function(e) {
+            // Validación básica del formulario
+            if (this.checkValidity() === false) {
+                e.preventDefault();
+                e.stopPropagation();
+                $(this).addClass('was-validated');
+                return false;
+            }
+
+            // Verificar que se haya seleccionado al menos un paquete
+            if ($('.paquete-checkbox:checked').length === 0) {
+                e.preventDefault();
+                alert('Debe seleccionar al menos un paquete turístico');
+                return false;
+            }
+
+            return true;
+        });
+
+        // Calcular valores iniciales
+        calcularTotales();
+    });
+</script>
 }

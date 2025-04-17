@@ -24,6 +24,7 @@ namespace CrudDF3.Controllers
         {
             var idUsuario = HttpContext.Session.GetString("idUsuario");
             var idRol = HttpContext.Session.GetString("idRol");
+            var CedulaUsuario = HttpContext.Session.GetString("CedulaUsuario");
 
             IQueryable<Reserva> query = _context.Reservas;
 
@@ -40,6 +41,7 @@ namespace CrudDF3.Controllers
                 {
                     IdReserva = r.IdReserva,
                     NombreUsuario = r.IdUsuarioNavigation.NombreUsuario,
+                    CedulaUsuario = r.IdUsuarioNavigation.CedulaUsuario,
                     FechaInicial = r.FechaInicial,
                     FechaFinal = r.FechaFinal,
                     NumeroPersonas = r.NumeroPersonas,
@@ -84,6 +86,8 @@ namespace CrudDF3.Controllers
         {
             var idRol = HttpContext.Session.GetString("idRol");
             var idUsuario = HttpContext.Session.GetString("idUsuario");
+            var CedulaUsuario = HttpContext.Session.GetString("CedulaUsuario");
+
 
             // Si es cliente (rol 2), cargar vista específica
             if (idRol == "2" && !string.IsNullOrEmpty(idUsuario))
@@ -99,7 +103,7 @@ namespace CrudDF3.Controllers
         {
             var model = new CreateReservaViewModel
             {
-                Usuarios = new SelectList(_context.Usuarios, "IdUsuario", "NombreUsuario"),
+                Usuarios = new SelectList(_context.Usuarios, "IdUsuario", "CedulaUsuario", "NombreUsuario"),
                 PaquetesDisponibles = _context.PaquetesTuristicos
                     .Where(p => p.DisponibilidadPaquete && p.EstadoPaquete)
                     .Select(p => new PaqueteSelectionViewModel
@@ -129,7 +133,9 @@ namespace CrudDF3.Controllers
             var model = new CreateReservaViewModel
             {
                 IdUsuario = userId,
-                Usuarios = new SelectList(new List<Usuario> { usuario }, "IdUsuario", "NombreUsuario", userId),
+                NombreUsuario = usuario.NombreUsuario,  // Agrega esta línea
+                CedulaUsuario = usuario.CedulaUsuario, // Agrega esta línea
+                Usuarios = new SelectList(new List<Usuario> { usuario }, "IdUsuario", "NombreUsuario"),
                 PaquetesDisponibles = _context.PaquetesTuristicos
                     .Where(p => p.DisponibilidadPaquete && p.EstadoPaquete)
                     .Select(p => new PaqueteSelectionViewModel
@@ -154,6 +160,7 @@ namespace CrudDF3.Controllers
         {
             var idRol = HttpContext.Session.GetString("idRol");
             var idUsuario = HttpContext.Session.GetString("idUsuario");
+            var CedulaUsuario = HttpContext.Session.GetString("CedulaUsuario");
 
             // Si es cliente, forzar el ID de usuario de la sesión
             if (idRol == "2" && !string.IsNullOrEmpty(idUsuario))
@@ -346,7 +353,7 @@ namespace CrudDF3.Controllers
                 FechaReserva = reserva.FechaReserva,
                 EstadoReserva = reserva.EstadoReserva,
                 PaquetesSeleccionados = reserva.ReservasPaquetes.Select(rp => rp.IdPaquete).ToList(),
-                Usuarios = new SelectList(_context.Usuarios, "IdUsuario", "NombreUsuario", reserva.IdUsuario),
+                Usuarios = new SelectList(_context.Usuarios, "IdUsuario", "NombreUsuario", reserva.IdUsuario, "CedulaUsuario"),
                 PaquetesDisponibles = await _context.PaquetesTuristicos
                     .Where(p => p.DisponibilidadPaquete && p.EstadoPaquete)
                     .Select(p => new PaqueteSelectionViewModel

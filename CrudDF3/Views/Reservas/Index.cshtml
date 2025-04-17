@@ -5,6 +5,7 @@
     var idRol = Context.Session.GetString("idRol");
     ViewData["Title"] = idRol == "2" ? "Mis Reservas" : "Lista de Reservas";
     Layout = "_Layout";
+    var permisos = Context.Session.GetString("permisosUsuario")?.Split(',') ?? new string[0];
 }
 
 <div class="container mt-4">
@@ -24,6 +25,7 @@
                     <thead class="bg-light">
                         <tr>
                             <th class="py-3">Código</th>
+                            <th class="py-3">Cédula</th>
                             <th class="py-3">Usuario</th>
                             <th class="py-3">Fechas</th>
                             <th class="py-3">Personas</th>
@@ -38,6 +40,7 @@
                         {
                             <tr class="border-top">
                                 <td class="align-middle">@item.IdReserva</td>
+                                <td class="align-middle">@item.CedulaUsuario</td>
                                 <td class="align-middle">@item.NombreUsuario</td>
                                 <td class="align-middle">
                                     <small class="text-muted d-block">Inicio: @item.FechaInicial?.ToString("dd/MM/yyyy")</small>
@@ -72,15 +75,21 @@
                                 </td>
                                 <td class="align-middle text-end">
                                     <div class="btn-group btn-group-sm" role="group">
-                                        <a asp-action="Edit" asp-route-id="@item.IdReserva" class="btn btn-outline-secondary border-0">
-                                            Editar
-                                        </a>
+                                        @if (permisos.Contains("Editar_Reservas"))
+                                        {
+                                            <a asp-action="Edit" asp-route-id="@item.IdReserva" class="btn btn-outline-secondary border-0">
+                                                Editar
+                                            </a>
+                                        }
                                         <a asp-action="Details" asp-route-id="@item.IdReserva" class="btn btn-outline-secondary border-0">
                                             Detalles
                                         </a>
-                                        <a asp-action="Delete" asp-route-id="@item.IdReserva" class="btn btn-outline-danger border-0">
-                                            Eliminar
-                                        </a>
+                                        @if (permisos.Contains("Eliminar_Reservas"))
+                                        {
+                                            <a asp-action="Delete" asp-route-id="@item.IdReserva" class="btn btn-outline-danger border-0">
+                                                Eliminar
+                                            </a>
+                                        }
                                     </div>
                                 </td>
                             </tr>
@@ -114,7 +123,7 @@
         $('#toggleInactive').change(function() {
             const showInactive = $(this).is(':checked');
             $('#reservasTable tbody tr').each(function() {
-                const isActive = $(this).find('td').eq(5).text().includes('Confirmada');
+                const isActive = $(this).find('td').eq(6).text().includes('Confirmada');
                 $(this).toggle(showInactive || isActive);
             });
         });

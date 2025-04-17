@@ -25,7 +25,6 @@ namespace CrudDF3.Controllers
             return View();
         }
 
-        // MÉTODO PARA PROCESAR EL LOGIN (CORREGIDO)
         // MÉTODO PARA PROCESAR EL LOGIN (VERSIÓN CORREGIDA)
         [HttpPost]
         public IActionResult Login(LoginViewModel model)
@@ -49,10 +48,21 @@ namespace CrudDF3.Controllers
                     return View(model);
                 }
 
+                // OBTENER LOS PERMISOS DEL ROL DEL USUARIO
+                var permisos = _context.RolPermisos
+                    .Where(rp => rp.IdRol == user.IdRol)
+                    .Include(rp => rp.IdPermisoNavigation)
+                    .Select(rp => rp.IdPermisoNavigation.NombrePermiso)
+                    .ToList();
+
                 // GUARDAR DATOS EN SESIÓN
                 HttpContext.Session.SetString("idUsuario", user.IdUsuario.ToString());
                 HttpContext.Session.SetString("nombreUsuario", user.NombreUsuario);
                 HttpContext.Session.SetString("idRol", user.IdRol.ToString());
+                HttpContext.Session.SetString("CedulaUsuario", user.CedulaUsuario.ToString());
+
+                // Guardar permisos en la sesión como lista separada por comas
+                HttpContext.Session.SetString("permisosUsuario", string.Join(",", permisos));
 
                 // VERIFICAR QUE EL ROL NO SEA NULO
                 if (user.IdRolNavigation != null)
@@ -146,6 +156,8 @@ namespace CrudDF3.Controllers
             HttpContext.Session.Remove("nombreUsuario");
             HttpContext.Session.Remove("idRol");
             HttpContext.Session.Remove("nombreRol");
+            HttpContext.Session.Remove("permisosUsuario");
+            HttpContext.Session.Remove("CedulaUsuario");
 
             HttpContext.Session.Clear();
 

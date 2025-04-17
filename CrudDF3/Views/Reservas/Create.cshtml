@@ -6,6 +6,7 @@
     var paquetes = Model.PaquetesDisponibles as IList<PaqueteSelectionViewModel> ?? new List<PaqueteSelectionViewModel>();
     var usuarios = Model.Usuarios ?? new SelectList(Enumerable.Empty<SelectListItem>());
     var idRol = Context.Session.GetString("idRol");
+    var CedulaUsuario = Context.Session.GetString("CedulaUsuario");
     var isAdmin = idRol != "2"; // Rol 2 es cliente
 }
 

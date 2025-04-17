@@ -166,13 +166,6 @@
                 <div class="row">
                     <div class="col-md-6">
                         <div class="form-group mb-3">
-                            <label asp-for="DestinoPaquete" class="form-label text-secondary-dark">Destino</label>
-                            <input asp-for="DestinoPaquete" class="form-control" placeholder="Ej: Machu Picchu, Perú" />
-                            <span asp-validation-for="DestinoPaquete" class="text-danger small"></span>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="form-group mb-3">
                             <label asp-for="TipoViajePaquete" class="form-label text-secondary-dark">Tipo de Viaje</label>
                             <select asp-for="TipoViajePaquete" class="form-control">
                                 <option value="">Seleccione un tipo</option>
@@ -215,15 +208,6 @@
                             <label asp-for="StockPaquete" class="form-label text-secondary-dark">Stock Disponible</label>
                             <input asp-for="StockPaquete" class="form-control" type="number" min="0" />
                             <span asp-validation-for="StockPaquete" class="text-danger small"></span>
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="form-group mb-3">
-                            <label asp-for="FechaPaquete" class="form-label text-secondary-dark">Fecha del Viaje</label>
-                            <input asp-for="FechaPaquete" class="form-control" type="date" />
-                            <span asp-validation-for="FechaPaquete" class="text-danger small"></span>
                         </div>
                     </div>
                 </div>

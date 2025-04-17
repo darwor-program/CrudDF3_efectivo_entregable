@@ -3,15 +3,19 @@
 @{
     ViewData["Title"] = "Gestión de Usuarios";
     Layout = "_Layout";
+    var permisos = Context.Session.GetString("permisosUsuario")?.Split(',') ?? new string[0];
 }
 <div class="container mt-4">
     <div class="card border-0 shadow-sm">
         <div class="card-header bg-white border-bottom">
             <div class="d-flex justify-content-between align-items-center py-2">
                 <h3 class="h5 mb-0">Gestión de Usuarios</h3>
-                <a asp-action="Create" class="btn btn-outline-dark btn-sm">
-                    <span class="me-1">+</span> Nuevo Usuario
-                </a>
+                @if (permisos.Contains("Crear_Usuarios"))
+                {
+                    <a asp-action="Create" class="btn btn-outline-dark btn-sm">
+                        <span class="me-1">+</span> Nuevo Usuario
+                    </a>
+                }
             </div>
             <div class="mt-3">
                 <input type="text" id="searchInput" class="form-control" placeholder="Buscar usuarios..." />
@@ -59,15 +63,21 @@
                                 </td>
                                 <td class="align-middle text-end">
                                     <div class="btn-group btn-group-sm" role="group">
-                                        <a asp-action="Edit" asp-route-id="@item.IdUsuario" class="btn btn-outline-secondary border-0">
-                                            Editar
-                                        </a>
+                                        @if (permisos.Contains("Editar_Usuarios"))
+                                        {
+                                            <a asp-action="Edit" asp-route-id="@item.IdUsuario" class="btn btn-outline-secondary border-0">
+                                                Editar
+                                            </a>
+                                        }
                                         <a asp-action="Details" asp-route-id="@item.IdUsuario" class="btn btn-outline-secondary border-0">
                                             Detalles
                                         </a>
-                                        <a asp-action="Delete" asp-route-id="@item.IdUsuario" class="btn btn-outline-danger border-0">
-                                            Eliminar
-                                        </a>
+                                        @if (permisos.Contains("Eliminar_Usuarios"))
+                                        {
+                                            <a asp-action="Delete" asp-route-id="@item.IdUsuario" class="btn btn-outline-danger border-0">
+                                                Eliminar
+                                            </a>
+                                        }
                                     </div>
                                 </td>
                             </tr>
